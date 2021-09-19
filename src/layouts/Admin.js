@@ -54,7 +54,7 @@ class Admin extends React.Component {
             imgAlt: "...",
           }}
         />
-        <div className="main-content" ref="mainContent">
+        <div className="main-content mb-5" ref="mainContent">
           <AdminNavbar
             {...this.props}
             brandText={this.getBrandText(this.props.location.pathname)}
@@ -63,9 +63,9 @@ class Admin extends React.Component {
             {this.getRoutes(routes)}
             <Redirect from="*" to="/admin/index" />
           </Switch>
-          <Container fluid>
+          {/* <Container fluid>
             <AdminFooter />
-          </Container>
+          </Container> */}
         </div>
       </>
     );
