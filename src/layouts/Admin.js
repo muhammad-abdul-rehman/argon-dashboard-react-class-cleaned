@@ -23,6 +23,7 @@ class Admin extends React.Component {
             path={prop.layout + prop.path}
             component={prop.component}
             key={key}
+            exact
           />
         );
       } else {
@@ -61,7 +62,7 @@ class Admin extends React.Component {
           />
           <Switch>
             {this.getRoutes(routes)}
-            <Redirect from="*" to="/admin/index" />
+            {/* <Redirect from="*" to="/admin/index" /> */}
           </Switch>
           {/* <Container fluid>
             <AdminFooter />

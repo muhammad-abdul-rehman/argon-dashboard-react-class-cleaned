@@ -2,6 +2,8 @@ import Index from "views/Index.js";
 import Register from "views/auth/Register.js";
 import Login from "views/auth/Login.js";
 import Tables from "views/Tables.js";
+import Memberships from "views/Memberships";
+import AddIndividualMembership from "views/AddIndividualMembership";
 
 var routes = [
   {
@@ -12,11 +14,41 @@ var routes = [
     layout: "/admin",
   },
   {
-    path: "/tables",
-    name: "Tables",
+    path: "/membership",
+    name: "Memberships",
     icon: "ni ni-bullet-list-67 text-red",
-    component: Tables,
+    component: Memberships,
     layout: "/admin",
+    children: [
+      {
+        path: "/membership/individual/add",
+        name: "Add New Individual Membership",
+        icon: "ni ni-bullet-list-67 text-red", // redundant
+        component: AddIndividualMembership,
+        layout: "/admin",
+      },
+      {
+        path: "/membership/club-individual/add",
+        name: "Add New Club Individual Membership",
+        icon: "ni ni-bullet-list-67 text-red", // redundant
+        component: Tables,
+        layout: "/admin",
+      },
+      {
+        path: "/membership/renew-membership",
+        name: "Renew or change a Membership",
+        icon: "ni ni-bullet-list-67 text-red", // redundant
+        component: Tables,
+        layout: "/admin",
+      },
+      {
+        path: "/membership/about",
+        name: "About",
+        icon: "ni ni-bullet-list-67 text-red", // redundant
+        component: Tables,
+        layout: "/admin",
+      },
+    ],
   },
   {
     path: "/login",

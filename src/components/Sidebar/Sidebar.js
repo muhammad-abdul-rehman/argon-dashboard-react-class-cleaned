@@ -83,17 +83,51 @@ class Sidebar extends React.Component {
     return routes.map((prop, key) => {
       if (prop.isMenu != false)
         return (
-          <NavItem key={key}>
-            <NavLink
-              to={prop.layout + prop.path}
-              tag={NavLinkRRD}
-              onClick={this.closeCollapse}
-              activeClassName="active"
-            >
-              <i className={prop.icon} />
-              {prop.name}
-            </NavLink>
-          </NavItem>
+          <>
+            {typeof prop.children !== "undefined" &&
+            0 !== prop.children.length ? (
+              <>
+                <NavItem key={key}>
+                  <NavLink
+                    to={prop.layout + prop.path}
+                    tag={NavLinkRRD}
+                    onClick={this.closeCollapse}
+                    activeClassName="active"
+                  >
+                    <i className={prop.icon} />
+                    {prop.name}
+                  </NavLink>
+                </NavItem>
+                <Nav vertical>
+                  {prop.children.map((item, key) => (
+                    <NavItem key={key}>
+                      <NavLink
+                        to={item.layout + item.path}
+                        exact
+                        tag={NavLinkRRD}
+                        onClick={this.closeCollapse}
+                        activeClassName="active"
+                      >
+                        {item.name}
+                      </NavLink>
+                    </NavItem>
+                  ))}
+                </Nav>
+              </>
+            ) : (
+              <NavItem key={key}>
+                <NavLink
+                  to={prop.layout + prop.path}
+                  tag={NavLinkRRD}
+                  onClick={this.closeCollapse}
+                  activeClassName="active"
+                >
+                  <i className={prop.icon} />
+                  {prop.name}
+                </NavLink>
+              </NavItem>
+            )}
+          </>
         );
     });
   };
@@ -137,7 +171,9 @@ class Sidebar extends React.Component {
             </NavbarBrand>
           ) : null}
           {/* User */}
-          <Button color="danger" className="d-md-none">Logout</Button>
+          <Button color="danger" className="d-md-none">
+            Logout
+          </Button>
           {/* <Nav className="align-items-center d-md-none">
             <UncontrolledDropdown nav>
               <DropdownToggle nav className="nav-link-icon">
