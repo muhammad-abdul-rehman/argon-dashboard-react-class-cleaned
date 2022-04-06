@@ -37,6 +37,15 @@ class Admin extends React.Component {
               ))}
             </Switch>
           );
+        } else {
+          return (
+            <Route
+              path={prop.layout + prop.path}
+              component={prop.component}
+              key={key}
+              exact
+            />
+          );
         }
       } else {
         return null;
