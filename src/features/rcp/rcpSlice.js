@@ -4,7 +4,7 @@ const initialState = {
   base_url: "/wp-json/rcp/v1/",
   auth_url: "/wp-json/jwt-auth/v1/", // for testing purposes only.
   route: "",
-  domain: "http://test.local", // for testing purposes only.
+  domain: "https://atpi-dev14.grafton.digital", // for testing purposes only.
 };
 
 const rcpSlice = createSlice({

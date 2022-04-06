@@ -44,12 +44,13 @@ class Memberships extends React.Component {
   async fetchToken(token_url) {
     const response = await fetch(token_url, {
       method: "post",
+      mode: "cors",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        username: "root", // Hardcoded for now.
-        password: "root", // Hardcoded for now.
+        username: process.env.REACT_APP_ATPI_USERNAME, // Hardcoded for now.
+        password: process.env.REACT_APP_ATPI_PASSWORD, // Hardcoded for now.
       }),
     });
     const data = await response.json();
@@ -73,6 +74,7 @@ class Memberships extends React.Component {
     }
 
     const res = await fetch(urlQuery, {
+      mode: "cors",
       headers: {
         Authorization: "Bearer " + token,
       },

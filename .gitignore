@@ -3,4 +3,8 @@
 package-lock.json
 /build
 
+.env
 .vscode
+/.firebase
+.firebaserc
+firebase.json
