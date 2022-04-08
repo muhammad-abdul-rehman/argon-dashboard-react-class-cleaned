@@ -9,22 +9,55 @@ import Sidebar from "components/Sidebar/Sidebar.js";
 
 import routes from "routes.js";
 
+import { connect } from "react-redux";
+import { setUserLoginDetails } from "features/user/userSlice";
+
+//Stripe
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+
+const stripePromise = loadStripe("" + process.env.REACT_APP_PUBLISHABLE_KEY);
+
 class Admin extends React.Component {
+  componentDidMount() {
+    this.fetchToken(
+      this.props.rcp_url.domain + this.props.rcp_url.auth_url + "token"
+    );
+  }
   componentDidUpdate(e) {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
     this.refs.mainContent.scrollTop = 0;
   }
+  /**
+   * Fetching token url from auth endpoint
+   * @param {string} token_url
+   */
+  async fetchToken(token_url) {
+    const response = await fetch(token_url, {
+      method: "post",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: process.env.REACT_APP_ATPI_USERNAME, // Hardcoded for now.
+        password: process.env.REACT_APP_ATPI_PASSWORD, // Hardcoded for now.
+      }),
+    });
+    const data = await response.json();
+    this.props.setUserLoginDetails(data);
+  }
+
   getRoutes = (routes) => {
     return routes.map((prop, key) => {
       if (prop.layout === "/admin") {
         if (prop.children !== undefined) {
           return (
-            <Switch>
+            <Switch key={key}>
               <Route
                 path={prop.layout + prop.path}
                 component={prop.component}
-                key={key}
                 exact
               />
               {prop.children.map((item, key) => (
@@ -82,7 +115,7 @@ class Admin extends React.Component {
             brandText={this.getBrandText(this.props.location.pathname)}
           />
           <Switch>
-            {this.getRoutes(routes)}
+            <Elements stripe={stripePromise}>{this.getRoutes(routes)}</Elements>
             {/* <Redirect from="*" to="/admin/index" /> */}
           </Switch>
           {/* <Container fluid>
@@ -94,4 +127,13 @@ class Admin extends React.Component {
   }
 }
 
-export default Admin;
+const mapStateToProps = (state) => {
+  return {
+    rcp_url: state.rcp_url,
+    user: state.user,
+  };
+};
+
+const mapDispatchToProps = { setUserLoginDetails };
+
+export default connect(mapStateToProps, mapDispatchToProps)(Admin);
