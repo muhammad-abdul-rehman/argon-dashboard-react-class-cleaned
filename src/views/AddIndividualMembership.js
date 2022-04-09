@@ -3,40 +3,36 @@ import React from "react";
 
 // reactstrap components
 import {
-  Badge,
   Button,
   Card,
   CardHeader,
-  CardFooter,
-  DropdownMenu,
-  DropdownItem,
-  UncontrolledDropdown,
-  DropdownToggle,
-  Media,
-  Pagination,
-  PaginationItem,
-  PaginationLink,
-  Progress,
-  Table,
   Label,
   Col,
   Input,
   Container,
   Row,
-  UncontrolledTooltip,
   CardBody,
   Form,
   FormFeedback,
   FormGroup,
-  InputGroup,
-  InputGroupText,
 } from "reactstrap";
 
 import { connect } from "react-redux";
 import { setUserLoginDetails } from "features/user/userSlice";
 import { setMembershipLevels } from "features/levels/levelsSlice";
 //Stripe
-import { CardElement, ElementsConsumer } from "@stripe/react-stripe-js";
+import {
+  CardElement,
+  ElementsConsumer,
+  PaymentElement,
+} from "@stripe/react-stripe-js";
+
+//Country Selector
+import {
+  CountryDropdown,
+  RegionDropdown,
+  CountryRegionData,
+} from "react-country-region-selector";
 
 class AddIndividualMembership extends React.Component {
   constructor(props) {
@@ -47,12 +43,18 @@ class AddIndividualMembership extends React.Component {
       validate: {
         emailState: "",
       },
+      country: "",
+      region: "",
+      error_message: [],
     };
     this.handleChange = this.handleChange.bind(this);
   }
 
-  componentDidUpdate() {
-    if (null !== this.props.user.token) {
+  componentDidUpdate({ user: prevUser }) {
+    if (
+      null !== this.props.user.token &&
+      prevUser.token !== this.props.user.token
+    ) {
       this.fetchMembershipLevels(
         this.props.rcp_url.domain + this.props.rcp_url.base_url + "levels"
       );
@@ -96,6 +98,14 @@ class AddIndividualMembership extends React.Component {
     this.setState({ validate });
   }
 
+  selectCountry(val) {
+    this.setState({ country: val });
+  }
+
+  selectRegion(val) {
+    this.setState({ region: val });
+  }
+
   /**
    * Submit the form.
    */
@@ -110,9 +120,22 @@ class AddIndividualMembership extends React.Component {
     }
     const cardElement = elements.getElement("card");
     try {
+      const membership = this.props.levels.levels.find(
+        (el) => el.id === parseInt(event.target.membership_level.value)
+      );
       const res = await fetch(
-        this.props.rcp_url.domain +
-          "/wp-admin/admin-ajax.php?action=stripe_payment_intent"
+        this.props.rcp_url.proxy_domain +
+          "/wp-admin/admin-ajax.php?action=stripe_payment_intent",
+        {
+          method: "post",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            money: membership.price,
+            currency_symbol: membership.currency_symbol,
+          }),
+        }
       );
       const {
         data: { client_secret },
@@ -120,6 +143,11 @@ class AddIndividualMembership extends React.Component {
       const paymentMethodReq = await stripe.createPaymentMethod({
         type: "card",
         card: cardElement,
+        billing_details: {
+          name: `${event.target.first_name.value} ${event.target.last_name.value}`,
+          email: event.target.email.value,
+          country: this.props.country,
+        },
       });
 
       if (paymentMethodReq.error) {
@@ -133,11 +161,114 @@ class AddIndividualMembership extends React.Component {
       if (error) {
         return;
       }
-    } catch (err) {}
+
+      const user_args = {
+        first_name: event.target.first_name.value,
+        last_name: event.target.last_name.value,
+        user_email: event.target.email.value,
+        user_pass: event.target.password.value,
+      };
+      const transaction = "";
+
+      this.onSuccessfullCheckout(user_args, membership, transaction);
+    } catch (err) {
+      console.error(err);
+      this.setState({ error_message: "Error happened" + err });
+    }
+  }
+
+  onSuccessfullCheckout(user_args, membership, transaction) {
+    this.addCustomer(user_args)
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        const { errors } = data;
+        if (errors) return Promise.reject(errors);
+        return this.addPaymentAndMembership(data, membership, transaction);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }
+
+  addCustomer(user_args) {
+    return fetch(
+      this.props.rcp_url.domain + this.props.rcp_url.base_url + "customers/new",
+      {
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + this.props.user.token,
+        },
+        body: JSON.stringify({ user_args: user_args }),
+      }
+    );
+  }
+
+  addPaymentAndMembership(data, membership, transaction) {
+    this.addPayment(data.user_id, membership, transaction)
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        const { errors } = data;
+        if (errors) return Promise.reject(errors);
+        return this.addMembership(data);
+      })
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        const { errors } = data;
+        if (errors) return Promise.reject(errors);
+        console.log(data);
+        return data;
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }
+
+  addPayment(user_id, membership, transaction) {
+    const args = {
+      subscription: membership.name,
+      object_id: membership.id,
+      user_id: user_id,
+      amount: membership.price,
+      transaction_id: transaction.id,
+      status: transaction.status,
+    };
+
+    return fetch(
+      this.props.rcp_url.domain + this.props.rcp_url.base_url + "payments/new",
+      {
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(args),
+      }
+    );
+  }
+
+  addMembership(data) {
+    return fetch(
+      this.props.rcp_url.domain +
+        this.props.rcp_url.base_url +
+        "memberships/new",
+      {
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    );
   }
 
   render() {
-    const { email } = this.state;
+    const { email, country, region } = this.state;
     const cardElementOptions = {
       style: { base: {}, invalid: {} },
       hidePostalCode: true,
@@ -155,33 +286,39 @@ class AddIndividualMembership extends React.Component {
                 <CardBody>
                   <Form onSubmit={this.submitForm.bind(this)}>
                     <FormGroup row>
-                      <Label for="first_name" sm={2}>
-                        Name
-                      </Label>
-                      <Row style={{ flex: 2 }}>
+                      <Label sm={3}>Name</Label>
+                      <Row style={{ flex: 2, paddingLeft: "1em" }}>
                         <Col md={6}>
                           <Input
                             id="first_name"
                             name="first_name"
                             placeholder="First Name"
                             type="text"
+                            onChange={(e) => {
+                              this.handleChange(e);
+                            }}
+                            required
                           />
                         </Col>
-                        <Col md={6}>
+                        <Col className="mt-sm-2 mt-md-0" md={6}>
                           <Input
-                            id="first_name"
-                            name="first_name"
+                            id="last_name"
+                            name="last_name"
                             placeholder="Last Name"
                             type="text"
+                            onChange={(e) => {
+                              this.handleChange(e);
+                            }}
+                            required
                           />
                         </Col>
                       </Row>
                     </FormGroup>
                     <FormGroup row>
-                      <Label for="email" sm={2}>
+                      <Label for="email" sm={3}>
                         Email
                       </Label>
-                      <Col style={{ paddingLeft: 0 }} md={6}>
+                      <Col md={6}>
                         <Input
                           id="email"
                           name="email"
@@ -198,6 +335,7 @@ class AddIndividualMembership extends React.Component {
                             this.validateEmail(e);
                             this.handleChange(e);
                           }}
+                          required
                         />
                         <FormFeedback>
                           Please use a valid email address.
@@ -205,15 +343,16 @@ class AddIndividualMembership extends React.Component {
                       </Col>
                     </FormGroup>
                     <FormGroup row>
-                      <Label for="password" sm={2}>
+                      <Label for="password" sm={3}>
                         Password
                       </Label>
-                      <Col style={{ paddingLeft: 0 }} md={6}>
+                      <Col md={6}>
                         <Input
                           id="password"
                           name="password"
                           placeholder="Password"
                           type="password"
+                          required
                         />
                       </Col>
                     </FormGroup>
@@ -222,15 +361,73 @@ class AddIndividualMembership extends React.Component {
                         Individual Membership
                       </Label>
                       <Col md={6}>
-                        <Input defaultValue="" type="select">
+                        <Input
+                          name="membership_level"
+                          defaultValue=""
+                          type="select"
+                          onChange={(e) => {
+                            this.handleChange(e);
+                          }}
+                          required
+                        >
                           <option disabled>Select a membership level.</option>
                           {this.props.levels.levels.length > 0 &&
                             this.props.levels.levels.map((item, key) => (
-                              <option key={key} name={item.id}>
+                              <option key={key} value={item.id}>
                                 {item.name}
                               </option>
                             ))}
                         </Input>
+                      </Col>
+                    </FormGroup>
+                    <FormGroup row>
+                      <Label sm={4} for="workplace">
+                        Workplace
+                      </Label>
+                      <Col md={6}>
+                        <Input name="workplace" type="text" />
+                      </Col>
+                    </FormGroup>
+                    <FormGroup row>
+                      <Label sm={4} for="address">
+                        Address
+                      </Label>
+                      <Col md={6}>
+                        <Input required name="address" type="text" />
+                      </Col>
+                    </FormGroup>
+                    <FormGroup row>
+                      <Label sm={4} for="address_secondary">
+                        Address 2
+                      </Label>
+                      <Col md={6}>
+                        <Input required name="address_secondary" type="text" />
+                      </Col>
+                    </FormGroup>
+                    <FormGroup row>
+                      <Label sm={4} for="country">
+                        Country
+                      </Label>
+                      <Col md={6}>
+                        <CountryDropdown
+                          className="form-control"
+                          name="country"
+                          value={country}
+                          onChange={(val) => this.selectCountry(val)}
+                        />
+                      </Col>
+                    </FormGroup>
+                    <FormGroup row>
+                      <Label sm={4} for="region">
+                        Region
+                      </Label>
+                      <Col md={6}>
+                        <RegionDropdown
+                          className="form-control"
+                          name="country"
+                          value={region}
+                          onChange={(val) => this.selectRegion(val)}
+                        />
                       </Col>
                     </FormGroup>
                     <FormGroup row>
