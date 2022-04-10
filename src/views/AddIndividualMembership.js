@@ -50,7 +50,10 @@ class AddIndividualMembership extends React.Component {
     this.handleChange = this.handleChange.bind(this);
   }
 
-  componentDidUpdate({ user: prevUser }) {
+  componentDidUpdate(
+    { user: prevUser },
+    { membership_level: prevMembershipLevel }
+  ) {
     if (
       null !== this.props.user.token &&
       prevUser.token !== this.props.user.token
@@ -58,6 +61,16 @@ class AddIndividualMembership extends React.Component {
       this.fetchMembershipLevels(
         this.props.rcp_url.domain + this.props.rcp_url.base_url + "levels"
       );
+    }
+
+    if (
+      undefined !== this.state.membership_level &&
+      prevMembershipLevel !== this.state.membership_level
+    ) {
+      const membership = this.props.levels.levels.find(
+        (el) => el.id === parseInt(this.state.membership_level)
+      );
+      this.setState({ selectedMembership: membership });
     }
   }
 
@@ -180,6 +193,7 @@ class AddIndividualMembership extends React.Component {
   onSuccessfullCheckout(user_args, membership, transaction) {
     this.addCustomer(user_args)
       .then((res) => {
+        if (res.status !== 200) return Promise.reject(res);
         return res.json();
       })
       .then((data) => {
@@ -209,6 +223,7 @@ class AddIndividualMembership extends React.Component {
   addPaymentAndMembership(data, membership, transaction) {
     this.addPayment(data.user_id, membership, transaction)
       .then((res) => {
+        if (res.status !== 200) return Promise.reject(res);
         return res.json();
       })
       .then((data) => {
@@ -217,6 +232,7 @@ class AddIndividualMembership extends React.Component {
         return this.addMembership(data);
       })
       .then((res) => {
+        if (res.status !== 200) return Promise.reject(res);
         return res.json();
       })
       .then((data) => {
@@ -246,6 +262,7 @@ class AddIndividualMembership extends React.Component {
         method: "post",
         headers: {
           "Content-Type": "application/json",
+          Authorization: "Bearer " + this.props.user.token,
         },
         body: JSON.stringify(args),
       }
@@ -261,6 +278,7 @@ class AddIndividualMembership extends React.Component {
         method: "post",
         headers: {
           "Content-Type": "application/json",
+          Authorization: "Bearer " + this.props.user.token,
         },
         body: JSON.stringify(data),
       }
@@ -430,6 +448,21 @@ class AddIndividualMembership extends React.Component {
                         />
                       </Col>
                     </FormGroup>
+                    {undefined !== this.state.selectedMembership && (
+                      <FormGroup row>
+                        <Card>
+                          <CardHeader>Price Details</CardHeader>
+                          <CardBody>
+                            <Row>
+                              <Col>Price: </Col>
+                              <Col>
+                                {this.state.selectedMembership.price + "$"}
+                              </Col>
+                            </Row>
+                          </CardBody>
+                        </Card>
+                      </FormGroup>
+                    )}
                     <FormGroup row>
                       <Col md={12}>
                         <CardElement options={cardElementOptions} />
