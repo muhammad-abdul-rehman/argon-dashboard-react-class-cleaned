@@ -15,6 +15,7 @@ import {
   Form,
   FormFeedback,
   FormGroup,
+  Table,
 } from "reactstrap";
 
 import { connect } from "react-redux";
@@ -75,7 +76,17 @@ class AddIndividualMembership extends React.Component {
   }
 
   async fetchMembershipLevels(url) {
-    const response = await fetch(url, {
+    const queryUrl = new URL(url);
+    const paramsOptions = {
+      status: "active",
+      level: 1,
+      type: "individual",
+    };
+    for (let key in paramsOptions) {
+      queryUrl.searchParams.set(key, paramsOptions[key]);
+    }
+
+    const response = await fetch(queryUrl, {
       method: "get",
       mode: "cors",
       headers: {
@@ -449,25 +460,41 @@ class AddIndividualMembership extends React.Component {
                       </Col>
                     </FormGroup>
                     {undefined !== this.state.selectedMembership && (
+                      <Table bordered striped className="mb-2">
+                        <thead>
+                          <tr>
+                            <th className="border-right-0">
+                              <h2>Memberhsip Details</h2>
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td className="font-weight-bold">Name</td>
+                            <td>{this.state.selectedMembership.name}</td>
+                          </tr>
+                          <tr>
+                            <td className="font-weight-bold">Duration</td>
+                            <td>
+                              {`${this.state.selectedMembership.duration} ${this.state.selectedMembership.duration_unit}`}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="font-weight-bold">Price</td>
+                            <td>
+                              {`${this.state.selectedMembership.price} ${this.state.selectedMembership.currency_symbol}`}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </Table>
+                    )}
+                    {this.state.selectedMembership?.price !== 0 && (
                       <FormGroup row>
-                        <Card>
-                          <CardHeader>Price Details</CardHeader>
-                          <CardBody>
-                            <Row>
-                              <Col>Price: </Col>
-                              <Col>
-                                {this.state.selectedMembership.price + "$"}
-                              </Col>
-                            </Row>
-                          </CardBody>
-                        </Card>
+                        <Col md={12}>
+                          <CardElement options={cardElementOptions} />
+                        </Col>
                       </FormGroup>
                     )}
-                    <FormGroup row>
-                      <Col md={12}>
-                        <CardElement options={cardElementOptions} />
-                      </Col>
-                    </FormGroup>
                     <FormGroup check row>
                       <Col
                         sm={{
