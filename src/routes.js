@@ -4,6 +4,7 @@ import Login from "views/auth/Login.js";
 import Tables from "views/Tables.js";
 import Memberships from "views/Memberships";
 import AddIndividualMembership from "views/AddIndividualMembership";
+import AddClubMembership from "views/AddClubMembership";
 
 var routes = [
   {
@@ -31,7 +32,7 @@ var routes = [
         path: "/membership/club-individual/add",
         name: "Add New Club Individual Membership",
         icon: "ni ni-bullet-list-67 text-red", // redundant
-        component: Tables,
+        component: AddClubMembership,
         layout: "/admin",
       },
       {

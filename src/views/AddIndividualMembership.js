@@ -57,7 +57,8 @@ class AddIndividualMembership extends React.Component {
   ) {
     if (
       null !== this.props.user.token &&
-      prevUser.token !== this.props.user.token
+      prevUser.token !== this.props.user.token &&
+      this.props.levels?.levels?.length === 0
     ) {
       this.fetchMembershipLevels(
         this.props.rcp_url.domain + this.props.rcp_url.base_url + "levels"
@@ -76,17 +77,7 @@ class AddIndividualMembership extends React.Component {
   }
 
   async fetchMembershipLevels(url) {
-    const queryUrl = new URL(url);
-    const paramsOptions = {
-      status: "active",
-      level: 1,
-      type: "individual",
-    };
-    for (let key in paramsOptions) {
-      queryUrl.searchParams.set(key, paramsOptions[key]);
-    }
-
-    const response = await fetch(queryUrl, {
+    const response = await fetch(url, {
       method: "get",
       mode: "cors",
       headers: {
@@ -148,7 +139,7 @@ class AddIndividualMembership extends React.Component {
         (el) => el.id === parseInt(event.target.membership_level.value)
       );
       const res = await fetch(
-        this.props.rcp_url.proxy_domain +
+        this.props.rcp_url.domain +
           "/wp-admin/admin-ajax.php?action=stripe_payment_intent",
         {
           method: "post",
@@ -310,7 +301,7 @@ class AddIndividualMembership extends React.Component {
             <div className="col">
               <Card className="shadow">
                 <CardHeader className="border-0">
-                  <h3 className="mb-0">Memberships</h3>
+                  <h3 className="mb-0">Add Individual Membership</h3>
                 </CardHeader>
                 <CardBody>
                   <Form onSubmit={this.submitForm.bind(this)}>
