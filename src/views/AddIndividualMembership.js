@@ -16,6 +16,7 @@ import {
   FormFeedback,
   FormGroup,
   Table,
+  Progress,
 } from "reactstrap";
 
 import { connect } from "react-redux";
@@ -57,7 +58,8 @@ class AddIndividualMembership extends React.Component {
   ) {
     if (
       null !== this.props.user.token &&
-      prevUser.token !== this.props.user.token
+      prevUser.token !== this.props.user.token &&
+      this.props.levels?.levels?.length === 0
     ) {
       this.fetchMembershipLevels(
         this.props.rcp_url.domain + this.props.rcp_url.base_url + "levels"
@@ -76,17 +78,7 @@ class AddIndividualMembership extends React.Component {
   }
 
   async fetchMembershipLevels(url) {
-    const queryUrl = new URL(url);
-    const paramsOptions = {
-      status: "active",
-      level: 1,
-      type: "individual",
-    };
-    for (let key in paramsOptions) {
-      queryUrl.searchParams.set(key, paramsOptions[key]);
-    }
-
-    const response = await fetch(queryUrl, {
+    const response = await fetch(url, {
       method: "get",
       mode: "cors",
       headers: {
@@ -152,7 +144,7 @@ class AddIndividualMembership extends React.Component {
       formData.append("price", membership.price);
       formData.append("currency_symbol", membership.currency_symbol);
       const res = await fetch(
-        this.props.rcp_url.proxy_domain +
+        this.props.rcp_url.domain +
           "/wp-admin/admin-ajax.php?action=stripe_payment_intent",
         {
           method: "post",
@@ -304,6 +296,7 @@ class AddIndividualMembership extends React.Component {
 
   render() {
     const { email, country, region } = this.state;
+
     const cardElementOptions = {
       style: { base: {}, invalid: {} },
       hidePostalCode: true,
@@ -311,14 +304,18 @@ class AddIndividualMembership extends React.Component {
     return (
       <>
         <OnlyHeader />
+        
         <Container className="mt--8" fluid>
           <Row>
             <div className="col">
               <Card className="shadow">
                 <CardHeader className="border-0">
-                  <h3 className="mb-0">Memberships</h3>
+                  <h3 className="mb-0">Add Individual Membership</h3>
                 </CardHeader>
                 <CardBody>
+                {/*
+                <Progress value={2 * 20} />
+                        */}
                   <Form onSubmit={this.submitForm.bind(this)}>
                     <FormGroup row>
                       <Label sm={3}>Name</Label>
@@ -459,7 +456,8 @@ class AddIndividualMembership extends React.Component {
                       <Col md={6}>
                         <RegionDropdown
                           className="form-control"
-                          name="country"
+                          name="region"//"country"
+                          country={country}
                           value={region}
                           onChange={(val) => this.selectRegion(val)}
                         />
