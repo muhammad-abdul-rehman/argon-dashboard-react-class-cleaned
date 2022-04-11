@@ -163,7 +163,11 @@ class AddIndividualMembership extends React.Component {
         billing_details: {
           name: `${event.target.first_name.value} ${event.target.last_name.value}`,
           email: event.target.email.value,
-          country: this.props.country,
+          address: {
+            address: event.target.address.value,
+            country: this.props.country,
+            state: this.props.region,
+          },
         },
       });
 
