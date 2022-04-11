@@ -16,6 +16,7 @@ import {
   FormFeedback,
   FormGroup,
   Table,
+  Progress,
 } from "reactstrap";
 
 import { connect } from "react-redux";
@@ -289,6 +290,7 @@ class AddIndividualMembership extends React.Component {
 
   render() {
     const { email, country, region } = this.state;
+
     const cardElementOptions = {
       style: { base: {}, invalid: {} },
       hidePostalCode: true,
@@ -296,6 +298,7 @@ class AddIndividualMembership extends React.Component {
     return (
       <>
         <OnlyHeader />
+        
         <Container className="mt--8" fluid>
           <Row>
             <div className="col">
@@ -304,6 +307,9 @@ class AddIndividualMembership extends React.Component {
                   <h3 className="mb-0">Add Individual Membership</h3>
                 </CardHeader>
                 <CardBody>
+                {/*
+                <Progress value={2 * 20} />
+                        */}
                   <Form onSubmit={this.submitForm.bind(this)}>
                     <FormGroup row>
                       <Label sm={3}>Name</Label>
@@ -444,7 +450,8 @@ class AddIndividualMembership extends React.Component {
                       <Col md={6}>
                         <RegionDropdown
                           className="form-control"
-                          name="country"
+                          name="region"//"country"
+                          country={country}
                           value={region}
                           onChange={(val) => this.selectRegion(val)}
                         />
