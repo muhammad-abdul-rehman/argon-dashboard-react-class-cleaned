@@ -147,18 +147,19 @@ class AddIndividualMembership extends React.Component {
       const membership = this.props.levels.levels.find(
         (el) => el.id === parseInt(event.target.membership_level.value)
       );
+      const formData = new FormData();
+      formData.append("action", "stripe_payment_intent");
+      formData.append("price", membership.price);
+      formData.append("currency_symbol", membership.currency_symbol);
       const res = await fetch(
         this.props.rcp_url.proxy_domain +
           "/wp-admin/admin-ajax.php?action=stripe_payment_intent",
         {
           method: "post",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data",
           },
-          body: JSON.stringify({
-            money: membership.price,
-            currency_symbol: membership.currency_symbol,
-          }),
+          body: formData,
         }
       );
       const {
@@ -170,7 +171,7 @@ class AddIndividualMembership extends React.Component {
         billing_details: {
           name: `${event.target.first_name.value} ${event.target.last_name.value}`,
           email: event.target.email.value,
-          country: this.props.country,
+          address: { country: this.props.country },
         },
       });
 
@@ -178,9 +179,12 @@ class AddIndividualMembership extends React.Component {
         return;
       }
 
-      const { error } = await stripe.confirmCardPayment(client_secret, {
-        payment_method: paymentMethodReq.paymentMethod.id,
-      });
+      const { error, ...transaction } = await stripe.confirmCardPayment(
+        client_secret,
+        {
+          payment_method: paymentMethodReq.paymentMethod.id,
+        }
+      );
 
       if (error) {
         return;
@@ -192,7 +196,6 @@ class AddIndividualMembership extends React.Component {
         user_email: event.target.email.value,
         user_pass: event.target.password.value,
       };
-      const transaction = "";
 
       this.onSuccessfullCheckout(user_args, membership, transaction);
     } catch (err) {
@@ -237,10 +240,10 @@ class AddIndividualMembership extends React.Component {
         if (res.status !== 200) return Promise.reject(res);
         return res.json();
       })
-      .then((data) => {
-        const { errors } = data;
+      .then((data_payment) => {
+        const { errors } = data_payment;
         if (errors) return Promise.reject(errors);
-        return this.addMembership(data);
+        return this.addMembership(data.customer_id, membership);
       })
       .then((res) => {
         if (res.status !== 200) return Promise.reject(res);
@@ -280,7 +283,7 @@ class AddIndividualMembership extends React.Component {
     );
   }
 
-  addMembership(data) {
+  addMembership(customer_id, membership) {
     return fetch(
       this.props.rcp_url.domain +
         this.props.rcp_url.base_url +
@@ -291,7 +294,10 @@ class AddIndividualMembership extends React.Component {
           "Content-Type": "application/json",
           Authorization: "Bearer " + this.props.user.token,
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          customer_id: customer_id,
+          object_id: membership.id,
+        }),
       }
     );
   }
