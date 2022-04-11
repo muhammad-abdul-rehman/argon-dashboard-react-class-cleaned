@@ -163,7 +163,11 @@ class AddIndividualMembership extends React.Component {
         billing_details: {
           name: `${event.target.first_name.value} ${event.target.last_name.value}`,
           email: event.target.email.value,
-          address: { country: this.props.country },
+          address: {
+            address: event.target.address.value,
+            country: this.props.country,
+            state: this.props.region,
+          },
         },
       });
 
@@ -304,7 +308,7 @@ class AddIndividualMembership extends React.Component {
     return (
       <>
         <OnlyHeader />
-        
+
         <Container className="mt--8" fluid>
           <Row>
             <div className="col">
@@ -313,7 +317,7 @@ class AddIndividualMembership extends React.Component {
                   <h3 className="mb-0">Add Individual Membership</h3>
                 </CardHeader>
                 <CardBody>
-                {/*
+                  {/*
                 <Progress value={2 * 20} />
                         */}
                   <Form onSubmit={this.submitForm.bind(this)}>
@@ -456,7 +460,7 @@ class AddIndividualMembership extends React.Component {
                       <Col md={6}>
                         <RegionDropdown
                           className="form-control"
-                          name="region"//"country"
+                          name="region" //"country"
                           country={country}
                           value={region}
                           onChange={(val) => this.selectRegion(val)}
