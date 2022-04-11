@@ -30,7 +30,7 @@ class Memberships extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      memberships: [],
+      payments: [],
       page: 1,
       number: 5,
     };
@@ -55,32 +55,30 @@ class Memberships extends React.Component {
     });
     const data = await response.json();
     this.props.setUserLoginDetails(data);
-    this.fetchMemberships(
-      this.props.rcp_url.domain + this.props.rcp_url.base_url + "memberships",
+    this.fetchPayment(
+      this.props.rcp_url.domain + this.props.rcp_url.base_url + "payment",
       this.props.user.token
     );
   }
 */
+  async fetchToken(token_url) {
+    const response = await fetch(token_url, {
+      method: "post",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: process.env.REACT_APP_ATPI_USERNAME, // Hardcoded for now.
+        password: process.env.REACT_APP_ATPI_PASSWORD, // Hardcoded for now.
+      }),
+    });
 
+    const data = await response.json();
+    this.props.setUserLoginDetails(data);
+  }
 
-async fetchToken(token_url) {
-  const response = await fetch(token_url, {
-    method: "post",
-    mode: "cors",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      username: process.env.REACT_APP_ATPI_USERNAME, // Hardcoded for now.
-      password: process.env.REACT_APP_ATPI_PASSWORD, // Hardcoded for now.
-    }),
-  });
-
-  const data = await response.json();
-  this.props.setUserLoginDetails(data);
-}
-
-  fetchMemberships = async (url, token) => {
+  fetchPayment = async (url, token) => {
     const urlQuery = new URL(url);
     const paramsOptions = {
       number: this.state.number,
@@ -98,12 +96,10 @@ async fetchToken(token_url) {
       },
     });
     const data = await res.json();
-    this.setState({ memberships: data });
+    this.setState({ payments: data });
   };
 
   render() {
-
-    console.log('memberships => ',this.state.memberships);
 
     const columns = [
       { field: 'id', headerName: 'ID', width: 180 },
@@ -114,7 +110,9 @@ async fetchToken(token_url) {
       { field: 'created', headerName: 'Created', width: 180 },
     ];
 
-  const rows = this.state.memberships.map((item,key)=>{
+    console.log(this.state.payments);
+
+  const rows = this.state.payments.map((item,key)=>{
     return {
             id:item.id,
             name:item.membership_name,
@@ -134,7 +132,7 @@ async fetchToken(token_url) {
             <div className="col">
               <Card className="shadow">
                 <CardHeader className="border-0">
-                  <h3 className="mb-0">Memberships</h3>
+                  <h3 className="mb-0">Payments</h3>
                 </CardHeader>
  {/*}
                 <Table className="align-items-center table-flush" responsive>

@@ -4,7 +4,10 @@ import Login from "views/auth/Login.js";
 import Tables from "views/Tables.js";
 import Memberships from "views/Memberships";
 import AddIndividualMembership from "views/AddIndividualMembership";
-import AddClubMembership from "views/AddClubMembership";
+import Customers from "views/Customers";
+import Payment from 'views/Payment';
+
+//import AddClubMembership from "views/AddClubMembership";
 
 var routes = [
   {
@@ -12,6 +15,20 @@ var routes = [
     name: "Dashboard",
     icon: "ni ni-tv-2 text-primary",
     component: Index,
+    layout: "/admin",
+  }, 
+   {
+    path: "/customer",
+    name: "Customers",
+    icon: "ni ni-bullet-list-67 text-red",
+    component: Customers,
+    layout: "/admin",
+  },
+  {
+    path: "/payment",
+    name: "Payment",
+    icon: "ni ni-bullet-list-67 text-red",
+    component: Payment,
     layout: "/admin",
   },
   {
@@ -28,13 +45,13 @@ var routes = [
         component: AddIndividualMembership,
         layout: "/admin",
       },
-      {
+/*      {
         path: "/membership/club-individual/add",
         name: "Add New Club Individual Membership",
         icon: "ni ni-bullet-list-67 text-red", // redundant
         component: AddClubMembership,
         layout: "/admin",
-      },
+      },*/
       {
         path: "/membership/renew-membership",
         name: "Renew or change a Membership",
