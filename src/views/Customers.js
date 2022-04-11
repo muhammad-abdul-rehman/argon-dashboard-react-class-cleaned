@@ -93,17 +93,17 @@ class Memberships extends React.Component {
       { field: 'gateway', headerName: 'Gateway', width: 180 },
         ];
 
-  const rows = [];/*this.state.memberships.map((item,key)=>{
+  const rows = this.state.customers.map((item,key)=>{
     return {
             id:item.id,
-            name:item.membership_name,
-            customer_name:item.customer_name,
-            status:item.status,
-            recurring:item.recurring_amount,
-            created:item.created_date
+            membership_id:item.membership_name,
+            name:item.customer_name,
+            subscription:item.subscription,
+            date:item.date,
+            gateway:item.gateway
           }
 
-      });*/
+      });
       
     return (
       <>
