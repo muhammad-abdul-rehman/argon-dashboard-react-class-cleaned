@@ -1,6 +1,6 @@
 import OnlyHeader from "components/Headers/OnlyHeader";
 import React from "react";
-import { DataGrid } from '@material-ui/data-grid';
+import { DataGrid } from "@material-ui/data-grid";
 
 // reactstrap components
 import {
@@ -37,20 +37,39 @@ class Memberships extends React.Component {
   }
 
   componentDidMount() {
-    this.fetchToken(
-      this.props.rcp_url.domain + this.props.rcp_url.auth_url + "token"
+    if (null === this.props.user.token) {
+      this.fetchToken(
+        this.props.rcp_url.domain + this.props.rcp_url.auth_url + "token"
+      );
+    }
+    this.fetchMemberships(
+      this.props.rcp_url.domain + this.props.rcp_url.base_url + "memberships",
+      this.props.user.token
     );
   }
 
-/*  async fetchToken(token_url) {
+  componentDidUpdate({ user: prevUser }) {
+    if (
+      null !== this.props.user.token &&
+      prevUser.token !== this.props.user.token &&
+      this.state.memberships?.length === 0
+    ) {
+      this.fetchMembershipLevels(
+        this.props.rcp_url.domain + this.props.rcp_url.base_url + "memberships",
+        this.props.user.token
+      );
+    }
+  }
+
+  /*  async fetchToken(token_url) {
     const response = await fetch(token_url, {
       method: "post",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        username: "root", // Hardcoded for now.
-        password: "root", // Hardcoded for now.
+        username: "root", 
+        password: "root", 
       }),
     });
     const data = await response.json();
@@ -62,23 +81,22 @@ class Memberships extends React.Component {
   }
 */
 
+  async fetchToken(token_url) {
+    const response = await fetch(token_url, {
+      method: "post",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: process.env.REACT_APP_ATPI_USERNAME,
+        password: process.env.REACT_APP_ATPI_PASSWORD,
+      }),
+    });
 
-async fetchToken(token_url) {
-  const response = await fetch(token_url, {
-    method: "post",
-    mode: "cors",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      username: process.env.REACT_APP_ATPI_USERNAME, // Hardcoded for now.
-      password: process.env.REACT_APP_ATPI_PASSWORD, // Hardcoded for now.
-    }),
-  });
-
-  const data = await response.json();
-  this.props.setUserLoginDetails(data);
-}
+    const data = await response.json();
+    this.props.setUserLoginDetails(data);
+  }
 
   fetchMemberships = async (url, token) => {
     const urlQuery = new URL(url);
@@ -102,30 +120,26 @@ async fetchToken(token_url) {
   };
 
   render() {
-
-    console.log('memberships => ',this.state.memberships);
-
     const columns = [
-      { field: 'id', headerName: 'ID', width: 180 },
-      { field: 'name', headerName: 'Name', width: 180 },
-      { field: 'customer_name', headerName: 'Customer Name', width: 180 },
-      { field: 'status', headerName: 'Status', width: 180 },
-      { field: 'recurring', headerName: 'Recurring', width: 180 },
-      { field: 'created', headerName: 'Created', width: 180 },
+      { field: "id", headerName: "ID", width: 180 },
+      { field: "name", headerName: "Name", width: 180 },
+      { field: "customer_name", headerName: "Customer Name", width: 180 },
+      { field: "status", headerName: "Status", width: 180 },
+      { field: "recurring", headerName: "Recurring", width: 180 },
+      { field: "created", headerName: "Created", width: 180 },
     ];
 
-  const rows = this.state.memberships.map((item,key)=>{
-    return {
-            id:item.id,
-            name:item.membership_name,
-            customer_name:item.customer_name,
-            status:item.status,
-            recurring:item.recurring_amount,
-            created:item.created_date
-          }
+    const rows = this.state.memberships.map((item, key) => {
+      return {
+        id: item.id,
+        name: item.membership_name,
+        customer_name: item.customer_name,
+        status: item.status,
+        recurring: item.recurring_amount,
+        created: item.created_date,
+      };
+    });
 
-      });
-      
     return (
       <>
         <OnlyHeader />
@@ -136,7 +150,7 @@ async fetchToken(token_url) {
                 <CardHeader className="border-0">
                   <h3 className="mb-0">Memberships</h3>
                 </CardHeader>
- {/*}
+                {/*}
                 <Table className="align-items-center table-flush" responsive>
                   <thead className="thead-light">
                     <tr>
@@ -162,8 +176,8 @@ async fetchToken(token_url) {
                     ))}
                   </tbody>
                 </Table>
-                    */}    
-              <DataGrid  autoHeight rows={rows} columns={columns} pagination/>
+                    */}
+                <DataGrid autoHeight rows={rows} columns={columns} pagination />
                 {/* Add Pagination */}
               </Card>
             </div>
