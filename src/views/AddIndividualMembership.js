@@ -139,6 +139,10 @@ class AddIndividualMembership extends React.Component {
       const membership = this.props.levels.levels.find(
         (el) => el.id === parseInt(event.target.membership_level.value)
       );
+      const formData = new FormData();
+      formData.append("action", "stripe_payment_intent");
+      formData.append("price", membership.price);
+      formData.append("currency_symbol", membership.currency_symbol);
       const res = await fetch(
         this.props.rcp_url.domain +
           "/wp-admin/admin-ajax.php?action=stripe_payment_intent",
@@ -147,10 +151,7 @@ class AddIndividualMembership extends React.Component {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            money: membership.price,
-            currency_symbol: membership.currency_symbol,
-          }),
+          body: formData,
         }
       );
       const {
@@ -298,7 +299,7 @@ class AddIndividualMembership extends React.Component {
     return (
       <>
         <OnlyHeader />
-        
+
         <Container className="mt--8" fluid>
           <Row>
             <div className="col">
@@ -307,7 +308,7 @@ class AddIndividualMembership extends React.Component {
                   <h3 className="mb-0">Add Individual Membership</h3>
                 </CardHeader>
                 <CardBody>
-                {/*
+                  {/*
                 <Progress value={2 * 20} />
                         */}
                   <Form onSubmit={this.submitForm.bind(this)}>
@@ -450,7 +451,7 @@ class AddIndividualMembership extends React.Component {
                       <Col md={6}>
                         <RegionDropdown
                           className="form-control"
-                          name="region"//"country"
+                          name="region" //"country"
                           country={country}
                           value={region}
                           onChange={(val) => this.selectRegion(val)}
