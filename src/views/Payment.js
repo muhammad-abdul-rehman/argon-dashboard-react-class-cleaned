@@ -1,6 +1,6 @@
 import OnlyHeader from "components/Headers/OnlyHeader";
 import React from "react";
-import { DataGrid } from '@material-ui/data-grid';
+import { DataGrid } from "@material-ui/data-grid";
 
 // reactstrap components
 import {
@@ -37,30 +37,35 @@ class Memberships extends React.Component {
   }
 
   componentDidMount() {
-    this.fetchToken(
-      this.props.rcp_url.domain + this.props.rcp_url.auth_url + "token"
-    );
+    if (null === this.props.user.token) {
+      this.fetchToken(
+        this.props.rcp_url.domain + this.props.rcp_url.auth_url + "token"
+      );
+    } else {
+      this.fetchPayment(
+        this.props.rcp_url.proxy_domain +
+          this.props.rcp_url.base_url +
+          "payments",
+        this.props.user.token
+      );
+    }
   }
 
-/*  async fetchToken(token_url) {
-    const response = await fetch(token_url, {
-      method: "post",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: "root", // Hardcoded for now.
-        password: "root", // Hardcoded for now.
-      }),
-    });
-    const data = await response.json();
-    this.props.setUserLoginDetails(data);
-    this.fetchPayment(
-      this.props.rcp_url.domain + this.props.rcp_url.base_url + "payment",
-      this.props.user.token
-    );
+  componentDidUpdate({ user: prevUser }) {
+    if (
+      null !== this.props.user.token &&
+      prevUser.token !== this.props.user.token &&
+      this.state.payments?.length === 0
+    ) {
+      this.fetchPayment(
+        this.props.rcp_url.proxy_domain +
+          this.props.rcp_url.proxy_url +
+          "payments",
+        this.props.user.token
+      );
+    }
   }
-*/
+
   async fetchToken(token_url) {
     const response = await fetch(token_url, {
       method: "post",
@@ -100,30 +105,29 @@ class Memberships extends React.Component {
   };
 
   render() {
-
     const columns = [
-      { field: 'id', headerName: 'ID', width: 180 },
-      { field: 'name', headerName: 'Name', width: 180 },
-      { field: 'customer_name', headerName: 'Customer Name', width: 180 },
-      { field: 'status', headerName: 'Status', width: 180 },
-      { field: 'recurring', headerName: 'Recurring', width: 180 },
-      { field: 'created', headerName: 'Created', width: 180 },
+      { field: "id", headerName: "ID", width: 100 },
+      { field: "customer_name", headerName: "Customer Name", width: 180 },
+      { field: "status", headerName: "Status", width: 180 },
+      { field: "amount", headerName: "Amount", width: 180 },
+      { field: "subscription", headerName: "Subscription", width: 180 },
+      { field: "created", headerName: "Created", width: 180 },
     ];
 
     console.log(this.state.payments);
 
-  const rows = this.state.payments.map((item,key)=>{
-    return {
-            id:item.id,
-            name:item.membership_name,
-            customer_name:item.customer_name,
-            status:item.status,
-            recurring:item.recurring_amount,
-            created:item.created_date
-          }
+    const rows = this.state.payments.map((item, key) => {
+      return {
+        id: item.id,
+        name: item.membership_name,
+        customer_name: item.customer_name,
+        status: item.status,
+        amount: item.amount,
+        subscription: item.subscription,
+        created: item.date,
+      };
+    });
 
-      });
-      
     return (
       <>
         <OnlyHeader />
@@ -134,7 +138,7 @@ class Memberships extends React.Component {
                 <CardHeader className="border-0">
                   <h3 className="mb-0">Payments</h3>
                 </CardHeader>
- {/*}
+                {/*}
                 <Table className="align-items-center table-flush" responsive>
                   <thead className="thead-light">
                     <tr>
@@ -160,8 +164,8 @@ class Memberships extends React.Component {
                     ))}
                   </tbody>
                 </Table>
-                    */}    
-              <DataGrid  autoHeight rows={rows} columns={columns} pagination/>
+                    */}
+                <DataGrid autoHeight rows={rows} columns={columns} pagination />
                 {/* Add Pagination */}
               </Card>
             </div>

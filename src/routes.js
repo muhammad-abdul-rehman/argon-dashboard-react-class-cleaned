@@ -5,9 +5,8 @@ import Tables from "views/Tables.js";
 import Memberships from "views/Memberships";
 import AddIndividualMembership from "views/AddIndividualMembership";
 import Customers from "views/Customers";
-import Payment from 'views/Payment';
-
-//import AddClubMembership from "views/AddClubMembership";
+import Payment from "views/Payment";
+import AddClubMembership from "views/AddClubMembership";
 
 var routes = [
   {
@@ -16,18 +15,18 @@ var routes = [
     icon: "ni ni-tv-2 text-primary",
     component: Index,
     layout: "/admin",
-  }, 
-   {
+  },
+  {
     path: "/customer",
     name: "Customers",
-    icon: "ni ni-bullet-list-67 text-red",
+    icon: "ni ni-single-02 text-red",
     component: Customers,
     layout: "/admin",
   },
   {
     path: "/payment",
     name: "Payment",
-    icon: "ni ni-bullet-list-67 text-red",
+    icon: "ni ni-credit-card text-red",
     component: Payment,
     layout: "/admin",
   },
@@ -41,17 +40,17 @@ var routes = [
       {
         path: "/membership/individual/add",
         name: "Add New Individual Membership",
-        icon: "ni ni-bullet-list-67 text-red", // redundant
+        icon: "ni ni-bullet-list-67 text-info", // redundant
         component: AddIndividualMembership,
         layout: "/admin",
       },
-/*      {
+      {
         path: "/membership/club-individual/add",
         name: "Add New Club Individual Membership",
         icon: "ni ni-bullet-list-67 text-red", // redundant
         component: AddClubMembership,
         layout: "/admin",
-      },*/
+      },
       {
         path: "/membership/renew-membership",
         name: "Renew or change a Membership",

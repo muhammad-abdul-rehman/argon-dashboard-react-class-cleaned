@@ -41,6 +41,13 @@ class Memberships extends React.Component {
       this.fetchToken(
         this.props.rcp_url.domain + this.props.rcp_url.auth_url + "token"
       );
+    } else {
+      this.fetchMemberships(
+        this.props.rcp_url.proxy_domain +
+          this.props.rcp_url.base_url +
+          "memberships",
+        this.props.user.token
+      );
     }
   }
 
@@ -50,9 +57,9 @@ class Memberships extends React.Component {
       prevUser.token !== this.props.user.token &&
       this.state.memberships?.length === 0
     ) {
-      this.fetchMembershipLevels(
-        this.props.rcp_url.domain +
-          this.props.rcp_url.proxy_url +
+      this.fetchMemberships(
+        this.props.rcp_url.proxy_domain +
+          this.props.rcp_url.base_url +
           "memberships",
         this.props.user.token
       );
