@@ -544,13 +544,27 @@ class AddClubMembership extends React.Component {
                         </tbody>
                       </Table>
                     )}
-                    {this.state.selectedMembership?.price !== 0 && (
-                      <FormGroup row>
-                        <Col md={12}>
-                          <CardElement options={cardElementOptions} />
-                        </Col>
-                      </FormGroup>
-                    )}
+                    <FormGroup row>
+                      <Label sm={4} for="payment">
+                        Pay with card.
+                      </Label>
+                      <Col md={6}>
+                        <Switch
+                          name="payment_enable"
+                          onChange={(e) =>
+                            this.setState({ enable_payment: e.target.checked })
+                          }
+                        />
+                      </Col>
+                    </FormGroup>
+                    {this.state.selectedMembership?.price !== 0 &&
+                      this.state.enable_payment === true && (
+                        <FormGroup row>
+                          <Col md={12}>
+                            <CardElement options={cardElementOptions} />
+                          </Col>
+                        </FormGroup>
+                      )}
                     <FormGroup check row>
                       <Col
                         sm={{
