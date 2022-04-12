@@ -1,6 +1,8 @@
 import OnlyHeader from "components/Headers/OnlyHeader";
 import React from "react";
 
+import { Switch } from "@material-ui/core";
+
 // reactstrap components
 import {
   Button,
@@ -123,11 +125,10 @@ class AddIndividualMembership extends React.Component {
   }
 
   /**
-   * Submit the form.
+   * Handle Payment
+   * @param {*} event
    */
-  async submitForm(event) {
-    event.persist();
-    event.preventDefault();
+  async handlePayment(event) {
     const { stripe, elements } = this.props.stripe;
     if (!stripe || !elements) {
       // Stripe.js has not yet loaded.
@@ -186,21 +187,29 @@ class AddIndividualMembership extends React.Component {
         return;
       }
 
-      const user_args = {
-        first_name: event.target.first_name.value,
-        last_name: event.target.last_name.value,
-        user_email: event.target.email.value,
-        user_pass: event.target.password.value,
-      };
-
-      this.onSuccessfullCheckout(user_args, membership, transaction);
+      return transaction;
     } catch (err) {
-      console.error(err);
-      this.setState({ error_message: "Error happened" + err });
+      return Promise.reject(err);
     }
   }
 
-  onSuccessfullCheckout(user_args, membership, transaction) {
+  /**
+   * Submit the form.
+   */
+  async submitForm(event) {
+    event.persist();
+    event.preventDefault();
+    const user_args = {
+      first_name: event.target.first_name.value,
+      last_name: event.target.last_name.value,
+      user_email: event.target.email.value,
+      user_pass: event.target.password.value,
+    };
+
+    this.onSuccessfullCheckout(event, user_args, this.state.selectedMembership);
+  }
+
+  onSuccessfullCheckout(event, user_args, membership) {
     this.addCustomer(user_args)
       .then((res) => {
         if (res.status !== 200) return Promise.reject(res);
@@ -209,7 +218,30 @@ class AddIndividualMembership extends React.Component {
       .then((data) => {
         const { errors } = data;
         if (errors) return Promise.reject(errors);
-        return this.addPaymentAndMembership(data, membership, transaction);
+        return this.addMembership(data.customer_id, membership);
+        // return this.addPaymentAndMembership(data, membership, transaction);
+      })
+      .then((res) => {
+        if (res.status !== 200) return Promise.reject(res);
+        return res.json();
+      })
+      .then((data_memership) => {
+        const { errors, user_id, object_id } = data_memership;
+        if (errors) return Promise.reject(errors);
+        if (this.state.enable_payment) {
+          const transaction = this.handlePayment(event);
+          return this.addPayment(user_id, membership, transaction);
+        }
+        return Promise.resolve(data_memership);
+      })
+      .then((res) => {
+        if (res.status !== 200) return Promise.reject(res);
+        return res.json();
+      })
+      .then((data_payment) => {
+        const { errors } = data_payment;
+        if (errors) return Promise.reject(errors);
+        return data_payment;
       })
       .catch((err) => {
         console.error(err);
@@ -230,31 +262,31 @@ class AddIndividualMembership extends React.Component {
     );
   }
 
-  addPaymentAndMembership(data, membership, transaction) {
-    this.addPayment(data.user_id, membership, transaction)
-      .then((res) => {
-        if (res.status !== 200) return Promise.reject(res);
-        return res.json();
-      })
-      .then((data_payment) => {
-        const { errors } = data_payment;
-        if (errors) return Promise.reject(errors);
-        return this.addMembership(data.customer_id, membership);
-      })
-      .then((res) => {
-        if (res.status !== 200) return Promise.reject(res);
-        return res.json();
-      })
-      .then((data) => {
-        const { errors } = data;
-        if (errors) return Promise.reject(errors);
-        console.log(data);
-        return data;
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }
+  // addPaymentAndMembership(data, membership, transaction) {
+  //   this.addPayment(data.user_id, membership, transaction)
+  //     .then((res) => {
+  //       if (res.status !== 200) return Promise.reject(res);
+  //       return res.json();
+  //     })
+  //     .then((data_payment) => {
+  //       const { errors } = data_payment;
+  //       if (errors) return Promise.reject(errors);
+  //       return this.addMembership(data.customer_id, membership);
+  //     })
+  //     .then((res) => {
+  //       if (res.status !== 200) return Promise.reject(res);
+  //       return res.json();
+  //     })
+  //     .then((data) => {
+  //       const { errors } = data;
+  //       if (errors) return Promise.reject(errors);
+  //       console.log(data);
+  //       return data;
+  //     })
+  //     .catch((err) => {
+  //       console.error(err);
+  //     });
+  // }
 
   addPayment(user_id, membership, transaction) {
     const args = {
@@ -280,6 +312,7 @@ class AddIndividualMembership extends React.Component {
   }
 
   addMembership(customer_id, membership) {
+    console.log(membership);
     return fetch(
       this.props.rcp_url.domain +
         this.props.rcp_url.base_url +
@@ -408,11 +441,13 @@ class AddIndividualMembership extends React.Component {
                         >
                           <option disabled>Select a membership level.</option>
                           {this.props.levels.levels.length > 0 &&
-                            this.props.levels.levels.map((item, key) => (
-                              <option key={key} value={item.id}>
-                                {item.name}
-                              </option>
-                            ))}
+                            this.props.levels.levels
+                              .filter((el) => el.level)
+                              .map((item, key) => (
+                                <option key={key} value={item.id}>
+                                  {item.name}
+                                </option>
+                              ))}
                         </Input>
                       </Col>
                     </FormGroup>
@@ -496,13 +531,27 @@ class AddIndividualMembership extends React.Component {
                         </tbody>
                       </Table>
                     )}
-                    {this.state.selectedMembership?.price !== 0 && (
-                      <FormGroup row>
-                        <Col md={12}>
-                          <CardElement options={cardElementOptions} />
-                        </Col>
-                      </FormGroup>
-                    )}
+                    <FormGroup row>
+                      <Label sm={4} for="payment">
+                        Pay with card.
+                      </Label>
+                      <Col md={6}>
+                        <Switch
+                          name="payment_enable"
+                          onChange={(e) =>
+                            this.setState({ enable_payment: e.target.checked })
+                          }
+                        />
+                      </Col>
+                    </FormGroup>
+                    {this.state.selectedMembership?.price !== 0 &&
+                      this.state.enable_payment === true && (
+                        <FormGroup row>
+                          <Col md={12}>
+                            <CardElement options={cardElementOptions} />
+                          </Col>
+                        </FormGroup>
+                      )}
                     <FormGroup check row>
                       <Col
                         sm={{

@@ -61,7 +61,7 @@ class AddClubMembership extends React.Component {
       this.props.levels?.levels?.length === 0
     ) {
       this.fetchMembershipLevels(
-        this.props.rcp_url.domain + this.props.rcp_url.base_url + "levels"
+        this.props.rcp_url.proxy_domain + this.props.rcp_url.base_url + "levels"
       );
     }
 
@@ -120,13 +120,11 @@ class AddClubMembership extends React.Component {
   selectRegion(val) {
     this.setState({ region: val });
   }
-
   /**
-   * Submit the form.
+   * Handle Payment
+   * @param {*} event
    */
-  async submitForm(event) {
-    event.persist();
-    event.preventDefault();
+  async handlePayment(event) {
     const { stripe, elements } = this.props.stripe;
     if (!stripe || !elements) {
       // Stripe.js has not yet loaded.
@@ -138,18 +136,19 @@ class AddClubMembership extends React.Component {
       const membership = this.props.levels.levels.find(
         (el) => el.id === parseInt(event.target.membership_level.value)
       );
+      const formData = new FormData();
+      formData.append("action", "stripe_payment_intent");
+      formData.append("price", membership.price);
+      formData.append("currency_symbol", membership.currency_symbol);
       const res = await fetch(
         this.props.rcp_url.domain +
           "/wp-admin/admin-ajax.php?action=stripe_payment_intent",
         {
           method: "post",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data",
           },
-          body: JSON.stringify({
-            money: membership.price,
-            currency_symbol: membership.currency_symbol,
-          }),
+          body: formData,
         }
       );
       const {
@@ -161,7 +160,11 @@ class AddClubMembership extends React.Component {
         billing_details: {
           name: `${event.target.first_name.value} ${event.target.last_name.value}`,
           email: event.target.email.value,
-          country: this.props.country,
+          address: {
+            address: event.target.address.value,
+            country: this.props.country,
+            state: this.props.region,
+          },
         },
       });
 
@@ -169,30 +172,44 @@ class AddClubMembership extends React.Component {
         return;
       }
 
-      const { error } = await stripe.confirmCardPayment(client_secret, {
-        payment_method: paymentMethodReq.paymentMethod.id,
-      });
+      const { error, ...transaction } = await stripe.confirmCardPayment(
+        client_secret,
+        {
+          payment_method: paymentMethodReq.paymentMethod.id,
+        }
+      );
 
       if (error) {
         return;
       }
 
-      const user_args = {
-        first_name: event.target.first_name.value,
-        last_name: event.target.last_name.value,
-        user_email: event.target.email.value,
-        user_pass: event.target.password.value,
-      };
-      const transaction = "";
-
-      this.onSuccessfullCheckout(user_args, membership, transaction);
+      return transaction;
     } catch (err) {
-      console.error(err);
-      this.setState({ error_message: "Error happened" + err });
+      return Promise.reject(err);
     }
   }
 
-  onSuccessfullCheckout(user_args, membership, transaction) {
+  /**
+   * Submit the form.
+   */
+  async submitForm(event) {
+    event.persist();
+    event.preventDefault();
+    const user_args = {
+      first_name: event.target.first_name.value,
+      last_name: event.target.last_name.value,
+      user_email: event.target.email.value,
+      user_pass: event.target.password.value,
+    };
+
+    this.onSuccessfullCheckout(
+      user_args,
+      this.state.selectedMembership,
+      event.target.club_name.value
+    );
+  }
+
+  onSuccessfullCheckout(user_args, membership, club_name) {
     this.addCustomer(user_args)
       .then((res) => {
         if (res.status !== 200) return Promise.reject(res);
@@ -201,7 +218,37 @@ class AddClubMembership extends React.Component {
       .then((data) => {
         const { errors } = data;
         if (errors) return Promise.reject(errors);
-        return this.addPaymentAndMembership(data, membership, transaction);
+        return this.addMembership(data.customer_id, membership, club_name);
+        // const { errors } = data;
+        // if (errors) return Promise.reject(errors);
+        // return this.addPaymentAndMembership(
+        //   data,
+        //   membership,
+        //   transaction,
+        //   club_name
+        // );
+      })
+      .then((res) => {
+        if (res.status !== 200) return Promise.reject(res);
+        return res.json();
+      })
+      .then((data_memership) => {
+        const { errors, user_id, object_id } = data_memership;
+        if (errors) return Promise.reject(errors);
+        if (this.state.enable_payment) {
+          const transaction = this.handlePayment(event);
+          return this.addPayment(user_id, membership, transaction);
+        }
+        return Promise.resolve(data_memership);
+      })
+      .then((res) => {
+        if (res.status !== 200) return Promise.reject(res);
+        return res.json();
+      })
+      .then((data_payment) => {
+        const { errors } = data_payment;
+        if (errors) return Promise.reject(errors);
+        return data_payment;
       })
       .catch((err) => {
         console.error(err);
@@ -210,7 +257,9 @@ class AddClubMembership extends React.Component {
 
   addCustomer(user_args) {
     return fetch(
-      this.props.rcp_url.domain + this.props.rcp_url.base_url + "customers/new",
+      this.props.rcp_url.proxy_domain +
+        this.props.rcp_url.base_url +
+        "customers/new",
       {
         method: "post",
         headers: {
@@ -222,31 +271,31 @@ class AddClubMembership extends React.Component {
     );
   }
 
-  addPaymentAndMembership(data, membership, transaction) {
-    this.addPayment(data.user_id, membership, transaction)
-      .then((res) => {
-        if (res.status !== 200) return Promise.reject(res);
-        return res.json();
-      })
-      .then((data) => {
-        const { errors } = data;
-        if (errors) return Promise.reject(errors);
-        return this.addMembership(data);
-      })
-      .then((res) => {
-        if (res.status !== 200) return Promise.reject(res);
-        return res.json();
-      })
-      .then((data) => {
-        const { errors } = data;
-        if (errors) return Promise.reject(errors);
-        console.log(data);
-        return data;
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }
+  // addPaymentAndMembership(data, membership, transaction, club_name) {
+  //   this.addPayment(data.user_id, membership, transaction)
+  //     .then((res) => {
+  //       if (res.status !== 200) return Promise.reject(res);
+  //       return res.json();
+  //     })
+  //     .then((data_payment) => {
+  //       const { errors } = data_payment;
+  //       if (errors) return Promise.reject(errors);
+  //       return this.addMembership(data.customer_id, membership, club_name);
+  //     })
+  //     .then((res) => {
+  //       if (res.status !== 200) return Promise.reject(res);
+  //       return res.json();
+  //     })
+  //     .then((data) => {
+  //       const { errors } = data;
+  //       if (errors) return Promise.reject(errors);
+  //       console.log(data);
+  //       return data;
+  //     })
+  //     .catch((err) => {
+  //       console.error(err);
+  //     });
+  // }
 
   addPayment(user_id, membership, transaction) {
     const args = {
@@ -259,7 +308,9 @@ class AddClubMembership extends React.Component {
     };
 
     return fetch(
-      this.props.rcp_url.domain + this.props.rcp_url.base_url + "payments/new",
+      this.props.rcp_url.proxy_domain +
+        this.props.rcp_url.base_url +
+        "payments/new",
       {
         method: "post",
         headers: {
@@ -271,9 +322,9 @@ class AddClubMembership extends React.Component {
     );
   }
 
-  addMembership(data) {
+  addMembership(customer_id, membership, club_name) {
     return fetch(
-      this.props.rcp_url.domain +
+      this.props.rcp_url.proxy_domain +
         this.props.rcp_url.base_url +
         "memberships/new",
       {
@@ -282,7 +333,11 @@ class AddClubMembership extends React.Component {
           "Content-Type": "application/json",
           Authorization: "Bearer " + this.props.user.token,
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          customer_id: customer_id,
+          object_id: membership.id,
+          club_name: club_name,
+        }),
       }
     );
   }
@@ -390,14 +445,23 @@ class AddClubMembership extends React.Component {
                           }}
                           required
                         >
-                          <option disabled>Select a membership level.</option>
                           {this.props.levels.levels.length > 0 &&
-                            this.props.levels.levels.map((item, key) => (
-                              <option key={key} value={item.id}>
-                                {item.name}
-                              </option>
-                            ))}
+                            this.props.levels.levels
+                              .filter((el) => el.level === 3)
+                              .map((item, key) => (
+                                <option selected key={key} value={item.id}>
+                                  {item.name}
+                                </option>
+                              ))}
                         </Input>
+                      </Col>
+                    </FormGroup>
+                    <FormGroup row>
+                      <Label sm={4} for="club_name">
+                        Club Name
+                      </Label>
+                      <Col md={6}>
+                        <Input name="club_name" type="text" />
                       </Col>
                     </FormGroup>
                     <FormGroup row>
@@ -444,7 +508,8 @@ class AddClubMembership extends React.Component {
                       <Col md={6}>
                         <RegionDropdown
                           className="form-control"
-                          name="country"
+                          name="region"
+                          country={country}
                           value={region}
                           onChange={(val) => this.selectRegion(val)}
                         />
