@@ -1,6 +1,9 @@
 import OnlyHeader from "components/Headers/OnlyHeader";
 import React from "react";
 
+//@mui
+import { Switch } from "@material-ui/core";
+
 // reactstrap components
 import {
   Button,
