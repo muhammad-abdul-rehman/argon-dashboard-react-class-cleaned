@@ -7,6 +7,7 @@ import AddIndividualMembership from "views/AddIndividualMembership";
 import Customers from "views/Customers";
 import Payment from "views/Payment";
 import AddClubMembership from "views/AddClubMembership";
+import Clubs from "views/Clubs";
 
 var routes = [
   {
@@ -26,8 +27,15 @@ var routes = [
   {
     path: "/payment",
     name: "Payment",
-    icon: "ni ni-credit-card text-red",
+    icon: "ni ni-credit-card text-black",
     component: Payment,
+    layout: "/admin",
+  },
+  {
+    path: "/clubs",
+    name: "Clubs",
+    icon: "fa fa-users text-green",
+    component: Clubs,
     layout: "/admin",
   },
   {
@@ -40,21 +48,21 @@ var routes = [
       {
         path: "/membership/individual/add",
         name: "Add New Individual Membership",
-        icon: "ni ni-bullet-list-67 text-info", // redundant
+        icon: "fa fa-user-plus text-info", // redundant
         component: AddIndividualMembership,
         layout: "/admin",
       },
       {
         path: "/membership/club-individual/add",
-        name: "Add New Club Individual Membership",
-        icon: "ni ni-bullet-list-67 text-red", // redundant
+        name: "Add New Club Membership",
+        icon: "fa fa-user-plus  text-green", // redundant
         component: AddClubMembership,
         layout: "/admin",
       },
       {
         path: "/membership/renew-membership",
         name: "Renew or change a Membership",
-        icon: "ni ni-bullet-list-67 text-red", // redundant
+        icon: "ni ni-bullet-list-67 text-blue", // redundant
         component: Tables,
         layout: "/admin",
       },

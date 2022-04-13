@@ -135,7 +135,13 @@ class Memberships extends React.Component {
                 <CardHeader className="border-0">
                   <h3 className="mb-0">Memberships</h3>
                 </CardHeader>
-                <DataGrid autoHeight rows={rows} columns={columns} pagination />
+                <DataGrid
+                  loading={this.state.memberships.length === 0}
+                  autoHeight
+                  rows={rows}
+                  columns={columns}
+                  pagination
+                />
                 {/* Add Pagination */}
               </Card>
             </div>

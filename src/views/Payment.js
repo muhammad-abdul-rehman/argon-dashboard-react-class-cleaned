@@ -107,7 +107,7 @@ class Memberships extends React.Component {
   render() {
     const columns = [
       { field: "id", headerName: "ID", width: 100 },
-      { field: "customer_name", headerName: "Customer Name", width: 180 },
+      { field: "customer_id", headerName: "Customer ID", width: 180 },
       { field: "status", headerName: "Status", width: 180 },
       { field: "amount", headerName: "Amount", width: 180 },
       { field: "subscription", headerName: "Subscription", width: 180 },
@@ -120,7 +120,7 @@ class Memberships extends React.Component {
       return {
         id: item.id,
         name: item.membership_name,
-        customer_name: item.customer_name,
+        customer_id: item.customer_id,
         status: item.status,
         amount: item.amount,
         subscription: item.subscription,
@@ -165,7 +165,13 @@ class Memberships extends React.Component {
                   </tbody>
                 </Table>
                     */}
-                <DataGrid autoHeight rows={rows} columns={columns} pagination />
+                <DataGrid
+                  loading={this.state.payments.length === 0}
+                  autoHeight
+                  rows={rows}
+                  columns={columns}
+                  pagination
+                />
                 {/* Add Pagination */}
               </Card>
             </div>

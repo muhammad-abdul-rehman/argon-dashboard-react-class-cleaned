@@ -206,13 +206,14 @@ class AddClubMembership extends React.Component {
     };
 
     this.onSuccessfullCheckout(
+      event,
       user_args,
       this.state.selectedMembership,
       event.target.club_name.value
     );
   }
 
-  onSuccessfullCheckout(user_args, membership, club_name) {
+  onSuccessfullCheckout(event, user_args, membership, club_name) {
     this.addCustomer(user_args)
       .then((res) => {
         if (res.status !== 200) return Promise.reject(res);
@@ -435,9 +436,7 @@ class AddClubMembership extends React.Component {
                       </Col>
                     </FormGroup>
                     <FormGroup row>
-                      <Label for="individual_membership" sm={4}>
-                        Individual Membership
-                      </Label>
+                      <Label sm={4}>Membership Type</Label>
                       <Col md={6}>
                         <Input
                           name="membership_level"
