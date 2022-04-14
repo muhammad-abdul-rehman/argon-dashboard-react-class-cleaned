@@ -64,7 +64,7 @@ class AddIndividualMembership extends React.Component {
       this.props.levels?.levels?.length === 0
     ) {
       this.fetchMembershipLevels(
-        this.props.rcp_url.domain + this.props.rcp_url.base_url + "levels"
+        this.props.rcp_url.proxy_domain + this.props.rcp_url.base_url + "levels"
       );
     }
 
@@ -145,7 +145,7 @@ class AddIndividualMembership extends React.Component {
       formData.append("price", membership.price);
       formData.append("currency_symbol", membership.currency_symbol);
       const res = await fetch(
-        this.props.rcp_url.domain +
+        this.props.rcp_url.proxy_domain +
           "/wp-admin/admin-ajax.php?action=stripe_payment_intent",
         {
           method: "post",
@@ -250,7 +250,9 @@ class AddIndividualMembership extends React.Component {
 
   addCustomer(user_args) {
     return fetch(
-      this.props.rcp_url.domain + this.props.rcp_url.base_url + "customers/new",
+      this.props.rcp_url.proxy_domain +
+        this.props.rcp_url.base_url +
+        "customers/new",
       {
         method: "post",
         headers: {
@@ -299,7 +301,9 @@ class AddIndividualMembership extends React.Component {
     };
 
     return fetch(
-      this.props.rcp_url.domain + this.props.rcp_url.base_url + "payments/new",
+      this.props.rcp_url.proxy_domain +
+        this.props.rcp_url.base_url +
+        "payments/new",
       {
         method: "post",
         headers: {
@@ -314,7 +318,7 @@ class AddIndividualMembership extends React.Component {
   addMembership(customer_id, membership) {
     console.log(membership);
     return fetch(
-      this.props.rcp_url.domain +
+      this.props.rcp_url.proxy_domain +
         this.props.rcp_url.base_url +
         "memberships/new",
       {
