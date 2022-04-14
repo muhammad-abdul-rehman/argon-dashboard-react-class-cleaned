@@ -217,7 +217,7 @@ class RenewMembership extends React.Component {
 
   renew_membership(membership) {
     return fetch(
-      this.props.rcp_url.domain +
+      this.props.rcp_url.proxy_domain +
         this.props.rcp_url.base_url +
         "memberships/" +
         this.state.membership.id +
@@ -248,7 +248,9 @@ class RenewMembership extends React.Component {
     };
 
     return fetch(
-      this.props.rcp_url.domain + this.props.rcp_url.base_url + "payments/new",
+      this.props.rcp_url.proxy_domain +
+        this.props.rcp_url.base_url +
+        "payments/new",
       {
         method: "post",
         headers: {
