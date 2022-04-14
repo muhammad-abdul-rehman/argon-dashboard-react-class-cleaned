@@ -3,6 +3,13 @@ import React from "react";
 
 import { Switch } from "@material-ui/core";
 
+//Stripe
+import {
+  CardElement,
+  ElementsConsumer,
+  PaymentElement,
+} from "@stripe/react-stripe-js";
+
 // reactstrap components
 import {
   Button,
@@ -33,6 +40,7 @@ class RenewMembership extends React.Component {
       validate: {
         emailState: "",
       },
+      enable_payment: false,
       error_message: [],
     };
     this.handleChange = this.handleChange.bind(this);
@@ -113,33 +121,170 @@ class RenewMembership extends React.Component {
   }
 
   /**
+   * Handle Payment
+   * @param {*} event
+   */
+  async handlePayment(event) {
+    const { stripe, elements } = this.props.stripe;
+    if (!stripe || !elements) {
+      // Stripe.js has not yet loaded.
+      // Make sure to disable form submission until Stripe.js has loaded.
+      return;
+    }
+    const cardElement = elements.getElement("card");
+    try {
+      const membership = this.props.levels.levels.find(
+        (el) => el.id === parseInt(event.target.membership_level.value)
+      );
+      const formData = new FormData();
+      formData.append("action", "stripe_payment_intent");
+      formData.append("price", membership.recurring_amount);
+      formData.append("currency_symbol", membership.currency_symbol);
+      const res = await fetch(
+        this.props.rcp_url.domain +
+          "/wp-admin/admin-ajax.php?action=stripe_payment_intent",
+        {
+          method: "post",
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          body: formData,
+        }
+      );
+      const {
+        data: { client_secret },
+      } = await res.json();
+      const paymentMethodReq = await stripe.createPaymentMethod({
+        type: "card",
+        card: cardElement,
+        billing_details: {
+          name: membership.customer_name,
+        },
+      });
+
+      if (paymentMethodReq.error) {
+        return;
+      }
+
+      const { error, ...transaction } = await stripe.confirmCardPayment(
+        client_secret,
+        {
+          payment_method: paymentMethodReq.paymentMethod.id,
+        }
+      );
+
+      if (error) {
+        return;
+      }
+
+      return transaction;
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  }
+
+  /**
    * Submit the form.
    */
-  async submitForm(event) {
-    event.persist();
-    event.preventDefault();
+  submit_renew_membership() {
+    if (this.state.enable_payment) {
+      const transaction = this.handlePayment();
+      this.addPayment(this.state.membership, transaction)
+        .then((res) => {
+          if (res.status !== 200) return Promise.reject(res);
+          return res.json();
+        })
+        .then((data_payment) => {
+          const { errors } = data_payment;
+          if (errors) return Promise.reject(errors);
+          return this.renew_membership(this.state.membership);
+        })
+        .catch((e) => console.error(e));
+    } else {
+      this.renew_membership(this.state.membership)
+        .then((res) => {
+          if (res.status !== 200) return Promise.reject(res);
+          return res.json();
+        })
+        .then((data) => {
+          const { errors } = data;
+          if (errors) return Promise.reject(errors);
+          return data;
+        })
+        .catch((e) => console.error(e));
+    }
+  }
+
+  renew_membership(membership) {
+    return fetch(
+      this.props.rcp_url.domain +
+        this.props.rcp_url.base_url +
+        "memberships/" +
+        this.state.membership.id +
+        "/renew",
+      {
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + this.props.user.token,
+        },
+        body: JSON.stringify({
+          id: membership.id,
+          status: membership.status,
+          expiration: membership.expiration,
+        }),
+      }
+    );
+  }
+
+  addPayment(membership, transaction) {
+    const args = {
+      subscription: membership.name,
+      object_id: membership.id,
+      user_id: membership.user_id,
+      amount: membership.price,
+      transaction_id: transaction.id,
+      status: transaction.status,
+    };
+
+    return fetch(
+      this.props.rcp_url.domain + this.props.rcp_url.base_url + "payments/new",
+      {
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + this.props.user.token,
+        },
+        body: JSON.stringify(args),
+      }
+    );
   }
 
   render() {
-    const { email, country, region } = this.state;
-
     return (
       <>
         <OnlyHeader />
-
         <Container className="mt--8" fluid>
           <Row>
             <div className="col">
               <Card className="shadow">
                 <CardHeader className="border-0">
-                  <h3 className="mb-0">Renew Membership</h3>
+                  <Row className="justify-content-between">
+                    <h3 className="mb-0 ml-3">Renew Membership</h3>
+                    <Button
+                      className="mr-3"
+                      onClick={this.submit_renew_membership.bind(this)}
+                    >
+                      Renew
+                    </Button>
+                  </Row>
                 </CardHeader>
                 <CardBody>
-                  <Form onSubmit={this.submitForm.bind(this)}>
+                  <Form>
                     {null !== this.state.membership &&
                       Object.keys(this.state.membership).map((key, index) => {
                         return (
-                          <FormGroup row>
+                          <FormGroup key={index} row>
                             <Label sm={3} for={key}>
                               {key
                                 .split("_")
@@ -160,6 +305,23 @@ class RenewMembership extends React.Component {
                           </FormGroup>
                         );
                       })}
+                    {null !== this.state.membership && (
+                      <FormGroup row>
+                        <Label sm={4} for="payment">
+                          Pay with card.
+                        </Label>
+                        <Col md={6}>
+                          <Switch
+                            name="payment_enable"
+                            onChange={(e) =>
+                              this.setState({
+                                enable_payment: e.target.checked,
+                              })
+                            }
+                          />
+                        </Col>
+                      </FormGroup>
+                    )}
                   </Form>
                 </CardBody>
               </Card>
@@ -171,6 +333,14 @@ class RenewMembership extends React.Component {
   }
 }
 
+const injectedRenewMembership = (props) => (
+  <ElementsConsumer>
+    {(stripe, elements) => (
+      <RenewMembership {...props} stripe={stripe} elements={elements} />
+    )}
+  </ElementsConsumer>
+);
+
 const mapStateToProps = (state) => {
   return {
     rcp_url: state.rcp_url,
@@ -181,4 +351,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = { setUserLoginDetails, setMembershipLevels };
 
-export default connect(mapStateToProps, mapDispatchToProps)(RenewMembership);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(injectedRenewMembership);
