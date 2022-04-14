@@ -64,7 +64,7 @@ class AddClubMembership extends React.Component {
       this.props.levels?.levels?.length === 0
     ) {
       this.fetchMembershipLevels(
-        this.props.rcp_url.proxy_domain + this.props.rcp_url.base_url + "levels"
+        this.props.rcp_url.domain + this.props.rcp_url.base_url + "levels"
       );
     }
 
@@ -261,9 +261,7 @@ class AddClubMembership extends React.Component {
 
   addCustomer(user_args) {
     return fetch(
-      this.props.rcp_url.proxy_domain +
-        this.props.rcp_url.base_url +
-        "customers/new",
+      this.props.rcp_url.domain + this.props.rcp_url.base_url + "customers/new",
       {
         method: "post",
         headers: {
@@ -312,9 +310,7 @@ class AddClubMembership extends React.Component {
     };
 
     return fetch(
-      this.props.rcp_url.proxy_domain +
-        this.props.rcp_url.base_url +
-        "payments/new",
+      this.props.rcp_url.domain + this.props.rcp_url.base_url + "payments/new",
       {
         method: "post",
         headers: {
@@ -328,7 +324,7 @@ class AddClubMembership extends React.Component {
 
   addMembership(customer_id, membership, club_name) {
     return fetch(
-      this.props.rcp_url.proxy_domain +
+      this.props.rcp_url.domain +
         this.props.rcp_url.base_url +
         "memberships/new",
       {

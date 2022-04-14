@@ -43,9 +43,7 @@ class Memberships extends React.Component {
       );
     } else if (this.state.payments?.length === 0) {
       this.fetchPayment(
-        this.props.rcp_url.proxy_domain +
-          this.props.rcp_url.base_url +
-          "payments",
+        this.props.rcp_url.domain + this.props.rcp_url.base_url + "payments",
         this.props.user.token
       );
     }
@@ -58,9 +56,7 @@ class Memberships extends React.Component {
       this.state.payments?.length === 0
     ) {
       this.fetchPayment(
-        this.props.rcp_url.proxy_domain +
-          this.props.rcp_url.proxy_url +
-          "payments",
+        this.props.rcp_url.domain + this.props.rcp_url.url + "payments",
         this.props.user.token
       );
     }

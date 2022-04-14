@@ -49,9 +49,7 @@ class RenewMembership extends React.Component {
   async componentDidMount() {
     if (null === this.state.membership && null !== this.props.user.token) {
       const data = await this.fetchMembership(
-        this.props.rcp_url.proxy_domain +
-          this.props.rcp_url.base_url +
-          "memberships",
+        this.props.rcp_url.domain + this.props.rcp_url.base_url + "memberships",
         this.props.match.params.id
       );
       this.setState({ membership: data });
@@ -65,9 +63,7 @@ class RenewMembership extends React.Component {
       null === this.state.membership
     ) {
       const data = await this.fetchMembership(
-        this.props.rcp_url.proxy_domain +
-          this.props.rcp_url.base_url +
-          "memberships",
+        this.props.rcp_url.domain + this.props.rcp_url.base_url + "memberships",
         this.props.match.params.id
       );
 

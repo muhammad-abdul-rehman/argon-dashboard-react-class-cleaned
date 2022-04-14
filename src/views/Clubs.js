@@ -39,9 +39,7 @@ class Clubs extends React.Component {
   componentDidMount() {
     if (null !== this.props.user.token && this.state.clubs.length === 0) {
       this.fetchClubs(
-        this.props.rcp_url.proxy_domain +
-          this.props.rcp_url.base_url +
-          "groups",
+        this.props.rcp_url.domain + this.props.rcp_url.base_url + "groups",
         this.props.user.token
       );
     }
@@ -50,9 +48,7 @@ class Clubs extends React.Component {
   componentDidUpdate({ user: prevUser }) {
     if (null !== this.props.user.token && this.state.clubs.length === 0) {
       this.fetchClubs(
-        this.props.rcp_url.proxy_domain +
-          this.props.rcp_url.base_url +
-          "groups",
+        this.props.rcp_url.domain + this.props.rcp_url.base_url + "groups",
         this.props.user.token
       );
     }

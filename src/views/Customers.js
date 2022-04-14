@@ -39,9 +39,7 @@ class Customers extends React.Component {
   componentDidMount() {
     if (null !== this.props.user.token && this.state.customers.length === 0) {
       this.fetchCustomers(
-        this.props.rcp_url.proxy_domain +
-          this.props.rcp_url.base_url +
-          "customers",
+        this.props.rcp_url.domain + this.props.rcp_url.base_url + "customers",
         this.props.user.token
       );
     }
@@ -50,9 +48,7 @@ class Customers extends React.Component {
   componentDidUpdate() {
     if (null !== this.props.user.token && this.state.customers.length === 0) {
       this.fetchCustomers(
-        this.props.rcp_url.proxy_domain +
-          this.props.rcp_url.base_url +
-          "customers",
+        this.props.rcp_url.domain + this.props.rcp_url.base_url + "customers",
         this.props.user.token
       );
     }
@@ -82,9 +78,7 @@ class Customers extends React.Component {
   render() {
     if (this.state.customers.length === 0 && this.props.user.token !== null)
       this.fetchCustomers(
-        this.props.rcp_url.proxy_domain +
-          this.props.rcp_url.base_url +
-          "customers",
+        this.props.rcp_url.domain + this.props.rcp_url.base_url + "customers",
         this.props.user.token
       );
 
