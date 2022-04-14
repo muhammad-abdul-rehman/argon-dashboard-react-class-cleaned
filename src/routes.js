@@ -8,6 +8,7 @@ import Customers from "views/Customers";
 import Payment from "views/Payment";
 import AddClubMembership from "views/memberships/AddClubMembership";
 import Clubs from "views/Clubs";
+import RenewMembership from "views/memberships/RenewMembership";
 
 var routes = [
   {
@@ -51,6 +52,7 @@ var routes = [
         icon: "fa fa-user-plus text-info", // redundant
         component: AddIndividualMembership,
         layout: "/admin",
+        showInSidebar: true,
       },
       {
         path: "/membership/club-individual/add",
@@ -58,13 +60,15 @@ var routes = [
         icon: "fa fa-user-plus  text-green", // redundant
         component: AddClubMembership,
         layout: "/admin",
+        showInSidebar: true,
       },
       {
-        path: "/membership/renew-membership",
+        path: "/membership/renew-membership/:id",
         name: "Renew or change a Membership",
         icon: "ni ni-bullet-list-67 text-blue", // redundant
-        component: Tables,
+        component: RenewMembership,
         layout: "/admin",
+        showInSidebar: false,
       },
       {
         path: "/membership/about",
@@ -72,6 +76,7 @@ var routes = [
         icon: "ni ni-bullet-list-67 text-red", // redundant
         component: Tables,
         layout: "/admin",
+        showInSidebar: true,
       },
     ],
   },

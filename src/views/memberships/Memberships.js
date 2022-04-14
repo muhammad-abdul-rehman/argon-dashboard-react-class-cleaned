@@ -110,6 +110,9 @@ class Memberships extends React.Component {
       const handleEditClick = (e) => {
         // some action
         e.preventDefault();
+        this.props.history.push(
+          this.props.history.location.pathname + "/renew-membership/" + index
+        );
         console.log(index);
       };
       const handleDeleteClick = (e) => {

@@ -16,7 +16,7 @@ ReactDOM.render(
     <Switch>
       <Provider store={store}>
         <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
-        <Redirect from="/" to="/admin/membership" />
+        <Redirect from="/" to="/admin/membership/renew-membership/64" />
       </Provider>
     </Switch>
   </BrowserRouter>,
