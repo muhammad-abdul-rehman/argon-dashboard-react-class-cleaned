@@ -272,6 +272,7 @@ class RenewMembership extends React.Component {
                   <Row className="justify-content-between">
                     <h3 className="mb-0 ml-3">Renew Membership</h3>
                     <Button
+                      disabled={this.state.membership === null}
                       className="mr-3"
                       onClick={this.submit_renew_membership.bind(this)}
                     >
