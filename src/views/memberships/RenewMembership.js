@@ -141,7 +141,7 @@ class RenewMembership extends React.Component {
       formData.append("price", membership.recurring_amount);
       formData.append("currency_symbol", membership.currency_symbol);
       const res = await fetch(
-        this.props.rcp_url.domain +
+        this.props.rcp_url.proxy_domain +
           "/wp-admin/admin-ajax.php?action=stripe_payment_intent",
         {
           method: "post",
