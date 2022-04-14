@@ -99,19 +99,23 @@ class Sidebar extends React.Component {
                   </NavLink>
                 </NavItem>
                 <Nav vertical>
-                  {prop.children.map((item, key) => (
-                    <NavItem key={key}>
-                      <NavLink
-                        to={item.layout + item.path}
-                        exact
-                        tag={NavLinkRRD}
-                        onClick={this.closeCollapse}
-                        activeClassName="active"
-                      >
-                        {item.name}
-                      </NavLink>
-                    </NavItem>
-                  ))}
+                  {prop.children.map((item, key) => {
+                    if (item.showInSidebar)
+                      return (
+                        <NavItem key={key}>
+                          <NavLink
+                            to={item.layout + item.path}
+                            exact
+                            tag={NavLinkRRD}
+                            onClick={this.closeCollapse}
+                            activeClassName="active"
+                          >
+                            <i className={item.icon} />
+                            {item.name}
+                          </NavLink>
+                        </NavItem>
+                      );
+                  })}
                 </Nav>
               </>
             ) : (

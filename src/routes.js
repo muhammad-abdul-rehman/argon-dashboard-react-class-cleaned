@@ -2,12 +2,13 @@ import Index from "views/Index.js";
 import Register from "views/auth/Register.js";
 import Login from "views/auth/Login.js";
 import Tables from "views/Tables.js";
-import Memberships from "views/Memberships";
-import AddIndividualMembership from "views/AddIndividualMembership";
+import Memberships from "views/memberships/Memberships";
+import AddIndividualMembership from "views/memberships/AddIndividualMembership";
 import Customers from "views/Customers";
-import Payment from 'views/Payment';
-
-//import AddClubMembership from "views/AddClubMembership";
+import Payment from "views/Payment";
+import AddClubMembership from "views/memberships/AddClubMembership";
+import Clubs from "views/Clubs";
+import RenewMembership from "views/memberships/RenewMembership";
 
 var routes = [
   {
@@ -16,19 +17,26 @@ var routes = [
     icon: "ni ni-tv-2 text-primary",
     component: Index,
     layout: "/admin",
-  }, 
-   {
+  },
+  {
     path: "/customer",
     name: "Customers",
-    icon: "ni ni-bullet-list-67 text-red",
+    icon: "ni ni-single-02 text-red",
     component: Customers,
     layout: "/admin",
   },
   {
     path: "/payment",
     name: "Payment",
-    icon: "ni ni-bullet-list-67 text-red",
+    icon: "ni ni-credit-card text-black",
     component: Payment,
+    layout: "/admin",
+  },
+  {
+    path: "/clubs",
+    name: "Clubs",
+    icon: "fa fa-users text-green",
+    component: Clubs,
     layout: "/admin",
   },
   {
@@ -41,23 +49,26 @@ var routes = [
       {
         path: "/membership/individual/add",
         name: "Add New Individual Membership",
-        icon: "ni ni-bullet-list-67 text-red", // redundant
+        icon: "fa fa-user-plus text-info", // redundant
         component: AddIndividualMembership,
         layout: "/admin",
+        showInSidebar: true,
       },
-/*      {
+      {
         path: "/membership/club-individual/add",
-        name: "Add New Club Individual Membership",
-        icon: "ni ni-bullet-list-67 text-red", // redundant
+        name: "Add New Club Membership",
+        icon: "fa fa-user-plus  text-green", // redundant
         component: AddClubMembership,
         layout: "/admin",
-      },*/
+        showInSidebar: true,
+      },
       {
-        path: "/membership/renew-membership",
+        path: "/membership/renew-membership/:id",
         name: "Renew or change a Membership",
-        icon: "ni ni-bullet-list-67 text-red", // redundant
-        component: Tables,
+        icon: "ni ni-bullet-list-67 text-blue", // redundant
+        component: RenewMembership,
         layout: "/admin",
+        showInSidebar: false,
       },
       {
         path: "/membership/about",
@@ -65,6 +76,7 @@ var routes = [
         icon: "ni ni-bullet-list-67 text-red", // redundant
         component: Tables,
         layout: "/admin",
+        showInSidebar: true,
       },
     ],
   },

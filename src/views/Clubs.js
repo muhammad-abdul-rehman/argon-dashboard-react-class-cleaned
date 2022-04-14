@@ -26,39 +26,39 @@ import {
 import { connect } from "react-redux";
 import { setUserLoginDetails } from "features/user/userSlice";
 
-class Customers extends React.Component {
+class Clubs extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      memberships: [],
-      customers: [],
+      clubs: [],
       page: 1,
       number: 5,
     };
   }
+
   componentDidMount() {
-    if (null !== this.props.user.token && this.state.customers.length === 0) {
-      this.fetchCustomers(
+    if (null !== this.props.user.token && this.state.clubs.length === 0) {
+      this.fetchClubs(
         this.props.rcp_url.proxy_domain +
           this.props.rcp_url.base_url +
-          "customers",
+          "groups",
         this.props.user.token
       );
     }
   }
 
-  componentDidUpdate() {
-    if (null !== this.props.user.token && this.state.customers.length === 0) {
-      this.fetchCustomers(
+  componentDidUpdate({ user: prevUser }) {
+    if (null !== this.props.user.token && this.state.clubs.length === 0) {
+      this.fetchClubs(
         this.props.rcp_url.proxy_domain +
           this.props.rcp_url.base_url +
-          "customers",
+          "groups",
         this.props.user.token
       );
     }
   }
 
-  fetchCustomers = async (url, token) => {
+  fetchClubs = async (url, token) => {
     const urlQuery = new URL(url);
     const paramsOptions = {
       number: this.state.number,
@@ -76,33 +76,33 @@ class Customers extends React.Component {
       },
     });
     const data = await res.json();
-    this.setState({ customers: data });
+    this.setState({ clubs: data });
   };
 
   render() {
-    if (this.state.customers.length === 0 && this.props.user.token !== null)
-      this.fetchCustomers(
-        this.props.rcp_url.proxy_domain +
-          this.props.rcp_url.base_url +
-          "customers",
-        this.props.user.token
-      );
+    console.table("Clubs => ", this.state.clubs);
 
     const columns = [
-      { field: "id", headerName: "ID", width: 180 },
-      { field: "user_id", headerName: "User ID", width: 180 },
-      { field: "name", headerName: "Name", width: 180 },
+      { field: "id", headerName: "ID", width: 90 },
+      { field: "name", headerName: "Club Name", width: 180 },
       { field: "membership_id", headerName: "Membership ID", width: 180 },
-      { field: "date", headerName: "Date", width: 180 },
+      { field: "membership_name", headerName: "Membership Name", width: 180 },
+      { field: "owner_name", headerName: "Owner", width: 180 },
+      { field: "member_count", headerName: "Member Count", width: 180 },
+      { field: "seats", headerName: "Seats", width: 180 },
+      { field: "created_date", headerName: "Created At", width: 180 },
     ];
 
-    const rows = this.state.customers.map((item, key) => {
+    const rows = this.state.clubs?.map((item, key) => {
       return {
         id: item.id,
-        user_id: item.user_id,
-        membership_id: item.memberships[0],
         name: item.name,
-        date: item.date_registered,
+        membership_id: item.membership_id,
+        membership_name: item.membership_name,
+        owner_name: item.owner_name,
+        member_count: item.member_count,
+        seats: item.seats,
+        created_date: item.created_date,
       };
     });
 
@@ -114,10 +114,10 @@ class Customers extends React.Component {
             <div className="col">
               <Card className="shadow">
                 <CardHeader className="border-0">
-                  <h3 className="mb-0">Customers</h3>
+                  <h3 className="mb-0">Clubs</h3>
                 </CardHeader>
                 <DataGrid
-                  loading={this.state.customers.length === 0}
+                  loading={this.state.clubs.length === 0}
                   autoHeight
                   rows={rows}
                   columns={columns}
@@ -141,4 +141,4 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = { setUserLoginDetails };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Customers);
+export default connect(mapStateToProps, mapDispatchToProps)(Clubs);

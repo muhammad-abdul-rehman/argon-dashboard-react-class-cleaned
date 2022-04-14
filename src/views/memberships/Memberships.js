@@ -1,6 +1,7 @@
 import OnlyHeader from "components/Headers/OnlyHeader";
 import React from "react";
 import { DataGrid } from "@material-ui/data-grid";
+import { FormControlLabel, IconButton } from "@material-ui/core";
 
 // reactstrap components
 import {
@@ -41,11 +42,14 @@ class Memberships extends React.Component {
       this.fetchToken(
         this.props.rcp_url.domain + this.props.rcp_url.auth_url + "token"
       );
+    } else if (this.state.memberships?.length === 0) {
+      this.fetchMemberships(
+        this.props.rcp_url.proxy_domain +
+          this.props.rcp_url.base_url +
+          "memberships",
+        this.props.user.token
+      );
     }
-    this.fetchMemberships(
-      this.props.rcp_url.domain + this.props.rcp_url.base_url + "memberships",
-      this.props.user.token
-    );
   }
 
   componentDidUpdate({ user: prevUser }) {
@@ -54,32 +58,14 @@ class Memberships extends React.Component {
       prevUser.token !== this.props.user.token &&
       this.state.memberships?.length === 0
     ) {
-      this.fetchMembershipLevels(
-        this.props.rcp_url.domain + this.props.rcp_url.base_url + "memberships",
+      this.fetchMemberships(
+        this.props.rcp_url.proxy_domain +
+          this.props.rcp_url.base_url +
+          "memberships",
         this.props.user.token
       );
     }
   }
-
-  /*  async fetchToken(token_url) {
-    const response = await fetch(token_url, {
-      method: "post",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: "root", 
-        password: "root", 
-      }),
-    });
-    const data = await response.json();
-    this.props.setUserLoginDetails(data);
-    this.fetchMemberships(
-      this.props.rcp_url.domain + this.props.rcp_url.base_url + "memberships",
-      this.props.user.token
-    );
-  }
-*/
 
   async fetchToken(token_url) {
     const response = await fetch(token_url, {
@@ -120,13 +106,71 @@ class Memberships extends React.Component {
   };
 
   render() {
+    const MatEdit = ({ index }) => {
+      const handleEditClick = (e) => {
+        // some action
+        e.preventDefault();
+        this.props.history.push(
+          this.props.history.location.pathname + "/renew-membership/" + index
+        );
+        console.log(index);
+      };
+      const handleDeleteClick = (e) => {
+        e.preventDefault();
+        console.log(index);
+      };
+
+      return (
+        <>
+          <FormControlLabel
+            control={
+              <IconButton
+                style={{ fontSize: "1rem" }}
+                aria-label="edit membership"
+                onClick={handleEditClick}
+              >
+                <i className="fa fa-pen" />
+              </IconButton>
+            }
+          />
+          <FormControlLabel
+            control={
+              <IconButton
+                style={{ fontSize: "1rem" }}
+                aria-label="delete membership"
+                onClick={handleDeleteClick}
+              >
+                <i className="fa fa-trash" />
+              </IconButton>
+            }
+          />
+        </>
+      );
+    };
     const columns = [
-      { field: "id", headerName: "ID", width: 180 },
+      { field: "id", headerName: "ID", width: 90 },
       { field: "name", headerName: "Name", width: 180 },
       { field: "customer_name", headerName: "Customer Name", width: 180 },
       { field: "status", headerName: "Status", width: 180 },
       { field: "recurring", headerName: "Recurring", width: 180 },
       { field: "created", headerName: "Created", width: 180 },
+      {
+        field: "actions",
+        type: "actions",
+        headerName: "Actions",
+        width: 100,
+        cellClassName: "actions",
+        renderCell: (params) => {
+          return (
+            <div
+              className="d-flex justify-content-between align-items-center"
+              style={{ cursor: "pointer" }}
+            >
+              <MatEdit index={params.row.id} />
+            </div>
+          );
+        },
+      },
     ];
 
     const rows = this.state.memberships.map((item, key) => {
@@ -150,34 +194,13 @@ class Memberships extends React.Component {
                 <CardHeader className="border-0">
                   <h3 className="mb-0">Memberships</h3>
                 </CardHeader>
-                {/*}
-                <Table className="align-items-center table-flush" responsive>
-                  <thead className="thead-light">
-                    <tr>
-                      <th scope="col">ID</th>
-                      <th scope="col">Name</th>
-                      <th scope="col">Customer Name</th>
-                      <th scope="col">Status</th>
-                      <th scope="col">Recurring</th>
-                      <th scope="col">Created</th>
-                      <th scope="col" />
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {this.state.memberships.map((item, key) => (
-                      <tr key={key}>
-                        <th>{item.id}</th>
-                        <td>{item.membership_name}</td>
-                        <td>{item.customer_name}</td>
-                        <td>{item.status}</td>
-                        <td>{item.recurring_amount}</td>
-                        <td>{item.created_date}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
-                    */}
-                <DataGrid autoHeight rows={rows} columns={columns} pagination />
+                <DataGrid
+                  loading={this.state.memberships.length === 0}
+                  autoHeight
+                  rows={rows}
+                  columns={columns}
+                  pagination
+                />
                 {/* Add Pagination */}
               </Card>
             </div>
