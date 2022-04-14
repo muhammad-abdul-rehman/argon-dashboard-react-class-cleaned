@@ -41,7 +41,7 @@ class Memberships extends React.Component {
       this.fetchToken(
         this.props.rcp_url.domain + this.props.rcp_url.auth_url + "token"
       );
-    } else {
+    } else if (this.state.payments?.length === 0) {
       this.fetchPayment(
         this.props.rcp_url.proxy_domain +
           this.props.rcp_url.base_url +

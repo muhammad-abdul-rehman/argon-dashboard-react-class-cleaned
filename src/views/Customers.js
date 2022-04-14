@@ -36,6 +36,16 @@ class Customers extends React.Component {
       number: 5,
     };
   }
+  componentDidMount() {
+    if (null !== this.props.user.token && this.state.customers.length === 0) {
+      this.fetchCustomers(
+        this.props.rcp_url.proxy_domain +
+          this.props.rcp_url.base_url +
+          "customers",
+        this.props.user.token
+      );
+    }
+  }
 
   componentDidUpdate() {
     if (null !== this.props.user.token && this.state.customers.length === 0) {

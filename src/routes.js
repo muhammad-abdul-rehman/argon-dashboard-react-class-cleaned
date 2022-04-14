@@ -2,11 +2,11 @@ import Index from "views/Index.js";
 import Register from "views/auth/Register.js";
 import Login from "views/auth/Login.js";
 import Tables from "views/Tables.js";
-import Memberships from "views/Memberships";
-import AddIndividualMembership from "views/AddIndividualMembership";
+import Memberships from "views/memberships/Memberships";
+import AddIndividualMembership from "views/memberships/AddIndividualMembership";
 import Customers from "views/Customers";
 import Payment from "views/Payment";
-import AddClubMembership from "views/AddClubMembership";
+import AddClubMembership from "views/memberships/AddClubMembership";
 import Clubs from "views/Clubs";
 
 var routes = [

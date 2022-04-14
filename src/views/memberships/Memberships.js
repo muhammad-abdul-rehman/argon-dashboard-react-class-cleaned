@@ -1,6 +1,7 @@
 import OnlyHeader from "components/Headers/OnlyHeader";
 import React from "react";
 import { DataGrid } from "@material-ui/data-grid";
+import { FormControlLabel, IconButton } from "@material-ui/core";
 
 // reactstrap components
 import {
@@ -41,7 +42,7 @@ class Memberships extends React.Component {
       this.fetchToken(
         this.props.rcp_url.domain + this.props.rcp_url.auth_url + "token"
       );
-    } else {
+    } else if (this.state.memberships?.length === 0) {
       this.fetchMemberships(
         this.props.rcp_url.proxy_domain +
           this.props.rcp_url.base_url +
@@ -105,13 +106,68 @@ class Memberships extends React.Component {
   };
 
   render() {
+    const MatEdit = ({ index }) => {
+      const handleEditClick = (e) => {
+        // some action
+        e.preventDefault();
+        console.log(index);
+      };
+      const handleDeleteClick = (e) => {
+        e.preventDefault();
+        console.log(index);
+      };
+
+      return (
+        <>
+          <FormControlLabel
+            control={
+              <IconButton
+                style={{ fontSize: "1rem" }}
+                aria-label="edit membership"
+                onClick={handleEditClick}
+              >
+                <i className="fa fa-pen" />
+              </IconButton>
+            }
+          />
+          <FormControlLabel
+            control={
+              <IconButton
+                style={{ fontSize: "1rem" }}
+                aria-label="delete membership"
+                onClick={handleDeleteClick}
+              >
+                <i className="fa fa-trash" />
+              </IconButton>
+            }
+          />
+        </>
+      );
+    };
     const columns = [
-      { field: "id", headerName: "ID", width: 180 },
+      { field: "id", headerName: "ID", width: 90 },
       { field: "name", headerName: "Name", width: 180 },
       { field: "customer_name", headerName: "Customer Name", width: 180 },
       { field: "status", headerName: "Status", width: 180 },
       { field: "recurring", headerName: "Recurring", width: 180 },
       { field: "created", headerName: "Created", width: 180 },
+      {
+        field: "actions",
+        type: "actions",
+        headerName: "Actions",
+        width: 100,
+        cellClassName: "actions",
+        renderCell: (params) => {
+          return (
+            <div
+              className="d-flex justify-content-between align-items-center"
+              style={{ cursor: "pointer" }}
+            >
+              <MatEdit index={params.row.id} />
+            </div>
+          );
+        },
+      },
     ];
 
     const rows = this.state.memberships.map((item, key) => {
