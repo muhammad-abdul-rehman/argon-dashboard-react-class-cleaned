@@ -9,6 +9,7 @@ import Payment from "views/Payment";
 import AddClubMembership from "views/memberships/AddClubMembership";
 import Clubs from "views/Clubs";
 import RenewMembership from "views/memberships/RenewMembership";
+import Filr from "views/filr/Filr";
 
 var routes = [
   {
@@ -84,7 +85,7 @@ var routes = [
     path: "/filr",
     name: "Filr",
     icon: "fa fa-folder text-red",
-    component: Memberships,
+    component: Filr,
     layout: "/admin",
   },
   {

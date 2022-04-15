@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   base_url: "/wp-json/rcp/v1/",
+  base_wp_url: "/wp-json/wp/v2/",
   auth_url: "/wp-json/jwt-auth/v1/", // for testing purposes only.
   route: "",
   proxy_domain: "http://localhost:8010/proxy",
