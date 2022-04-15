@@ -28,7 +28,7 @@ import {
 //MUI
 import { DataGrid } from "@material-ui/data-grid";
 
-import fileIcons from "./file-icons";
+import fileIcons from "../../variables/file-icons";
 
 import { connect } from "react-redux";
 import { setUserLoginDetails } from "features/user/userSlice";
