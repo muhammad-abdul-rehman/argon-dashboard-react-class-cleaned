@@ -105,6 +105,22 @@ class Memberships extends React.Component {
     this.setState({ memberships: data });
   };
 
+  deleteMembership = async (url, id) => {
+    const res = await fetch(url + id, {
+      method: "DELETE",
+      headers: {
+        Authorization: "Bearer " + this.props.user.token,
+      },
+    });
+    if (res.status !== 200) return this.setState({ error: "error" });
+    const data = await res.json();
+    const { errors } = data;
+    if (errors) return this.setState({ error: "error" });
+    this.setState({
+      memberships: this.state.memberships.filter((el) => el.id !== id),
+    });
+  };
+
   render() {
     const MatEdit = ({ index }) => {
       const handleEditClick = (e) => {
@@ -113,11 +129,17 @@ class Memberships extends React.Component {
         this.props.history.push(
           this.props.history.location.pathname + "/renew-membership/" + index
         );
-        console.log(index);
       };
       const handleDeleteClick = (e) => {
         e.preventDefault();
-        console.log(index);
+        if (null !== this.props.user.token) {
+          this.deleteMembership(
+            this.props.rcp_url.proxy_domain +
+              this.props.rcp_url.base_url +
+              "memberships/delete/",
+            index
+          );
+        }
       };
 
       return (

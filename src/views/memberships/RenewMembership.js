@@ -302,7 +302,11 @@ class RenewMembership extends React.Component {
                               <Input
                                 disabled
                                 name={key}
-                                value={this.state.membership[key]}
+                                value={
+                                  this.state.membership[key] === null
+                                    ? ""
+                                    : this.state.membership[key]
+                                }
                               />
                             </Col>
                           </FormGroup>
