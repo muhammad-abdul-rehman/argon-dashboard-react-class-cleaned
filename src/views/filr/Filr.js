@@ -57,6 +57,7 @@ class Filr extends React.Component {
       selectedFile: {},
       viewFiles: [],
       viewLoading: false,
+      currentFolder: null,
     };
   }
 
@@ -80,14 +81,30 @@ class Filr extends React.Component {
   }
 
   fetchFiles = async (url) => {
-    const res = await fetch(url);
+    const queryUrl = new URL(url);
+    const params = {
+      per_page: 100,
+    };
+    for (let key in params) {
+      queryUrl.searchParams.set(key, params[key]);
+    }
+    const res = await fetch(queryUrl);
     const data = await res.json();
     this.setState({ files: data });
   };
 
-  openFolder = (event) => {
-    event.preventDefault();
-    this.setState({ viewLoading: true });
+  openFolder = (item) => {
+    console.log(item);
+    this.setState({
+      viewLoading: true,
+      currentFolder: item.id,
+    });
+    document.querySelectorAll(".folder-icon").forEach((el) => {
+      if (el.classList.contains("fa-folder-open") || el.dataset.id == item.id) {
+        el.classList.toggle("fa-folder-open");
+      }
+    });
+
     setTimeout(() => {
       this.setState({ viewLoading: false });
     }, 2000);
@@ -138,7 +155,6 @@ class Filr extends React.Component {
         width: 180,
       },
     ];
-
     const rows = [];
     return (
       <>
@@ -157,18 +173,23 @@ class Filr extends React.Component {
                         <List className="w-100">
                           {this.state.files.length !== 0 &&
                             this.state.files
-                              .filter((el) =>
-                                el.metadata["is-folder"]?.includes("true")
+                              .filter(
+                                (el) =>
+                                  el.metadata["is-folder"]?.includes("true") &&
+                                  el.metadata["assigned-folder"] === "0"
                               )
                               .map((item, key) => (
                                 <NavLink key={key}>
                                   <ListItem>
                                     <ListItemButton
                                       startIcon={
-                                        <i className="fa fa-folder text-orange" />
+                                        <i
+                                          className="fa fa-folder text-orange folder-icon"
+                                          data-id={item.id}
+                                        />
                                       }
                                       className="w-100 justify-content-start text-capitalize folder-buttons"
-                                      onClick={this.openFolder.bind(this)}
+                                      onClick={this.openFolder.bind(this, item)}
                                     >
                                       {item.title.rendered.slice(0, 20) + "..."}
                                     </ListItemButton>
@@ -194,7 +215,7 @@ class Filr extends React.Component {
                             const fileIcon = fileIcons
                               .filter((el) => el.type.includes(fileType))
                               ?.pop()?.icon;
-                            console.log(fileIcon); // @todo it return undefined after a while.
+                            //console.log(fileIcon);  @todo it return undefined after a while.
                             rows.push({
                               id: item.id,
                               fileUrl: fileUrl,
