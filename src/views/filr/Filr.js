@@ -54,6 +54,7 @@ class Filr extends React.Component {
       files: [],
       drawer: false,
       selectedFile: {},
+      viewFiles: [],
     };
   }
 
@@ -66,7 +67,15 @@ class Filr extends React.Component {
       );
   }
 
-  componentDidUpdate() {}
+  componentDidUpdate(prevProps, { files: prevFiles }) {
+    if (this.state.files.length !== 0 && prevFiles !== this.state.files) {
+      this.setState({
+        viewFiles: this.state.files.filter(
+          (el) => el.metadata["assigned-folder"] === undefined
+        ),
+      });
+    }
+  }
 
   fetchFiles = async (url) => {
     const res = await fetch(url);
@@ -149,7 +158,9 @@ class Filr extends React.Component {
                                 <NavLink key={key}>
                                   <ListItem>
                                     <ListItemButton
-                                      startIcon={<i className="fa fa-folder" />}
+                                      startIcon={
+                                        <i className="fa fa-folder text-orange" />
+                                      }
                                       className="w-100 justify-content-start text-capitalize folder-buttons"
                                       onClick={this.openFolder.bind(this)}
                                     >
@@ -164,62 +175,62 @@ class Filr extends React.Component {
                     <Grid item xs={12} md={8}>
                       <List>
                         {this.state.files.length !== 0 &&
-                          this.state.files
-                            .filter(
-                              (el) =>
-                                el.metadata["assigned-folder"] === undefined
-                            )
-                            .map((item, key) => {
-                              const fileType = item.metadata["file-download"]
-                                ?.split(".")
-                                .pop();
-                              const fileUrl = item.metadata["file-download"];
-                              const fileIcon = fileIcons
-                                .filter((el) => el.type.includes(fileType))
-                                ?.pop()?.icon;
-                              console.log(fileIcon); // @todo it return undefined after a while.
-                              rows.push({
-                                id: item.id,
-                                fileUrl: fileUrl,
-                                fileType: fileType,
-                                fileIcon: fileIcon,
-                                name: item.title.rendered,
-                                modified: item.modified,
-                                status: item.status,
-                              });
+                          // this.state.files
+                          //   .filter(
+                          //     (el) =>
+                          //       el.metadata["assigned-folder"] === undefined
+                          //   )
+                          this.state.viewFiles.map((item, key) => {
+                            const fileType = item.metadata["file-download"]
+                              ?.split(".")
+                              .pop();
+                            const fileUrl = item.metadata["file-download"];
+                            const fileIcon = fileIcons
+                              .filter((el) => el.type.includes(fileType))
+                              ?.pop()?.icon;
+                            console.log(fileIcon); // @todo it return undefined after a while.
+                            rows.push({
+                              id: item.id,
+                              fileUrl: fileUrl,
+                              fileType: fileType,
+                              fileIcon: fileIcon,
+                              name: item.title.rendered,
+                              modified: item.modified,
+                              status: item.status,
+                            });
 
-                              // return (
-                              //   <>
-                              //     <ListItem key={key}>
-                              //       <ListItemButton
-                              // onClick={() =>
-                              //   this.setState({
-                              //     selectedFile: item,
-                              //     drawer: true,
-                              //   })
-                              // }
-                              //         className="w-100 text-capitalize justify-content-start"
-                              //       >
-                              //         <ListItemIcon className="fs-2 justify-content-center">
-                              //           <i
-                              //             className={
-                              //               typeof fileIcon === "string"
-                              //                 ? fileIcon
-                              //                 : "fa fa-file"
-                              //             }
-                              //           />
-                              //         </ListItemIcon>
-                              //         {item.title.rendered}
-                              //       </ListItemButton>
-                              //     </ListItem>
-                              //   </>
-                              // );
-                            })}
+                            // return (
+                            //   <>
+                            //     <ListItem key={key}>
+                            //       <ListItemButton
+                            // onClick={() =>
+                            //   this.setState({
+                            //     selectedFile: item,
+                            //     drawer: true,
+                            //   })
+                            // }
+                            //         className="w-100 text-capitalize justify-content-start"
+                            //       >
+                            //         <ListItemIcon className="fs-2 justify-content-center">
+                            //           <i
+                            //             className={
+                            //               typeof fileIcon === "string"
+                            //                 ? fileIcon
+                            //                 : "fa fa-file"
+                            //             }
+                            //           />
+                            //         </ListItemIcon>
+                            //         {item.title.rendered}
+                            //       </ListItemButton>
+                            //     </ListItem>
+                            //   </>
+                            // );
+                          })}
                         <DataGrid
+                          checkboxSelection
                           autoHeight
                           rows={rows}
                           columns={columns}
-                          checkboxSelection
                         />
                       </List>
                     </Grid>
