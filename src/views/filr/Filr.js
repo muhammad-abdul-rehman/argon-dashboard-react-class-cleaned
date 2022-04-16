@@ -97,13 +97,33 @@ class Filr extends React.Component {
         //use indexes to clear up breadcrumbs.
         if (folder !== undefined && folder?.metadata["assigned-folder"] != 0) {
           this.breadcrumbs.push(
-            <Link underline="hover" key={folder.id} color="inherit" href="#">
+            <Link
+              underline="hover"
+              key={folder.id}
+              color="inherit"
+              href="#"
+              data-id={folder.id}
+              onClick={(e) => {
+                e.preventDefault();
+                this.openFolder(folder);
+              }}
+            >
               {folder?.title.rendered}
             </Link>
           );
         } else if (folder !== undefined) {
           this.breadcrumbs = [
-            <Link underline="hover" key={folder?.id} color="inherit" href="#">
+            <Link
+              underline="hover"
+              key={folder?.id}
+              color="inherit"
+              data-id={folder.id}
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                this.openFolder(folder);
+              }}
+            >
               {folder?.title.rendered}
             </Link>,
           ];
@@ -126,6 +146,7 @@ class Filr extends React.Component {
   };
 
   openFolder = (item) => {
+    console.log(item);
     this.setState({
       viewLoading: true,
       currentFolder: item.id,
