@@ -94,8 +94,9 @@ class Filr extends React.Component {
                 className={
                   (typeof params.row.fileIcon === "string"
                     ? params.row.fileIcon
-                    : "fa fa-file") + " mr-2"
+                    : "fa fa-file text-red") + " mr-2"
                 }
+                style={{ fontSize: "1rem" }}
               />
               <Link
                 onClick={() =>
