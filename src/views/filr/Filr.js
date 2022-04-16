@@ -88,16 +88,37 @@ class Filr extends React.Component {
       });
     }
     if (prevViewFiles !== this.state.viewFiles) {
-      const folder = this.state.files.find(
-        (el) => el.id == this.state.currentFolder
+      console.log(
+        this.state.currentFolder,
+        this.breadcrumbs.findIndex(
+          (item) => item.key == this.state.currentFolder
+        )
       );
-      if (folder !== undefined) {
-        console.log(this.breadcrumbs);
-        this.breadcrumbs.push(
-          <Link underline="hover" key={folder.id} color="inherit" href="#">
-            {folder?.title.rendered}
-          </Link>
+
+      const index = this.breadcrumbs.findIndex(
+        (item) => item.key == this.state.currentFolder
+      );
+
+      if (index !== -1) {
+        this.breadcrumbs = this.breadcrumbs.slice(0, index + 1);
+      } else {
+        const folder = this.state.files.find(
+          (el) => el.id == this.state.currentFolder
         );
+        //use indexes to clear up breadcrumbs.
+        if (folder !== undefined && folder?.metadata["assigned-folder"] != 0) {
+          this.breadcrumbs.push(
+            <Link underline="hover" key={folder.id} color="inherit" href="#">
+              {folder?.title.rendered}
+            </Link>
+          );
+        } else if (folder !== undefined) {
+          this.breadcrumbs = [
+            <Link underline="hover" key={folder?.id} color="inherit" href="#">
+              {folder?.title.rendered}
+            </Link>,
+          ];
+        }
       }
     }
   }
