@@ -45,6 +45,8 @@ import {
 } from "@material-ui/core";
 import ListItemButton from "@material-ui/core/Button";
 
+import "file-viewer";
+
 class Filr extends React.Component {
   constructor(props) {
     super(props);
@@ -178,6 +180,7 @@ class Filr extends React.Component {
                               rows.push({
                                 id: item.id,
                                 fileUrl: fileUrl,
+                                fileType: fileType,
                                 fileIcon: fileIcon,
                                 name: item.title.rendered,
                                 modified: item.modified,
@@ -224,29 +227,51 @@ class Filr extends React.Component {
               </Card>
               <Drawer anchor="left" open={this.state.drawer}>
                 {Object.keys(this.state.selectedFile).length !== 0 && (
-                  <Row
-                    style={{ width: window.innerWidth * 0.75 }}
-                    className="pt-3 pl-3"
-                  >
-                    <Col xs={8}>
-                      <h2>{this.state.selectedFile.name}</h2>
-                    </Col>
-                    <Col
-                      className="d-flex justify-content-end  align-items-center"
-                      xs={4}
+                  <>
+                    <Row
+                      style={{ width: window.innerWidth * 0.75 }}
+                      className="pt-3 pl-3"
                     >
-                      <IconButton
-                        className="p-2 mr-3"
-                        onClick={() => this.setState({ drawer: false })}
-                        size="small"
+                      <Col xs={8}>
+                        <h2>{this.state.selectedFile.name}</h2>
+                      </Col>
+                      <Col
+                        className="d-flex justify-content-end  align-items-center"
+                        xs={4}
                       >
-                        <i
-                          className="fa fa-plus"
-                          style={{ transform: "rotate(45deg)" }}
-                        />
-                      </IconButton>
-                    </Col>
-                  </Row>
+                        <IconButton
+                          className="p-2 mr-3"
+                          onClick={() => this.setState({ drawer: false })}
+                          size="small"
+                        >
+                          <i
+                            className="fa fa-plus"
+                            style={{ transform: "rotate(45deg)" }}
+                          />
+                        </IconButton>
+                      </Col>
+                    </Row>
+                    <file-viewer
+                      style={{ height: "80%" }}
+                      id="file-viewer"
+                      filename={this.state.selectedFile.name}
+                      url={this.state.selectedFile.fileUrl}
+                    ></file-viewer>
+                    <Row className="mt-3">
+                      <Col xs={6}></Col>
+                      <Col xs={6} className="d-flex justify-content-center">
+                        <Button className="mr-2" variant="contained">
+                          Download
+                        </Button>
+                        <Button
+                          onClick={() => this.setState({ drawer: false })}
+                          variant="outlined"
+                        >
+                          Cancel
+                        </Button>
+                      </Col>
+                    </Row>
+                  </>
                 )}
               </Drawer>
             </div>

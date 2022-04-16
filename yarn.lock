@@ -5329,6 +5329,11 @@
   "resolved" "https://registry.npmjs.org/file-uri-to-path/-/file-uri-to-path-1.0.0.tgz"
   "version" "1.0.0"
 
+"file-viewer@^1.0.0":
+  "integrity" "sha512-4idHybgauuCJhoY/cKhs6GMuowSrOBYzCF53NyEPiwYWfW/5psJcpbH1bhD7iSwPPVM73PfCj0bZk0txteSKpw=="
+  "resolved" "https://registry.npmjs.org/file-viewer/-/file-viewer-1.0.0.tgz"
+  "version" "1.0.0"
+
 "filesize@6.0.1":
   "integrity" "sha512-u4AYWPgbI5GBhs6id1KdImZWn5yfyFrrQ8OWZdN7ZMfA8Bf4HcO0BGo9bmUIEV8yrp8I1xVfJ/dn90GtFNNJcg=="
   "resolved" "https://registry.npmjs.org/filesize/-/filesize-6.0.1.tgz"
