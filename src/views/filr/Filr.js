@@ -43,6 +43,7 @@ import {
   Button,
   Link,
   LinearProgress,
+  Breadcrumbs,
 } from "@material-ui/core";
 import ListItemButton from "@material-ui/core/Button";
 
@@ -59,6 +60,11 @@ class Filr extends React.Component {
       viewLoading: false,
       currentFolder: null,
     };
+    this.breadcrumbs = [
+      // <Link underline="hover" key="1" color="inherit" href="#">
+      //   /
+      // </Link>,
+    ];
   }
 
   componentDidMount() {
@@ -70,13 +76,29 @@ class Filr extends React.Component {
       );
   }
 
-  componentDidUpdate(prevProps, { files: prevFiles }) {
+  componentDidUpdate(
+    prevProps,
+    { files: prevFiles, viewFiles: prevViewFiles }
+  ) {
     if (this.state.files.length !== 0 && prevFiles !== this.state.files) {
       this.setState({
         viewFiles: this.state.files.filter(
           (el) => el.metadata["assigned-folder"] === undefined
         ),
       });
+    }
+    if (prevViewFiles !== this.state.viewFiles) {
+      const folder = this.state.files.find(
+        (el) => el.id == this.state.currentFolder
+      );
+      if (folder !== undefined) {
+        console.log(this.breadcrumbs);
+        this.breadcrumbs.push(
+          <Link underline="hover" key={folder.id} color="inherit" href="#">
+            {folder?.title.rendered}
+          </Link>
+        );
+      }
     }
   }
 
@@ -94,17 +116,22 @@ class Filr extends React.Component {
   };
 
   openFolder = (item) => {
-    console.log(item);
     this.setState({
       viewLoading: true,
       currentFolder: item.id,
+      viewFiles: this.state.files.filter((el) => {
+        return (
+          el.metadata.hasOwnProperty("assigned-folder") &&
+          el.metadata["assigned-folder"] == item.id
+        );
+      }),
     });
     document.querySelectorAll(".folder-icon").forEach((el) => {
       if (el.classList.contains("fa-folder-open") || el.dataset.id == item.id) {
         el.classList.toggle("fa-folder-open");
       }
     });
-
+    // @todo fetch from api
     setTimeout(() => {
       this.setState({ viewLoading: false });
     }, 2000);
@@ -131,12 +158,16 @@ class Filr extends React.Component {
                 style={{ fontSize: "1rem" }}
               />
               <Link
-                onClick={() =>
-                  this.setState({
-                    selectedFile: params.row,
-                    drawer: true,
-                  })
-                }
+                onClick={() => {
+                  if (params.row.isFolder) {
+                    this.openFolder(params.row);
+                  } else {
+                    this.setState({
+                      selectedFile: params.row,
+                      drawer: true,
+                    });
+                  }
+                }}
               >
                 {params.row.name}
               </Link>
@@ -167,6 +198,7 @@ class Filr extends React.Component {
                   <h3 className="mb-0">Filr</h3>
                 </CardHeader>
                 <CardBody>
+                  <Breadcrumbs maxItems={3}>{this.breadcrumbs}</Breadcrumbs>
                   <Grid container spacing={2}>
                     <Grid item xs={12} md={4}>
                       <Navbar className="p-0">
@@ -208,13 +240,23 @@ class Filr extends React.Component {
                           //       el.metadata["assigned-folder"] === undefined
                           //   )
                           this.state.viewFiles.map((item, key) => {
-                            const fileType = item.metadata["file-download"]
-                              ?.split(".")
-                              .pop();
-                            const fileUrl = item.metadata["file-download"];
-                            const fileIcon = fileIcons
-                              .filter((el) => el.type.includes(fileType))
-                              ?.pop()?.icon;
+                            const isFolder =
+                              item.hasOwnProperty("metadata") &&
+                              item.metadata.hasOwnProperty("is-folder") &&
+                              item.metadata["is-folder"] === "true"
+                                ? true
+                                : false;
+                            const fileType =
+                              !isFolder &&
+                              item.metadata["file-download"]?.split(".").pop();
+                            const fileUrl = isFolder
+                              ? null
+                              : item.metadata["file-download"];
+                            const fileIcon = isFolder
+                              ? "fa fa-folder text-orange"
+                              : fileIcons
+                                  .filter((el) => el.type.includes(fileType))
+                                  ?.pop()?.icon;
                             //console.log(fileIcon);  @todo it return undefined after a while.
                             rows.push({
                               id: item.id,
@@ -224,6 +266,7 @@ class Filr extends React.Component {
                               name: item.title.rendered,
                               modified: item.modified,
                               status: item.status,
+                              isFolder: isFolder,
                             });
 
                             // return (
