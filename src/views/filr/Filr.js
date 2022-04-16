@@ -42,6 +42,7 @@ import {
   IconButton,
   Button,
   Link,
+  LinearProgress,
 } from "@material-ui/core";
 import ListItemButton from "@material-ui/core/Button";
 
@@ -55,6 +56,7 @@ class Filr extends React.Component {
       drawer: false,
       selectedFile: {},
       viewFiles: [],
+      viewLoading: false,
     };
   }
 
@@ -85,6 +87,10 @@ class Filr extends React.Component {
 
   openFolder = (event) => {
     event.preventDefault();
+    this.setState({ viewLoading: true });
+    setTimeout(() => {
+      this.setState({ viewLoading: false });
+    }, 2000);
   };
 
   render() {
@@ -227,6 +233,10 @@ class Filr extends React.Component {
                             // );
                           })}
                         <DataGrid
+                          loading={this.state.viewLoading}
+                          components={{
+                            LoadingOverlay: LinearProgress,
+                          }}
                           checkboxSelection
                           autoHeight
                           rows={rows}
