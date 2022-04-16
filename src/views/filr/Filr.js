@@ -262,7 +262,13 @@ class Filr extends React.Component {
                       <Col xs={6}></Col>
                       <Col xs={6} className="d-flex justify-content-center">
                         <Button className="mr-2" variant="contained">
-                          Download
+                          <a
+                            className="text-black"
+                            href={this.state.selectedFile.fileUrl}
+                            target="_blank"
+                          >
+                            Download
+                          </a>
                         </Button>
                         <Button
                           onClick={() => this.setState({ drawer: false })}
