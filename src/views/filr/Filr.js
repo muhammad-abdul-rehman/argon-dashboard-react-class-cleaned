@@ -60,11 +60,7 @@ class Filr extends React.Component {
       viewLoading: false,
       currentFolder: null,
     };
-    this.breadcrumbs = [
-      // <Link underline="hover" key="1" color="inherit" href="#">
-      //   /
-      // </Link>,
-    ];
+    this.breadcrumbs = [];
   }
 
   componentDidMount() {
@@ -88,13 +84,6 @@ class Filr extends React.Component {
       });
     }
     if (prevViewFiles !== this.state.viewFiles) {
-      console.log(
-        this.state.currentFolder,
-        this.breadcrumbs.findIndex(
-          (item) => item.key == this.state.currentFolder
-        )
-      );
-
       const index = this.breadcrumbs.findIndex(
         (item) => item.key == this.state.currentFolder
       );
