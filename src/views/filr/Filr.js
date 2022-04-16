@@ -20,6 +20,7 @@ import {
   Table,
   Container,
   Row,
+  Col,
   UncontrolledTooltip,
   Navbar,
   NavLink,
@@ -32,7 +33,16 @@ import fileIcons from "../../variables/file-icons";
 
 import { connect } from "react-redux";
 import { setUserLoginDetails } from "features/user/userSlice";
-import { Grid, List, ListItem, ListItemIcon } from "@material-ui/core";
+import {
+  Grid,
+  List,
+  ListItem,
+  ListItemIcon,
+  Drawer,
+  IconButton,
+  Button,
+  Link,
+} from "@material-ui/core";
 import ListItemButton from "@material-ui/core/Button";
 
 class Filr extends React.Component {
@@ -40,6 +50,8 @@ class Filr extends React.Component {
     super(props);
     this.state = {
       files: [],
+      drawer: false,
+      selectedFile: {},
     };
   }
 
@@ -62,10 +74,54 @@ class Filr extends React.Component {
 
   openFolder = (event) => {
     event.preventDefault();
-    console.log(event, event.target);
   };
 
   render() {
+    const columns = [
+      {
+        field: "name",
+        headerName: "Name",
+        width: 180,
+        renderCell: (params) => {
+          return (
+            <div
+              className="d-flex justify-content-between align-items-center"
+              style={{ cursor: "pointer" }}
+            >
+              <i
+                className={
+                  (typeof params.row.fileIcon === "string"
+                    ? params.row.fileIcon
+                    : "fa fa-file") + " mr-2"
+                }
+              />
+              <Link
+                onClick={() =>
+                  this.setState({
+                    selectedFile: params.row,
+                    drawer: true,
+                  })
+                }
+              >
+                {params.row.name}
+              </Link>
+            </div>
+          );
+        },
+      },
+      {
+        field: "modified",
+        headerName: "Modified Date",
+        width: 180,
+      },
+      {
+        field: "status",
+        headerName: "Status",
+        width: 180,
+      },
+    ];
+
+    const rows = [];
     return (
       <>
         <OnlyHeader />
@@ -79,7 +135,7 @@ class Filr extends React.Component {
                 <CardBody>
                   <Grid container spacing={2}>
                     <Grid item xs={12} md={4}>
-                      <Navbar>
+                      <Navbar className="p-0">
                         <List className="w-100">
                           {this.state.files.length !== 0 &&
                             this.state.files
@@ -112,35 +168,87 @@ class Filr extends React.Component {
                             )
                             .map((item, key) => {
                               const fileType = item.metadata["file-download"]
-                                ?.pop()
                                 ?.split(".")
                                 .pop();
+                              const fileUrl = item.metadata["file-download"];
                               const fileIcon = fileIcons
                                 .filter((el) => el.type.includes(fileType))
                                 ?.pop()?.icon;
                               console.log(fileIcon); // @todo it return undefined after a while.
-                              return (
-                                <ListItem key={key}>
-                                  <ListItemButton className="w-100 text-capitalize justify-content-start">
-                                    <ListItemIcon>
-                                      <i
-                                        className={
-                                          typeof fileIcon === "string"
-                                            ? fileIcon
-                                            : "fa fa-file"
-                                        }
-                                      />
-                                    </ListItemIcon>
-                                    {item.title.rendered}
-                                  </ListItemButton>
-                                </ListItem>
-                              );
+                              rows.push({
+                                id: item.id,
+                                fileUrl: fileUrl,
+                                fileIcon: fileIcon,
+                                name: item.title.rendered,
+                                modified: item.modified,
+                                status: item.status,
+                              });
+
+                              // return (
+                              //   <>
+                              //     <ListItem key={key}>
+                              //       <ListItemButton
+                              // onClick={() =>
+                              //   this.setState({
+                              //     selectedFile: item,
+                              //     drawer: true,
+                              //   })
+                              // }
+                              //         className="w-100 text-capitalize justify-content-start"
+                              //       >
+                              //         <ListItemIcon className="fs-2 justify-content-center">
+                              //           <i
+                              //             className={
+                              //               typeof fileIcon === "string"
+                              //                 ? fileIcon
+                              //                 : "fa fa-file"
+                              //             }
+                              //           />
+                              //         </ListItemIcon>
+                              //         {item.title.rendered}
+                              //       </ListItemButton>
+                              //     </ListItem>
+                              //   </>
+                              // );
                             })}
+                        <DataGrid
+                          autoHeight
+                          rows={rows}
+                          columns={columns}
+                          checkboxSelection
+                        />
                       </List>
                     </Grid>
                   </Grid>
                 </CardBody>
               </Card>
+              <Drawer anchor="left" open={this.state.drawer}>
+                {Object.keys(this.state.selectedFile).length !== 0 && (
+                  <Row
+                    style={{ width: window.innerWidth * 0.75 }}
+                    className="pt-3 pl-3"
+                  >
+                    <Col xs={8}>
+                      <h2>{this.state.selectedFile.name}</h2>
+                    </Col>
+                    <Col
+                      className="d-flex justify-content-end  align-items-center"
+                      xs={4}
+                    >
+                      <IconButton
+                        className="p-2 mr-3"
+                        onClick={() => this.setState({ drawer: false })}
+                        size="small"
+                      >
+                        <i
+                          className="fa fa-plus"
+                          style={{ transform: "rotate(45deg)" }}
+                        />
+                      </IconButton>
+                    </Col>
+                  </Row>
+                )}
+              </Drawer>
             </div>
           </Row>
         </Container>

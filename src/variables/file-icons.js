@@ -5,6 +5,6 @@ export default [
   },
   {
     type: ["xlsx", "csv", "docx"],
-    icon: "fa fa-file-spreadsheet",
+    icon: "fa fa-file-excel",
   },
 ];
