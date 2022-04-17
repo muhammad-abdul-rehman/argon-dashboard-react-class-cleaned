@@ -93,6 +93,7 @@ class Sidebar extends React.Component {
                     tag={NavLinkRRD}
                     onClick={this.closeCollapse}
                     activeClassName="active"
+                    activeStyle={{ backgroundColor: "#5e72e40a" }}
                   >
                     <i className={prop.icon} />
                     {prop.name}
@@ -109,6 +110,7 @@ class Sidebar extends React.Component {
                             tag={NavLinkRRD}
                             onClick={this.closeCollapse}
                             activeClassName="active"
+                            activeStyle={{ backgroundColor: "#5e72e40a" }}
                           >
                             <i className={item.icon} />
                             {item.name}
@@ -125,6 +127,7 @@ class Sidebar extends React.Component {
                   tag={NavLinkRRD}
                   onClick={this.closeCollapse}
                   activeClassName="active"
+                  activeStyle={{ backgroundColor: "#5e72e417" }}
                 >
                   <i className={prop.icon} />
                   {prop.name}

@@ -11,6 +11,7 @@ import Clubs from "views/Clubs";
 import RenewMembership from "views/memberships/RenewMembership";
 import Filr from "views/filr/Filr";
 import Library from "views/filr/Library";
+import Logos from "views/sponsored-logos/Logos";
 
 var routes = [
   {
@@ -98,6 +99,20 @@ var routes = [
         showInSidebar: true,
       },
     ],
+  },
+  {
+    path: "/sponsored-logos",
+    name: "Sponsored Logos",
+    icon: "fa fa-images text-green",
+    component: Logos,
+    layout: "/admin",
+  },
+  {
+    path: "/speakers",
+    name: "Speakers",
+    icon: "fa fa-bullhorn text-green",
+    component: Tables,
+    layout: "/admin",
   },
   {
     path: "/login",
