@@ -105,11 +105,11 @@ class Admin extends React.Component {
           routes={routes}
           logo={{
             innerLink: "/admin/index",
-            imgSrc: require("assets/img/brand/argon-react.png"),
+            imgSrc: require("assets/img/brand/atpi-logo.png"),
             imgAlt: "...",
           }}
         />
-        <div className="main-content mb-5" ref="mainContent">
+        <div className="main-content bg-white mb-5" ref="mainContent">
           <AdminNavbar
             {...this.props}
             brandText={this.getBrandText(this.props.location.pathname)}

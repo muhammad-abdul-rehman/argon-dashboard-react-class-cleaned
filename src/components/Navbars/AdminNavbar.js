@@ -44,12 +44,12 @@ class AdminNavbar extends React.Component {
           <Container fluid>
             <div className="d-flex w-100 align-items-center">
               <Link
-                className="h4 mb-0 text-white text-uppercase d-none d-md-inline-block"
+                className="h4 mb-0 text-secondary text-uppercase d-none d-md-inline-block"
                 to="/"
               >
                 {this.props.brandText}
               </Link>
-              <Button color="danger" className="ml-auto d-none d-md-inline-block">
+              <Button color="success" className="ml-auto d-none d-md-inline-block">
                 Logout
               </Button>
             </div>
