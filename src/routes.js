@@ -10,6 +10,7 @@ import AddClubMembership from "views/memberships/AddClubMembership";
 import Clubs from "views/Clubs";
 import RenewMembership from "views/memberships/RenewMembership";
 import Filr from "views/filr/Filr";
+import Library from "views/filr/Library";
 
 var routes = [
   {
@@ -87,6 +88,16 @@ var routes = [
     icon: "fa fa-folder text-red",
     component: Filr,
     layout: "/admin",
+    children: [
+      {
+        path: "/filr-lists",
+        name: "Filr Library",
+        icon: "fa  fa-book text-green", // redundant
+        component: Library,
+        layout: "/admin",
+        showInSidebar: true,
+      },
+    ],
   },
   {
     path: "/login",
