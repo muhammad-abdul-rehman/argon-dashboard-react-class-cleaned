@@ -94,12 +94,17 @@ class Speakers extends React.Component {
         renderCell: (params) => (
           <div className="d-flex align-items-center">
             <Avatar
-              className="mr-3"
+              className="mr-5"
               alt={params.row?.avatar_alt}
               src={params.row?.avatar}
             />
             <Media>
-              <span className="mb-0 text-sm">{params.row?.name}</span>
+              <span
+                className="mb-0 text-sm font-weight-600"
+                style={{ color: "#525f7f" }}
+              >
+                {params.row?.name}
+              </span>
             </Media>
           </div>
         ),
