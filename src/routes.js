@@ -12,6 +12,7 @@ import RenewMembership from "views/memberships/RenewMembership";
 import Filr from "views/filr/Filr";
 import Library from "views/filr/Library";
 import Logos from "views/sponsored-logos/Logos";
+import Speakers from "views/speakers/Speakers";
 
 var routes = [
   {
@@ -111,7 +112,7 @@ var routes = [
     path: "/speakers",
     name: "Speakers",
     icon: "fa fa-bullhorn text-green",
-    component: Tables,
+    component: Speakers,
     layout: "/admin",
   },
   {
