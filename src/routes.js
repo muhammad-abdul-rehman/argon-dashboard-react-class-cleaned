@@ -13,6 +13,8 @@ import Filr from "views/filr/Filr";
 import Library from "views/filr/Library";
 import Logos from "views/sponsored-logos/Logos";
 import Speakers from "views/speakers/Speakers";
+import Users from "views/users/Users";
+import EditUser from "views/users/EditUser";
 
 var routes = [
   {
@@ -119,8 +121,18 @@ var routes = [
     path: "/users",
     name: "Users",
     icon: "fa fa-user text-green",
-    component: Tables,
+    component: Users,
     layout: "/admin",
+    children: [
+      {
+        path: "/users/:id",
+        name: "User",
+        icon: "fa  fa-book text-green", // redundant
+        component: EditUser,
+        layout: "/admin",
+        showInSidebar: false,
+      },
+    ],
   },
   {
     path: "/login",

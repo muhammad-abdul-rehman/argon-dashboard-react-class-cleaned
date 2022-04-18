@@ -9,6 +9,8 @@ import { Card, CardHeader, Container, Row } from "reactstrap";
 import { connect } from "react-redux";
 import { setUserLoginDetails } from "features/user/userSlice";
 
+import MatEdit from "views/MatEdit";
+
 class Memberships extends React.Component {
   constructor(props) {
     super(props);
