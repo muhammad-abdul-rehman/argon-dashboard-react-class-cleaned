@@ -3,25 +3,7 @@ import React from "react";
 import { DataGrid } from "@material-ui/data-grid";
 
 // reactstrap components
-import {
-  Badge,
-  Card,
-  CardHeader,
-  CardFooter,
-  DropdownMenu,
-  DropdownItem,
-  UncontrolledDropdown,
-  DropdownToggle,
-  Media,
-  Pagination,
-  PaginationItem,
-  PaginationLink,
-  Progress,
-  Table,
-  Container,
-  Row,
-  UncontrolledTooltip,
-} from "reactstrap";
+import { Card, CardHeader, Container, Row } from "reactstrap";
 
 import { connect } from "react-redux";
 import { setUserLoginDetails } from "features/user/userSlice";

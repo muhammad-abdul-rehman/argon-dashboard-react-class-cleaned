@@ -24,6 +24,8 @@ import {
   UncontrolledTooltip,
   Navbar,
   NavLink,
+  Form,
+  FormGroup,
 } from "reactstrap";
 
 //MUI
@@ -44,6 +46,9 @@ import {
   Link,
   LinearProgress,
   Breadcrumbs,
+  Modal,
+  TextField,
+  Grow,
 } from "@material-ui/core";
 import ListItemButton from "@material-ui/core/Button";
 
@@ -54,6 +59,7 @@ class Library extends React.Component {
     super(props);
     this.state = {
       libraries: [],
+      addLibrary: false,
     };
   }
 
@@ -79,6 +85,47 @@ class Library extends React.Component {
     const res = await fetch(queryUrl);
     const data = await res.json();
     this.setState({ libraries: data });
+  };
+
+  handleChange = (event) => {
+    const { target } = event;
+    const value = target.type === "checkbox" ? target.checked : target.value;
+    const { name } = target;
+
+    this.setState({
+      [name]: value,
+    });
+  };
+
+  addLibrary = async (e) => {
+    e.preventDefault();
+    if (this.props.user.token === null) return;
+    const res = await fetch(
+      this.props.rcp_url.proxy_domain +
+        this.props.rcp_url.base_wp_url +
+        "filr-lists",
+      {
+        method: "post",
+        headers: {
+          Authorization: "Bearer " + this.props.user.token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: this.state.library_name,
+        }),
+      }
+    );
+    if (res.status !== 201) {
+      console.log("failed");
+      return;
+    }
+    const { code, ...data } = await res.json();
+    if (code == "term_exists") {
+      console.log("error", code);
+      return;
+    }
+    this.state.libraries.push(data);
+    this.setState({ library_name: "" });
   };
 
   render() {
@@ -128,8 +175,55 @@ class Library extends React.Component {
           <Row>
             <div className="col">
               <Card className="shadow">
-                <CardHeader className="border-0">
+                <CardHeader className="border-0 d-flex justify-content-between pl-3 pr-3">
                   <h3 className="mb-0">Filr Libraries</h3>
+                  <Row className="d-flex ">
+                    <Grow in={this.state.addLibrary}>
+                      <Col className="animated fadeInLeft" xs={10}>
+                        <Form onSubmit={this.addLibrary.bind(this)}>
+                          <FormGroup className="mb-0" row>
+                            <Col>
+                              <TextField
+                                onChange={(e) => this.handleChange(e)}
+                                required
+                                name="library_name"
+                                id="library_name"
+                                label="Name"
+                                variant="outlined"
+                                size="small"
+                              />
+                            </Col>
+                            <Button type="submit" variant="contained">
+                              Submit
+                            </Button>
+                          </FormGroup>
+                        </Form>
+                      </Col>
+                    </Grow>
+                    <Col xs={2} className="mt-auto mb-auto">
+                      <Button
+                        style={{ minWidth: "unset", height: "max-content" }}
+                        aria-label="add a library"
+                        onClick={() =>
+                          this.setState({
+                            addLibrary: !this.state.addLibrary,
+                          })
+                        }
+                      >
+                        <i
+                          className="fa fa-plus"
+                          style={
+                            this.state.addLibrary
+                              ? {
+                                  transform: "rotate(-45deg)",
+                                  transition: "all 0.1s ease-out",
+                                }
+                              : {}
+                          }
+                        />
+                      </Button>
+                    </Col>
+                  </Row>
                 </CardHeader>
                 <CardBody>
                   <DataGrid

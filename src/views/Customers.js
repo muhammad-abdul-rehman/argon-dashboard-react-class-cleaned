@@ -4,23 +4,10 @@ import { DataGrid } from "@material-ui/data-grid";
 
 // reactstrap components
 import {
-  Badge,
   Card,
   CardHeader,
-  CardFooter,
-  DropdownMenu,
-  DropdownItem,
-  UncontrolledDropdown,
-  DropdownToggle,
-  Media,
-  Pagination,
-  PaginationItem,
-  PaginationLink,
-  Progress,
-  Table,
   Container,
   Row,
-  UncontrolledTooltip,
   Button,
   Modal,
   ModalHeader,
@@ -29,9 +16,7 @@ import {
   Label,
   Col,
   Input,
-  CardBody,
   Form,
-  FormFeedback,
   FormGroup,
 } from "reactstrap";
 

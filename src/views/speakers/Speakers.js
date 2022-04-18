@@ -2,51 +2,14 @@ import OnlyHeader from "components/Headers/OnlyHeader";
 import React from "react";
 
 // reactstrap components
-import {
-  Badge,
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  DropdownMenu,
-  DropdownItem,
-  UncontrolledDropdown,
-  DropdownToggle,
-  Media,
-  Pagination,
-  PaginationItem,
-  PaginationLink,
-  Progress,
-  Table,
-  Container,
-  Row,
-  Col,
-  UncontrolledTooltip,
-  Navbar,
-  NavLink,
-} from "reactstrap";
+import { Card, CardHeader, CardBody, Media, Container, Row } from "reactstrap";
 
 //MUI
 import { DataGrid } from "@material-ui/data-grid";
 
-import fileIcons from "../../variables/file-icons";
-
 import { connect } from "react-redux";
 import { setUserLoginDetails } from "features/user/userSlice";
-import {
-  Grid,
-  List,
-  ListItem,
-  ListItemIcon,
-  Drawer,
-  IconButton,
-  Button,
-  Link,
-  LinearProgress,
-  Breadcrumbs,
-  Avatar,
-} from "@material-ui/core";
-import ListItemButton from "@material-ui/core/Button";
+import { LinearProgress, Avatar } from "@material-ui/core";
 
 class Speakers extends React.Component {
   constructor(props) {
