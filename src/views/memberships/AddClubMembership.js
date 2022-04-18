@@ -144,7 +144,7 @@ class AddClubMembership extends React.Component {
       formData.append("price", membership.price);
       formData.append("currency_symbol", membership.currency_symbol);
       const res = await fetch(
-        this.props.rcp_url.proxy_domain +
+        this.props.rcp_url.domain +
           "/wp-admin/admin-ajax.php?action=stripe_payment_intent",
         {
           method: "post",

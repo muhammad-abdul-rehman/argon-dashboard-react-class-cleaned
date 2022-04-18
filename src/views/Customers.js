@@ -100,9 +100,7 @@ class Customers extends React.Component {
       );
     if (this.state.customers.length === 0 && this.props.user.token !== null)
       this.fetchCustomers(
-        this.props.rcp_url.proxy_domain +
-          this.props.rcp_url.base_url +
-          "customers",
+        this.props.rcp_url.domain + this.props.rcp_url.base_url + "customers",
         this.props.user.token
       );
 

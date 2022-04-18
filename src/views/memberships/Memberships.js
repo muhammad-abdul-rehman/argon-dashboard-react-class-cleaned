@@ -40,7 +40,7 @@ class Memberships extends React.Component {
   componentDidMount() {
     if (null === this.props.user.token) {
       this.fetchToken(
-        this.props.rcp_url.proxy_domain + this.props.rcp_url.auth_url + "token"
+        this.props.rcp_url.domain + this.props.rcp_url.auth_url + "token"
       );
     } else if (this.state.memberships?.length === 0) {
       this.fetchMemberships(
@@ -130,7 +130,7 @@ class Memberships extends React.Component {
         e.preventDefault();
         if (null !== this.props.user.token) {
           this.deleteMembership(
-            this.props.rcp_url.proxy_domain +
+            this.props.rcp_url.domain +
               this.props.rcp_url.base_url +
               "memberships/delete/",
             index

@@ -63,7 +63,7 @@ class Logos extends React.Component {
   componentDidMount() {
     if (this.state.logos.length === 0)
       this.fetchLogos(
-        this.props.rcp_url.proxy_domain +
+        this.props.rcp_url.domain +
           this.props.rcp_url.base_wp_url +
           "sponsored_logos"
       );

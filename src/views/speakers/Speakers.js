@@ -59,9 +59,7 @@ class Speakers extends React.Component {
   componentDidMount() {
     if (this.state.speakers.length === 0)
       this.fetchSpeakers(
-        this.props.rcp_url.proxy_domain +
-          this.props.rcp_url.base_wp_url +
-          "speakers"
+        this.props.rcp_url.domain + this.props.rcp_url.base_wp_url + "speakers"
       );
   }
 
