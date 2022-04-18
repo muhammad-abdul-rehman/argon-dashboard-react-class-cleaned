@@ -160,23 +160,18 @@ class AddIndividualMembership extends React.Component {
       formData.append("action", "stripe_payment_intent");
       formData.append("price", membership.price);
       formData.append("currency_symbol", membership.currency_symbol);
-      try {
-        const res = await fetch(
-          this.props.rcp_url.proxy_domain +
-            "/wp-admin/admin-ajax.php?action=stripe_payment_intent",
-          {
-            method: "post",
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-            body: formData,
-          }
-        );
-      } catch (e) {
-        alert(e);
-        this.resetProgress();
-        return;
-      }
+
+      const res = await fetch(
+        this.props.rcp_url.proxy_domain +
+          "/wp-admin/admin-ajax.php?action=stripe_payment_intent",
+        {
+          method: "post",
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          body: formData,
+        }
+      );
 
       /* UPDATE PROGRESS */
       console.log("3");
@@ -224,6 +219,7 @@ class AddIndividualMembership extends React.Component {
 
       return transaction;
     } catch (err) {
+      this.resetProgress();
       return Promise.reject(err);
     }
   }

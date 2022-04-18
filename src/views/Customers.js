@@ -113,12 +113,11 @@ class Customers extends React.Component {
       );
 
     const columns = [
-      { field: "user_id", headerName: "User Id", width: 180 },
-      { field: "number", headerName: "Number", width: 180 },
+      { field: "id", headerName: "ID", width: 90 },
+      { field: "user_id", headerName: "User ID", width: 180 },
+      { field: "name", headerName: "Name", width: 180 },
       { field: "membership_id", headerName: "Membership Id", width: 180 },
-      { field: "subscription", headerName: "Subscription", width: 180 },
       { field: "date", headerName: "Date", width: 180 },
-      { field: "gateway", headerName: "Gateway", width: 180 },
       {
         field: "actions",
         type: "actions",
@@ -142,7 +141,8 @@ class Customers extends React.Component {
       return {
         id: item.id,
         user_id: item.user_id,
-        membership_id: item.memberships[0],
+        membership_id:
+          item.memberships.length === 0 ? "No Memberhsip" : item.memberships[0],
         name: item.name,
         date: item.date_registered,
       };
