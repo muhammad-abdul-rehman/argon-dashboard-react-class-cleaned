@@ -371,7 +371,14 @@ class Filr extends React.Component {
                       id="file-viewer"
                       filename={this.state.selectedFile.name}
                       url={this.state.selectedFile.fileUrl}
-                    ></file-viewer>
+                    >
+                      <div
+                        className="w-100 h-100 d-flex justify-content-center align-items-center"
+                        slot="not-supported"
+                      >
+                        Not supported
+                      </div>
+                    </file-viewer>
                     <Row className="mt-3">
                       <Col xs={6}></Col>
                       <Col xs={6} className="d-flex justify-content-center">

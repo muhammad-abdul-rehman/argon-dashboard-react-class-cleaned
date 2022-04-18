@@ -4,28 +4,12 @@ import { DataGrid } from "@material-ui/data-grid";
 import { FormControlLabel, IconButton } from "@material-ui/core";
 
 // reactstrap components
-import {
-  Badge,
-  Card,
-  CardHeader,
-  CardFooter,
-  DropdownMenu,
-  DropdownItem,
-  UncontrolledDropdown,
-  DropdownToggle,
-  Media,
-  Pagination,
-  PaginationItem,
-  PaginationLink,
-  Progress,
-  Table,
-  Container,
-  Row,
-  UncontrolledTooltip,
-} from "reactstrap";
+import { Card, CardHeader, Container, Row } from "reactstrap";
 
 import { connect } from "react-redux";
 import { setUserLoginDetails } from "features/user/userSlice";
+
+import MatEdit from "views/MatEdit";
 
 class Memberships extends React.Component {
   constructor(props) {

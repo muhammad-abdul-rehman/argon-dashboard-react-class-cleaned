@@ -4,11 +4,7 @@ import React from "react";
 import { Switch } from "@material-ui/core";
 
 //Stripe
-import {
-  CardElement,
-  ElementsConsumer,
-  PaymentElement,
-} from "@stripe/react-stripe-js";
+import { ElementsConsumer } from "@stripe/react-stripe-js";
 
 // reactstrap components
 import {
@@ -22,10 +18,7 @@ import {
   Row,
   CardBody,
   Form,
-  FormFeedback,
   FormGroup,
-  Table,
-  Progress,
 } from "reactstrap";
 
 import { connect } from "react-redux";

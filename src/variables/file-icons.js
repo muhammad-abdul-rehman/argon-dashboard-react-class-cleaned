@@ -7,4 +7,8 @@ export default [
     type: ["xlsx", "csv", "docx"],
     icon: "fa fa-file-excel text-green",
   },
+  {
+    type: ["pdf"],
+    icon: "fa fa-file-pdf text-blue",
+  },
 ];

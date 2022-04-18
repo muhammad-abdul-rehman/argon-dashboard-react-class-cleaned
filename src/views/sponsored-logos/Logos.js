@@ -2,53 +2,11 @@ import OnlyHeader from "components/Headers/OnlyHeader";
 import React from "react";
 
 // reactstrap components
-import {
-  Badge,
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  DropdownMenu,
-  DropdownItem,
-  UncontrolledDropdown,
-  DropdownToggle,
-  Media,
-  Pagination,
-  PaginationItem,
-  PaginationLink,
-  Progress,
-  Table,
-  Container,
-  Row,
-  Col,
-  UncontrolledTooltip,
-  Navbar,
-  NavLink,
-} from "reactstrap";
-
-//MUI
-import { DataGrid } from "@material-ui/data-grid";
-
-import fileIcons from "../../variables/file-icons";
+import { Card, CardHeader, CardBody, Container, Row } from "reactstrap";
 
 import { connect } from "react-redux";
 import { setUserLoginDetails } from "features/user/userSlice";
-import {
-  Grid,
-  List,
-  ListItem,
-  ListItemIcon,
-  Drawer,
-  IconButton,
-  Button,
-  Link,
-  LinearProgress,
-  Breadcrumbs,
-  ImageList,
-  ImageListItem,
-  ImageListItemBar,
-} from "@material-ui/core";
-import ListItemButton from "@material-ui/core/Button";
+import { ImageList, ImageListItem, ImageListItemBar } from "@material-ui/core";
 
 import "file-viewer";
 
@@ -94,7 +52,7 @@ class Logos extends React.Component {
             <div className="col">
               <Card className="shadow">
                 <CardHeader className="border-0">
-                  <h3 className="mb-0">Filr Libraries</h3>
+                  <h3 className="mb-0">Sponsored Logos</h3>
                 </CardHeader>
                 <CardBody>
                   <ImageList variant="masonry" cols={3} gap={8}>
