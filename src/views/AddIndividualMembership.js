@@ -48,6 +48,8 @@ class AddIndividualMembership extends React.Component {
       country: "",
       region: "",
       error_message: [],
+      progress :0,
+      totalProgress : 5,
     };
     this.handleChange = this.handleChange.bind(this);
   }
@@ -122,6 +124,13 @@ class AddIndividualMembership extends React.Component {
     this.setState({ region: val });
   }
 
+  updateProgress(val){
+    this.setState({progress : this.state.progress+val});
+  }
+
+  resetProgress(){
+    this.setState({progress : 0});
+  }
   /**
    * Submit the form.
    */
@@ -136,26 +145,54 @@ class AddIndividualMembership extends React.Component {
     }
     const cardElement = elements.getElement("card");
     try {
+      
+      /* UPDATE PROGRESS */
+      console.log('1');
+      this.updateProgress(1);
+
       const membership = this.props.levels.levels.find(
         (el) => el.id === parseInt(event.target.membership_level.value)
       );
-      const res = await fetch(
-        this.props.rcp_url.domain +
-          "/wp-admin/admin-ajax.php?action=stripe_payment_intent",
-        {
-          method: "post",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            money: membership.price,
-            currency_symbol: membership.currency_symbol,
-          }),
-        }
-      );
+      
+      /* UPDATE PROGRESS */
+      console.log('2');
+      this.updateProgress(1);
+    
+      var res = JSON.stringify({});
+    
+      try{
+          res = await fetch(
+                this.props.rcp_url.proxy_domain +
+                  "/wp-admin/admin-ajax.php?action=stripe_payment_intent",
+                {
+                  method: "post",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    money: membership.price,
+                    currency_symbol: membership.currency_symbol,
+                  }),
+                }
+              );
+      
+            }catch(e){
+              alert(e);
+              this.resetProgress();
+              return;
+            }
+
+      /* UPDATE PROGRESS */
+      console.log('3');
+      this.updateProgress(1);
       const {
         data: { client_secret },
       } = await res.json();
+
+      /* UPDATE PROGRESS */
+      console.log('4');
+      this.updateProgress(1);
+      
       const paymentMethodReq = await stripe.createPaymentMethod({
         type: "card",
         card: cardElement,
@@ -167,6 +204,8 @@ class AddIndividualMembership extends React.Component {
       });
 
       if (paymentMethodReq.error) {
+        alert(paymentMethodReq.error.message);
+      this.resetProgress();
         return;
       }
 
@@ -175,6 +214,8 @@ class AddIndividualMembership extends React.Component {
       });
 
       if (error) {
+        alert(error);
+        this.resetProgress();
         return;
       }
 
@@ -186,13 +227,27 @@ class AddIndividualMembership extends React.Component {
       };
       const transaction = "";
 
+    
       this.onSuccessfullCheckout(user_args, membership, transaction);
+
+    /* UPDATE PROGRESS */      
+    console.log('5');
+    this.updateProgress(1);
+
     } catch (err) {
-      console.error(err);
+      alert(err);
       this.setState({ error_message: "Error happened" + err });
     }
   }
 
+
+
+
+
+
+
+
+  
   onSuccessfullCheckout(user_args, membership, transaction) {
     this.addCustomer(user_args)
       .then((res) => {
@@ -307,9 +362,10 @@ class AddIndividualMembership extends React.Component {
                   <h3 className="mb-0">Add Individual Membership</h3>
                 </CardHeader>
                 <CardBody>
-                {/*
-                <Progress value={2 * 20} />
-                        */}
+
+                {/* PROGRESS BAR */}
+                {this.state.progress > 0 && <Progress value={(this.state.progress/ this.state.totalProgress) * 100 } />}
+                
                   <Form onSubmit={this.submitForm.bind(this)}>
                     <FormGroup row>
                       <Label sm={3}>Name</Label>
