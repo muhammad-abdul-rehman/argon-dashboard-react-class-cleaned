@@ -116,6 +116,13 @@ var routes = [
     layout: "/admin",
   },
   {
+    path: "/users",
+    name: "Users",
+    icon: "fa fa-user text-green",
+    component: Tables,
+    layout: "/admin",
+  },
+  {
     path: "/login",
     name: "Login",
     icon: "ni ni-key-25 text-info",
