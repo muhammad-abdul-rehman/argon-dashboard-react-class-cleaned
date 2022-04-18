@@ -101,9 +101,7 @@ class Library extends React.Component {
     e.preventDefault();
     if (this.props.user.token === null) return;
     const res = await fetch(
-      this.props.rcp_url.proxy_domain +
-        this.props.rcp_url.base_wp_url +
-        "filr-lists",
+      this.props.rcp_url.domain + this.props.rcp_url.base_wp_url + "filr-lists",
       {
         method: "post",
         headers: {

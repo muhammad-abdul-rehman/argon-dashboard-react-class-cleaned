@@ -37,7 +37,7 @@ class Users extends React.Component {
   componentDidMount() {
     if (this.state.user === null && this.props.user.token !== null)
       this.fetchUser(
-        this.props.rcp_url.proxy_domain +
+        this.props.rcp_url.domain +
           this.props.rcp_url.base_wp_url +
           "users/" +
           this.props.match.params.id
@@ -47,7 +47,7 @@ class Users extends React.Component {
   componentDidUpdate({ user: prevUser }) {
     if (prevUser !== this.props.user && this.props.user.token !== null) {
       this.fetchUser(
-        this.props.rcp_url.proxy_domain +
+        this.props.rcp_url.domain +
           this.props.rcp_url.base_wp_url +
           "users/" +
           this.props.match.params.id
