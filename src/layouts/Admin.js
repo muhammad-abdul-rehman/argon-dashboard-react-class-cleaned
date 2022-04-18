@@ -21,7 +21,7 @@ const stripePromise = loadStripe("" + process.env.REACT_APP_PUBLISHABLE_KEY);
 class Admin extends React.Component {
   componentDidMount() {
     this.fetchToken(
-      this.props.rcp_url.domain + this.props.rcp_url.auth_url + "token"
+      this.props.rcp_url.proxy_domain + this.props.rcp_url.auth_url + "token"
     );
   }
   componentDidUpdate(e) {

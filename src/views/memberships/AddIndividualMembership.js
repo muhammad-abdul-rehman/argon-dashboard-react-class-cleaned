@@ -50,6 +50,8 @@ class AddIndividualMembership extends React.Component {
       country: "",
       region: "",
       error_message: [],
+      progress: 0,
+      totalProgress: 5,
     };
     this.handleChange = this.handleChange.bind(this);
   }
@@ -64,7 +66,7 @@ class AddIndividualMembership extends React.Component {
       this.props.levels?.levels?.length === 0
     ) {
       this.fetchMembershipLevels(
-        this.props.rcp_url.domain + this.props.rcp_url.base_url + "levels"
+        this.props.rcp_url.proxy_domain + this.props.rcp_url.base_url + "levels"
       );
     }
 
@@ -124,6 +126,13 @@ class AddIndividualMembership extends React.Component {
     this.setState({ region: val });
   }
 
+  updateProgress(val) {
+    this.setState({ progress: this.state.progress + val });
+  }
+
+  resetProgress() {
+    this.setState({ progress: 0 });
+  }
   /**
    * Handle Payment
    * @param {*} event
@@ -137,15 +146,23 @@ class AddIndividualMembership extends React.Component {
     }
     const cardElement = elements.getElement("card");
     try {
+      /* UPDATE PROGRESS */
+      console.log("1");
+      this.updateProgress(1);
+
       const membership = this.props.levels.levels.find(
         (el) => el.id === parseInt(event.target.membership_level.value)
       );
+      /* UPDATE PROGRESS */
+      console.log("2");
+      this.updateProgress(1);
       const formData = new FormData();
       formData.append("action", "stripe_payment_intent");
       formData.append("price", membership.price);
       formData.append("currency_symbol", membership.currency_symbol);
+
       const res = await fetch(
-        this.props.rcp_url.domain +
+        this.props.rcp_url.proxy_domain +
           "/wp-admin/admin-ajax.php?action=stripe_payment_intent",
         {
           method: "post",
@@ -155,9 +172,18 @@ class AddIndividualMembership extends React.Component {
           body: formData,
         }
       );
+
+      /* UPDATE PROGRESS */
+      console.log("3");
+      this.updateProgress(1);
       const {
         data: { client_secret },
       } = await res.json();
+
+      /* UPDATE PROGRESS */
+      console.log("4");
+      this.updateProgress(1);
+
       const paymentMethodReq = await stripe.createPaymentMethod({
         type: "card",
         card: cardElement,
@@ -173,6 +199,8 @@ class AddIndividualMembership extends React.Component {
       });
 
       if (paymentMethodReq.error) {
+        alert(paymentMethodReq.error.message);
+        this.resetProgress();
         return;
       }
 
@@ -184,11 +212,14 @@ class AddIndividualMembership extends React.Component {
       );
 
       if (error) {
+        alert(error);
+        this.resetProgress();
         return;
       }
 
       return transaction;
     } catch (err) {
+      this.resetProgress();
       return Promise.reject(err);
     }
   }
@@ -250,7 +281,9 @@ class AddIndividualMembership extends React.Component {
 
   addCustomer(user_args) {
     return fetch(
-      this.props.rcp_url.domain + this.props.rcp_url.base_url + "customers/new",
+      this.props.rcp_url.proxy_domain +
+        this.props.rcp_url.base_url +
+        "customers/new",
       {
         method: "post",
         headers: {
@@ -299,7 +332,9 @@ class AddIndividualMembership extends React.Component {
     };
 
     return fetch(
-      this.props.rcp_url.domain + this.props.rcp_url.base_url + "payments/new",
+      this.props.rcp_url.proxy_domain +
+        this.props.rcp_url.base_url +
+        "payments/new",
       {
         method: "post",
         headers: {
@@ -314,7 +349,7 @@ class AddIndividualMembership extends React.Component {
   addMembership(customer_id, membership) {
     console.log(membership);
     return fetch(
-      this.props.rcp_url.domain +
+      this.props.rcp_url.proxy_domain +
         this.props.rcp_url.base_url +
         "memberships/new",
       {
@@ -350,9 +385,15 @@ class AddIndividualMembership extends React.Component {
                   <h3 className="mb-0">Add Individual Membership</h3>
                 </CardHeader>
                 <CardBody>
-                  {/*
-                <Progress value={2 * 20} />
-                        */}
+                  {/* PROGRESS BAR */}
+                  {this.state.progress > 0 && (
+                    <Progress
+                      value={
+                        (this.state.progress / this.state.totalProgress) * 100
+                      }
+                    />
+                  )}
+
                   <Form onSubmit={this.submitForm.bind(this)}>
                     <FormGroup row>
                       <Label sm={3}>Name</Label>

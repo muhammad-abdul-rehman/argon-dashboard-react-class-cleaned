@@ -137,7 +137,7 @@ class RenewMembership extends React.Component {
       formData.append("price", membership.recurring_amount);
       formData.append("currency_symbol", membership.currency_symbol);
       const res = await fetch(
-        this.props.rcp_url.domain +
+        this.props.rcp_url.proxy_domain +
           "/wp-admin/admin-ajax.php?action=stripe_payment_intent",
         {
           method: "post",
@@ -213,7 +213,7 @@ class RenewMembership extends React.Component {
 
   renew_membership(membership) {
     return fetch(
-      this.props.rcp_url.domain +
+      this.props.rcp_url.proxy_domain +
         this.props.rcp_url.base_url +
         "memberships/" +
         this.state.membership.id +
@@ -244,7 +244,9 @@ class RenewMembership extends React.Component {
     };
 
     return fetch(
-      this.props.rcp_url.domain + this.props.rcp_url.base_url + "payments/new",
+      this.props.rcp_url.proxy_domain +
+        this.props.rcp_url.base_url +
+        "payments/new",
       {
         method: "post",
         headers: {
@@ -268,6 +270,7 @@ class RenewMembership extends React.Component {
                   <Row className="justify-content-between">
                     <h3 className="mb-0 ml-3">Renew Membership</h3>
                     <Button
+                      disabled={this.state.membership === null}
                       className="mr-3"
                       onClick={this.submit_renew_membership.bind(this)}
                     >
@@ -295,7 +298,11 @@ class RenewMembership extends React.Component {
                               <Input
                                 disabled
                                 name={key}
-                                value={this.state.membership[key]}
+                                value={
+                                  this.state.membership[key] === null
+                                    ? ""
+                                    : this.state.membership[key]
+                                }
                               />
                             </Col>
                           </FormGroup>

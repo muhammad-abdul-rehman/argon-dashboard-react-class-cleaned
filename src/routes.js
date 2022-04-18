@@ -9,6 +9,10 @@ import Payment from "views/Payment";
 import AddClubMembership from "views/memberships/AddClubMembership";
 import Clubs from "views/Clubs";
 import RenewMembership from "views/memberships/RenewMembership";
+import Filr from "views/filr/Filr";
+import Library from "views/filr/Library";
+import Logos from "views/sponsored-logos/Logos";
+import Speakers from "views/speakers/Speakers";
 
 var routes = [
   {
@@ -79,6 +83,37 @@ var routes = [
         showInSidebar: true,
       },
     ],
+  },
+  {
+    path: "/filr",
+    name: "Filr",
+    icon: "fa fa-folder text-red",
+    component: Filr,
+    layout: "/admin",
+    children: [
+      {
+        path: "/filr-lists",
+        name: "Filr Library",
+        icon: "fa  fa-book text-green", // redundant
+        component: Library,
+        layout: "/admin",
+        showInSidebar: true,
+      },
+    ],
+  },
+  {
+    path: "/sponsored-logos",
+    name: "Sponsored Logos",
+    icon: "fa fa-images text-green",
+    component: Logos,
+    layout: "/admin",
+  },
+  {
+    path: "/speakers",
+    name: "Speakers",
+    icon: "fa fa-bullhorn text-green",
+    component: Speakers,
+    layout: "/admin",
   },
   {
     path: "/login",
