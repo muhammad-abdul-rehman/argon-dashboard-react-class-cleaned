@@ -20,6 +20,7 @@ const MatEdit = ({ index,handleClick }) => {
 
         <FormControlLabel
           control={
+            <IconButton
               style={{ fontSize: "1rem" }}
               aria-label="edit membership"
               onClick={/*handleEditClick*/handleClick}
