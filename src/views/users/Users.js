@@ -128,7 +128,7 @@ class Users extends React.Component {
 
           const handleDeleteClick = (e) => {
             return this.deleteUser(
-              this.props.rcp_url.proxy_domain +
+              this.props.rcp_url.domain +
                 this.props.rcp_url.base_wp_url +
                 "users",
               params.row.id
