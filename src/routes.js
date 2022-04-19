@@ -15,6 +15,7 @@ import Logos from "views/sponsored-logos/Logos";
 import Speakers from "views/speakers/Speakers";
 import Users from "views/users/Users";
 import EditUser from "views/users/EditUser";
+import CreateLogo from "views/sponsored-logos/CreateLogo";
 
 var routes = [
   {
@@ -109,6 +110,16 @@ var routes = [
     icon: "fa fa-images text-green",
     component: Logos,
     layout: "/admin",
+    children: [
+      {
+        path: "/sponsored-logos/create",
+        name: "Create Logo",
+        icon: "fa  fa-book text-green", // redundant
+        component: CreateLogo,
+        layout: "/admin",
+        showInSidebar: false,
+      },
+    ],
   },
   {
     path: "/speakers",
