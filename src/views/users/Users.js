@@ -58,6 +58,25 @@ class Users extends React.Component {
     this.setState({ users: data });
   };
 
+  deleteUser(url, id) {
+    fetch(url + "/" + id, {
+      method: "DELETE",
+      headers: {
+        Authorization: "Bearer " + this.props.user.token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        reassign: 2, // ID of Farhan User Account.
+        force: true, // No trash supported.
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        this.setState({ users: this.state.users.filter((el) => el.id !== id) });
+      })
+      .catch((e) => console.error(e));
+  }
+
   render() {
     const columns = [
       {
@@ -112,7 +131,12 @@ class Users extends React.Component {
           };
 
           const handleDeleteClick = (e) => {
-            console.log(e, "Delete", params.row.id);
+            return this.deleteUser(
+              this.props.rcp_url.proxy_domain +
+                this.props.rcp_url.base_wp_url +
+                "users",
+              params.row.id
+            );
           };
 
           return (
