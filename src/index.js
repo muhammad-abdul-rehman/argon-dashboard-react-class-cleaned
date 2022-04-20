@@ -16,7 +16,7 @@ ReactDOM.render(
     <Switch>
       <Provider store={store}>
         <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
-        <Redirect from="/" to="/admin/speakers/create" />
+        <Redirect from="/" to="/admin/videos" />
       </Provider>
     </Switch>
   </BrowserRouter>,

@@ -17,6 +17,7 @@ import Users from "views/users/Users";
 import EditUser from "views/users/EditUser";
 import CreateLogo from "views/sponsored-logos/CreateLogo";
 import CreateSpeaker from "views/speakers/CreateSpeaker";
+import Video from "views/videos/Video";
 
 var routes = [
   {
@@ -127,6 +128,23 @@ var routes = [
     name: "Speakers",
     icon: "fa fa-bullhorn text-green",
     component: Speakers,
+    layout: "/admin",
+    children: [
+      {
+        path: "/speakers/create",
+        name: "Create Ppeaker",
+        icon: "fa  fa-book text-green", // redundant
+        component: CreateSpeaker,
+        layout: "/admin",
+        showInSidebar: false,
+      },
+    ],
+  },
+  {
+    path: "/videos",
+    name: "videos",
+    icon: "fa fa-bullhorn text-green",
+    component: Video,
     layout: "/admin",
     children: [
       {
