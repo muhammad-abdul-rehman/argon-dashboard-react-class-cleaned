@@ -127,6 +127,16 @@ var routes = [
     icon: "fa fa-bullhorn text-green",
     component: Speakers,
     layout: "/admin",
+    children: [
+      {
+        path: "/speakers/create",
+        name: "Create Ppeaker",
+        icon: "fa  fa-book text-green", // redundant
+        component: CreateLogo,
+        layout: "/admin",
+        showInSidebar: false,
+      },
+    ],
   },
   {
     path: "/users",
