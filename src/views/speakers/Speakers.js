@@ -9,7 +9,7 @@ import { DataGrid } from "@material-ui/data-grid";
 
 import { connect } from "react-redux";
 import { setUserLoginDetails } from "features/user/userSlice";
-import { LinearProgress, Avatar } from "@material-ui/core";
+import { LinearProgress, Avatar, Button } from "@material-ui/core";
 
 class Speakers extends React.Component {
   constructor(props) {
@@ -34,6 +34,7 @@ class Speakers extends React.Component {
     const queryUrl = new URL(url);
     const params = {
       per_page: 100,
+      acf_format: "standard",
     };
     for (let key in params) {
       queryUrl.searchParams.set(key, params[key]);
@@ -111,8 +112,14 @@ class Speakers extends React.Component {
           <Row>
             <div className="col">
               <Card className="shadow">
-                <CardHeader className="border-0">
+                <CardHeader className="border-0 d-flex justify-content-between pl-3 pr-3">
                   <h3 className="mb-0">Speakers</h3>
+                  <Button
+                    variant="contained"
+                    onClick={() => this.props.history.push("speakers/create")}
+                  >
+                    Create
+                  </Button>
                 </CardHeader>
                 <CardBody>
                   <DataGrid

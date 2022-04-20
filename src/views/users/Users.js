@@ -45,6 +45,7 @@ class Users extends React.Component {
     const params = {
       per_page: 100,
       context: "edit",
+      acf_format: "standard",
     };
     for (let key in params) {
       queryUrl.searchParams.set(key, params[key]);
