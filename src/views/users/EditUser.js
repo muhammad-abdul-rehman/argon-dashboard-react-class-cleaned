@@ -80,6 +80,7 @@ class Users extends React.Component {
     const queryUrl = new URL(url);
     const params = {
       context: "edit",
+      acf_format: "standard",
     };
     for (let key in params) {
       queryUrl.searchParams.set(key, params[key]);
