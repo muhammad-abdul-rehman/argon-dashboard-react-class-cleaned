@@ -16,6 +16,7 @@ import Speakers from "views/speakers/Speakers";
 import Users from "views/users/Users";
 import EditUser from "views/users/EditUser";
 import CreateLogo from "views/sponsored-logos/CreateLogo";
+import CreateSpeaker from "views/speakers/CreateSpeaker";
 
 var routes = [
   {
@@ -132,7 +133,7 @@ var routes = [
         path: "/speakers/create",
         name: "Create Ppeaker",
         icon: "fa  fa-book text-green", // redundant
-        component: CreateLogo,
+        component: CreateSpeaker,
         layout: "/admin",
         showInSidebar: false,
       },

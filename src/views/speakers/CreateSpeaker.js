@@ -29,6 +29,9 @@ import {
   Chip,
   Button,
   ButtonGroup,
+  FormControlLabel,
+  FormHelperText,
+  Switch,
 } from "@material-ui/core";
 
 import MatEdit from "views/MatEdit";
@@ -51,12 +54,12 @@ class CreateSpeaker extends React.Component {
     const formData = new FormData(
       document.getElementById("create-speaker-form")
     );
-    this.addProfileImage(formData)
+    this.addImage(formData)
       .then((res) => res.json())
       .then((data) => {
         const { id: image_id } = data;
         console.log(data);
-        return this.createLogo(image_id);
+        return this.createSpeaker(image_id);
       })
       .then((res) => res.json())
       .then((data) => console.log(data))
@@ -64,10 +67,21 @@ class CreateSpeaker extends React.Component {
         console.error(err);
       });
   }
+
+  handleChange = (event) => {
+    const { target } = event;
+    const value = target.type === "checkbox" ? target.checked : target.value;
+    const { name } = target;
+
+    this.setState({
+      [name]: value,
+    });
+  };
+
   /**
    *
    */
-  addProfileImage(formData) {
+  addImage(formData) {
     for (let [key, value] of formData) {
       if (key !== "file") formData.delete(key);
     }
@@ -88,8 +102,10 @@ class CreateSpeaker extends React.Component {
     );
   }
 
-  createLogo(id) {
-    const formData = new FormData(document.getElementById("create-logo-form")); // create again for title
+  createSpeaker(id) {
+    const formData = new FormData(
+      document.getElementById("create-speaker-form")
+    ); // create again for title
     formData.delete("file");
     return fetch(this.create_logo_url, {
       method: "POST",
@@ -100,8 +116,10 @@ class CreateSpeaker extends React.Component {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        ...Object.fromEntries(formData),
-        featured_media: parseInt(id),
+        title: this.state.differentTitle
+          ? formData.get("title")
+          : formData.get("name"),
+        acf: { ...Object.fromEntries(formData), profile_picture: parseInt(id) },
       }),
     });
   }
@@ -115,7 +133,7 @@ class CreateSpeaker extends React.Component {
             <div className="col">
               <Card className="shadow">
                 <CardHeader className="border-0">
-                  <h3 className="mb-0">Create Logo</h3>
+                  <h3 className="mb-0">Create Speaker</h3>
                 </CardHeader>
                 <CardBody>
                   <Form
@@ -128,9 +146,9 @@ class CreateSpeaker extends React.Component {
                     <FormGroup row>
                       <Col>
                         <TextField
-                          id="title"
-                          label="Title"
-                          name="title"
+                          id="name"
+                          label="Name"
+                          name="name"
                           variant="outlined"
                           required
                         />
@@ -138,7 +156,60 @@ class CreateSpeaker extends React.Component {
                     </FormGroup>
                     <FormGroup row>
                       <Col>
-                        <Label for="featured_image">File</Label>
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              name="differentTitle"
+                              onChange={(e) => this.handleChange(e)}
+                            />
+                          }
+                          label="Use different title for post"
+                        />
+                        <FormHelperText>
+                          {this.state.differentTitle
+                            ? "Post title will be different."
+                            : "Post title will be the same as name."}
+                        </FormHelperText>
+                      </Col>
+                    </FormGroup>
+                    {this.state.differentTitle && (
+                      <FormGroup row>
+                        <Col>
+                          <TextField
+                            id="title"
+                            label="Post Title"
+                            name="title"
+                            variant="outlined"
+                            required
+                          />
+                        </Col>
+                      </FormGroup>
+                    )}
+                    <FormGroup row>
+                      <Col>
+                        <TextField
+                          id="quote"
+                          label="Quote"
+                          name="quote"
+                          variant="outlined"
+                          required
+                        />
+                      </Col>
+                    </FormGroup>
+                    <FormGroup row>
+                      <Col>
+                        <TextField
+                          id="designation"
+                          label="Designation"
+                          name="designation"
+                          variant="outlined"
+                          required
+                        />
+                      </Col>
+                    </FormGroup>
+                    <FormGroup row>
+                      <Col>
+                        <Label for="featured_image">Profile Picture</Label>
                         <Input
                           type="file"
                           name="file"
