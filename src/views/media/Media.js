@@ -17,6 +17,8 @@ import {
   ListItem,
   Grid,
   IconButton,
+  CircularProgress,
+  Grow,
 } from "@material-ui/core";
 
 class Media extends React.Component {
@@ -25,6 +27,9 @@ class Media extends React.Component {
     this.state = {
       media: [],
       selectedMedia: null,
+      uploadFiles: [],
+      uploading: false,
+      uploadAreaOpen: false,
     };
     this.handleDrop = this.handleDrop.bind(this);
     this.uploadFile = this.uploadFile.bind(this);
@@ -72,6 +77,7 @@ class Media extends React.Component {
   }
 
   uploadFile(file) {
+    this.setState({ uploadFiles: [...this.state.uploadFiles, file] });
     let formData = new FormData();
 
     formData.append("file", file);
@@ -90,10 +96,19 @@ class Media extends React.Component {
       }
     )
       .then((res) => res.json())
-      .then((data) => console.log(data))
+      .then((data) => {
+        this.setState((prevState) => {
+          return {
+            media: [data, ...prevState.media],
+            uploading: false,
+            uploadFiles: [],
+          };
+        });
+      })
       .catch((err) => {
         this.refs.dropArea.classList.remove("highlight");
         console.log(err);
+        this.setState({ uploading: false, uploadFiles: [] });
       });
   }
 
@@ -110,6 +125,7 @@ class Media extends React.Component {
   }
 
   handleDrop(e) {
+    this.setState({ uploading: true });
     e.persist();
     e.preventDefault();
     e.stopPropagation();
@@ -129,15 +145,22 @@ class Media extends React.Component {
                   <Button
                     variant="contained"
                     onClick={() =>
-                      this.props.history.push("sponsored-logos/create")
+                      this.setState({
+                        uploadAreaOpen: !this.state.uploadAreaOpen,
+                      })
                     }
                   >
-                    Upload
+                    {this.state.uploadAreaOpen ? "Close" : "Upload"}
                   </Button>
                 </CardHeader>
                 <CardBody>
                   <div
-                    ref="dropArea"
+                    style={{
+                      display: this.state.uploadAreaOpen ? "block" : "none",
+                      transform: "scaleY(1)",
+                      transition: "all 0.5s ease-out",
+                    }}
+                    ref={this.state.uploadAreaOpen && "dropArea"}
                     id="drop-area"
                     onDragEnter={(e) => this.highlight(e)}
                     onDragOver={(e) => this.highlight(e)}
@@ -146,14 +169,15 @@ class Media extends React.Component {
                   >
                     <form className="my-form">
                       <p>
-                        Upload multiple files with the file dialog or by
-                        dragging and dropping images onto the dashed region
+                        Upload (multiple files -- will be done) single file with
+                        the file dialog or by dragging and dropping images onto
+                        the dashed region
                       </p>
                       <input
                         type="file"
                         id="fileElem"
                         ref="fileInput"
-                        multiple
+                        // multiple --- add after loading icon issue resolve
                         accept="image/*"
                         onChange={this.handleFiles(this.files)}
                       />
@@ -161,6 +185,33 @@ class Media extends React.Component {
                         Select some files
                       </label>
                     </form>
+                    <Row>
+                      <ImageList gap={8}>
+                        {this.state.uploadFiles.length !== 0 &&
+                          this.state.uploadFiles.map((item, key) => (
+                            <ImageListItem
+                              className="position-relative"
+                              key={key}
+                            >
+                              {this.state.uploading && (
+                                <CircularProgress
+                                  className="position-absolute top-50 left-50"
+                                  style={{
+                                    top: "50%",
+                                    left: "50%",
+                                    zIndex: 2,
+                                  }}
+                                />
+                              )}
+                              <img
+                                className="mw-100"
+                                style={{ objectFit: "cover" }}
+                                src={window.URL.createObjectURL(item)}
+                              />
+                            </ImageListItem>
+                          ))}
+                      </ImageList>
+                    </Row>
                   </div>
                   <ImageList variant="masonry" cols={3} gap={8}>
                     {this.state.media.length !== 0 &&
