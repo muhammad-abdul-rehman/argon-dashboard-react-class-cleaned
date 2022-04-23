@@ -18,6 +18,7 @@ import EditUser from "views/users/EditUser";
 import CreateLogo from "views/sponsored-logos/CreateLogo";
 import CreateSpeaker from "views/speakers/CreateSpeaker";
 import Video from "views/videos/Video";
+import Media from "views/media/Media";
 
 var routes = [
   {
@@ -143,8 +144,25 @@ var routes = [
   {
     path: "/videos",
     name: "videos",
-    icon: "fa fa-bullhorn text-green",
+    icon: "fa fa-video text-blue",
     component: Video,
+    layout: "/admin",
+    children: [
+      {
+        path: "/speakers/create",
+        name: "Create Ppeaker",
+        icon: "fa  fa-book text-green", // redundant
+        component: CreateSpeaker,
+        layout: "/admin",
+        showInSidebar: false,
+      },
+    ],
+  },
+  {
+    path: "/media",
+    name: "media",
+    icon: "fa fa-images text-blue",
+    component: Media,
     layout: "/admin",
     children: [
       {
