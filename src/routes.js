@@ -19,6 +19,7 @@ import CreateLogo from "views/sponsored-logos/CreateLogo";
 import CreateSpeaker from "views/speakers/CreateSpeaker";
 import Video from "views/videos/Video";
 import Media from "views/media/Media";
+import DiscountCodes from "views/discount/DiscountCodes";
 
 var routes = [
   {
@@ -91,6 +92,23 @@ var routes = [
     ],
   },
   {
+    path: "/discount",
+    name: "Discount Codes",
+    icon: "fa fa-tags text-blue",
+    component: DiscountCodes,
+    layout: "/admin",
+    children: [
+      {
+        path: "/discount/create",
+        name: "Create Speaker",
+        icon: "fa  fa-book text-green", // redundant
+        component: CreateSpeaker,
+        layout: "/admin",
+        showInSidebar: false,
+      },
+    ],
+  },
+  {
     path: "/filr",
     name: "Filr",
     icon: "fa fa-folder text-red",
@@ -149,7 +167,7 @@ var routes = [
     layout: "/admin",
     children: [
       {
-        path: "/speakers/create",
+        path: "/videos/create",
         name: "Create Ppeaker",
         icon: "fa  fa-book text-green", // redundant
         component: CreateSpeaker,
@@ -164,16 +182,6 @@ var routes = [
     icon: "fa fa-images text-blue",
     component: Media,
     layout: "/admin",
-    children: [
-      {
-        path: "/speakers/create",
-        name: "Create Ppeaker",
-        icon: "fa  fa-book text-green", // redundant
-        component: CreateSpeaker,
-        layout: "/admin",
-        showInSidebar: false,
-      },
-    ],
   },
   {
     path: "/users",
