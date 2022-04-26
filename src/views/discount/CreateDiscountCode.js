@@ -29,9 +29,15 @@ import {
   Chip,
   Button,
   ButtonGroup,
+  FormControl,
   FormControlLabel,
   FormHelperText,
   Switch,
+  Select,
+  withStyles,
+  MenuItem,
+  InputLabel,
+  Snackbar,
 } from "@material-ui/core";
 
 import MatEdit from "views/MatEdit";
@@ -40,36 +46,31 @@ class CreateDiscountCode extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      validate: {
-        code: false,
-      },
+      openSnackbar: false,
     };
 
     this.create_discount_code_url =
       this.props.rcp_url.proxy_domain +
-      this.props.rcp_url.base_wp_url +
-      "discounts";
-  }
-
-  validateCode(code) {
-    const regex = "^[a-zA-Z0-9]*$";
-    result = regex.test(code);
-    this.setState({ validate: { code: result } });
+      this.props.rcp_url.base_url +
+      "discounts/new";
   }
 
   submitForm() {
     const formData = new FormData(
       document.getElementById("create-discount-code-form")
     );
-    this.addImage(formData)
+    fetch(this.create_discount_code_url, {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + this.props.user.token,
+      },
+      body: formData,
+    })
       .then((res) => res.json())
       .then((data) => {
-        const { id: image_id } = data;
         console.log(data);
-        return this.createSpeaker(image_id);
+        this.setState({ openSnackbar: true });
       })
-      .then((res) => res.json())
-      .then((data) => console.log(data))
       .catch((err) => {
         console.error(err);
       });
@@ -85,20 +86,28 @@ class CreateDiscountCode extends React.Component {
     });
   };
 
-  createDiscountCode() {
-    return fetch(this.create_logo_url, {
-      method: "POST",
-      headers: {
-        //when using FormData(), the 'Content-Type' will automatically be set to 'form/multipart'
-        //so there's no need to set it here
-        Authorization: "Bearer " + this.props.user.token,
-        "Content-Type": "application/json",
-      },
-      body: formData,
-    });
-  }
+  handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    this.setState({ openSnackbar: false });
+  };
 
   render() {
+    const action = (
+      <React.Fragment>
+        <Button
+          size="small"
+          aria-label="close"
+          color="inherit"
+          onClick={this.handleClose}
+        >
+          <i className="fa fa-plus" style={{ transform: "rotate(-45deg)" }} />
+        </Button>
+      </React.Fragment>
+    );
+
     return (
       <>
         <OnlyHeader />
@@ -131,26 +140,66 @@ class CreateDiscountCode extends React.Component {
                     <FormGroup row>
                       <Col>
                         <TextField
-                          id="quote"
-                          label="Quote"
-                          name="quote"
+                          id="code"
+                          label="Code"
+                          name="code"
                           variant="outlined"
                           required
+                          onChange={this.handleChange}
                         />
                       </Col>
                     </FormGroup>
                     <FormGroup row>
                       <Col>
                         <TextField
-                          id="designation"
-                          label="Designation"
-                          name="designation"
+                          id="amount"
+                          label="Amount"
+                          name="amount"
                           variant="outlined"
                           required
+                          type="number"
+                          onChange={this.handleChange}
                         />
                       </Col>
                     </FormGroup>
-
+                    <FormGroup row>
+                      <Col>
+                        <FormControl style={{ minWidth: "120px" }}>
+                          <InputLabel id="amount_unit_label">Unit</InputLabel>
+                          <Select
+                            labelId="amount_unit_label"
+                            id="amount_unit"
+                            name="amount_unit"
+                            onChange={this.handleChange}
+                          >
+                            <MenuItem value={"%"}>Percentage</MenuItem>
+                            <MenuItem value={"flat"}>Flat Amount</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </Col>
+                    </FormGroup>
+                    <FormGroup row>
+                      <Col sm={6}>
+                        <Label>Expiration Date</Label>
+                        <Input
+                          type="date"
+                          className={
+                            this.props.classes.date +
+                            " MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                          }
+                          onChange={this.handleChange}
+                        />
+                      </Col>
+                    </FormGroup>
+                    <FormGroup row>
+                      <Col sm={6}>
+                        <FormControlLabel
+                          control={<Switch name="is_one_time" />}
+                          label="Is One Time"
+                          labelPlacement="start"
+                        />
+                      </Col>
+                    </FormGroup>
                     <FormGroup check row>
                       <Col>
                         <Button variant="contained" type="submit">
@@ -163,6 +212,14 @@ class CreateDiscountCode extends React.Component {
               </Card>
             </div>
           </Row>
+          <Snackbar
+            open={this.state.openSnackbar}
+            autoHideDuration={6000}
+            onClose={this.handleClose}
+            message="Discount Code Created"
+            action={action}
+            severity="success"
+          />
         </Container>
       </>
     );
@@ -178,4 +235,18 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = { setUserLoginDetails };
 
-export default connect(mapStateToProps, mapDispatchToProps)(CreateDiscountCode);
+const styles = {
+  date: {
+    "&:hover": {
+      borderColor: "inherit",
+    },
+    "&:focus": {
+      borderColor: "inherit",
+    },
+  },
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withStyles(styles)(CreateDiscountCode));
