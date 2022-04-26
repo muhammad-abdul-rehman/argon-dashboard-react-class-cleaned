@@ -60,24 +60,6 @@ class DiscountCodes extends React.Component {
     this.setState({ discount_codes: data });
   };
 
-  deleteDiscountCode(url, id) {
-    fetch(url + "/" + id, {
-      method: "DELETE",
-      headers: {
-        Authorization: "Bearer " + this.props.user.token,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        force: true, // No trash supported.
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        this.setState({ users: this.state.users.filter((el) => el.id !== id) });
-      })
-      .catch((e) => console.error(e));
-  }
-
   render() {
     const columns = [
       {
