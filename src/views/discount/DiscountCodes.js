@@ -172,27 +172,10 @@ const mapDispatchToProps = { setUserLoginDetails };
 
 const styles = (theme) => ({
   chip: {
-    "&::after": {
-      content: "''",
-      position: "absolute",
-      top: 0,
-      left: 0,
-      opacity: 0,
-      width: "100%",
-      height: "100%",
-      borderWidth: "1.5px",
-      borderRadius: "inherit",
-      borderStyle: "dotted",
-      borderLeft: "transparent",
-      borderTop: "transparent",
-    },
     position: "relative",
-    transition: "transform 0.5s, opacity 0.5s",
+    transition: "transform 0.5s",
     "&:hover": {
-      "&::after": {
-        opacity: 1,
-        transform: "translate(3px,3px)",
-      },
+      transform: "translate(-2px,-2px)",
     },
   },
 });
