@@ -9,7 +9,13 @@ import { DataGrid } from "@material-ui/data-grid";
 
 import { connect } from "react-redux";
 import { setUserLoginDetails } from "features/user/userSlice";
-import { LinearProgress, Avatar, Chip, withStyles } from "@material-ui/core";
+import {
+  LinearProgress,
+  Avatar,
+  Chip,
+  withStyles,
+  Button,
+} from "@material-ui/core";
 
 class DiscountCodes extends React.Component {
   constructor(props) {
@@ -134,8 +140,14 @@ class DiscountCodes extends React.Component {
           <Row>
             <div className="col">
               <Card className="shadow">
-                <CardHeader className="border-0">
+                <CardHeader className="border-0 d-flex justify-content-between pl-3 pr-3">
                   <h3 className="mb-0">Discount Codes</h3>
+                  <Button
+                    variant="contained"
+                    onClick={() => this.props.history.push("discount/create")}
+                  >
+                    Create
+                  </Button>
                 </CardHeader>
                 <CardBody>
                   <DataGrid

@@ -20,6 +20,7 @@ import CreateSpeaker from "views/speakers/CreateSpeaker";
 import Video from "views/videos/Video";
 import Media from "views/media/Media";
 import DiscountCodes from "views/discount/DiscountCodes";
+import CreateDiscountCode from "views/discount/CreateDiscountCode";
 
 var routes = [
   {
@@ -102,7 +103,7 @@ var routes = [
         path: "/discount/create",
         name: "Create Speaker",
         icon: "fa  fa-book text-green", // redundant
-        component: CreateSpeaker,
+        component: CreateDiscountCode,
         layout: "/admin",
         showInSidebar: false,
       },
