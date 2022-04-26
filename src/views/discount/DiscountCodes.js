@@ -9,7 +9,7 @@ import { DataGrid } from "@material-ui/data-grid";
 
 import { connect } from "react-redux";
 import { setUserLoginDetails } from "features/user/userSlice";
-import { LinearProgress, Avatar } from "@material-ui/core";
+import { LinearProgress, Avatar, Chip, withStyles } from "@material-ui/core";
 
 class DiscountCodes extends React.Component {
   constructor(props) {
@@ -94,6 +94,9 @@ class DiscountCodes extends React.Component {
         field: "code",
         headerName: "Discount Code",
         width: 180,
+        renderCell({ row, ...params }) {
+          return <Chip className={row?.class} label={row?.code} />;
+        },
       },
       {
         field: "amount",
@@ -135,11 +138,13 @@ class DiscountCodes extends React.Component {
               code: item?.code,
               amount: `${item?.amount} ${item?.unit}`,
               status: item?.status,
-              expiration: item?.expiration,
+              expiration:
+                item?.expiration === null ? "No Expiration" : item?.expiration,
               is_expired: item?.is_expired,
               used: `${item?.use_count} / ${
                 item?.max_uses == 0 ? "unlimited" : item?.max_uses
               }`,
+              class: this.props.classes.chip,
             };
           })
         : [];
@@ -183,4 +188,34 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = { setUserLoginDetails };
 
-export default connect(mapStateToProps, mapDispatchToProps)(DiscountCodes);
+const styles = (theme) => ({
+  chip: {
+    "&::after": {
+      content: "''",
+      position: "absolute",
+      top: 0,
+      left: 0,
+      opacity: 0,
+      width: "100%",
+      height: "100%",
+      borderWidth: "1.5px",
+      borderRadius: "inherit",
+      borderStyle: "dotted",
+      borderLeft: "transparent",
+      borderTop: "transparent",
+    },
+    position: "relative",
+    transition: "transform 0.5s, opacity 0.5s",
+    "&:hover": {
+      "&::after": {
+        opacity: 1,
+        transform: "translate(3px,3px)",
+      },
+    },
+  },
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withStyles(styles)(DiscountCodes));
