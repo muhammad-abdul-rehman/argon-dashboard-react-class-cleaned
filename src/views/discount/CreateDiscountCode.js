@@ -234,7 +234,7 @@ class CreateDiscountCode extends React.Component {
               color={this.state.errorSnackbar ? "danger" : "success"}
               style={{ width: "100%" }}
             >
-              {this.state.error !== null
+              {this.state.error !== null && this.state.errorSnackbar
                 ? this.state.error
                 : "Discount Code Created"}
             </Alert>
