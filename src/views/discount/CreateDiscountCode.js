@@ -3,6 +3,7 @@ import React from "react";
 
 // reactstrap components
 import {
+  Alert,
   Card,
   CardHeader,
   CardBody,
@@ -47,6 +48,8 @@ class CreateDiscountCode extends React.Component {
     super(props);
     this.state = {
       openSnackbar: false,
+      errorSnackbar: false,
+      error: null,
     };
 
     this.create_discount_code_url =
@@ -54,9 +57,9 @@ class CreateDiscountCode extends React.Component {
   }
 
   submitForm() {
-    const formData = new FormData(
-      document.getElementById("create-discount-code-form")
-    );
+    const form = document.getElementById("create-discount-code-form");
+    form.style.pointerEvents = "none";
+    const formData = new FormData(form);
     fetch(this.create_discount_code_url, {
       method: "POST",
       headers: {
@@ -66,10 +69,20 @@ class CreateDiscountCode extends React.Component {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
-        this.setState({ openSnackbar: true });
+        const { errors } = data;
+        let err_messages = "";
+        if (errors) {
+          for (const prop in errors) {
+            err_messages += prop + " : " + errors[prop];
+          }
+          return Promise.reject(err_messages);
+        }
+        this.setState({ openSnackbar: true, errorSnackbar: false });
+        form.style.pointerEvents = "all";
       })
       .catch((err) => {
+        this.setState({ openSnackbar: true, errorSnackbar: true, error: err });
+        form.style.pointerEvents = "all";
         console.error(err);
       });
   }
@@ -212,12 +225,20 @@ class CreateDiscountCode extends React.Component {
           </Row>
           <Snackbar
             open={this.state.openSnackbar}
-            autoHideDuration={6000}
+            autoHideDuration={4000}
             onClose={this.handleClose}
-            message="Discount Code Created"
             action={action}
-            severity="success"
-          />
+          >
+            <Alert
+              onClose={this.handleClose}
+              color={this.state.errorSnackbar ? "danger" : "success"}
+              style={{ width: "100%" }}
+            >
+              {this.state.error !== null
+                ? this.state.error
+                : "Discount Code Created"}
+            </Alert>
+          </Snackbar>
         </Container>
       </>
     );
