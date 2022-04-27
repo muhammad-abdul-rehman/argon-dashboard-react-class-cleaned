@@ -180,7 +180,7 @@ class CreateDiscountCode extends React.Component {
                           <Select
                             labelId="amount_unit_label"
                             id="amount_unit"
-                            name="amount_unit"
+                            name="unit"
                             onChange={this.handleChange}
                           >
                             <MenuItem value={"%"}>Percentage</MenuItem>
@@ -194,6 +194,7 @@ class CreateDiscountCode extends React.Component {
                         <Label>Expiration Date</Label>
                         <Input
                           type="date"
+                          name="expiration"
                           className={
                             this.props.classes.date +
                             " MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
@@ -205,9 +206,21 @@ class CreateDiscountCode extends React.Component {
                     <FormGroup row>
                       <Col sm={6}>
                         <FormControlLabel
-                          control={<Switch name="is_one_time" />}
+                          control={<Switch name="one_time" />}
                           label="Is One Time"
                           labelPlacement="start"
+                        />
+                      </Col>
+                    </FormGroup>
+                    <FormGroup row>
+                      <Col sm={6}>
+                        <TextField
+                          id="max_use"
+                          label="Max Use"
+                          name="max"
+                          variant="outlined"
+                          type="number"
+                          onChange={this.handleChange}
                         />
                       </Col>
                     </FormGroup>
