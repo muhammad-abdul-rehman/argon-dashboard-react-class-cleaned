@@ -166,7 +166,14 @@ class Users extends React.Component {
                 ? item?.acf?.user_profile
                 : item?.avatar_urls[Object.keys(item?.avatar_urls)[0]],
               login: item?.username,
-              roles: item?.roles.join(", "),
+              roles: item?.roles
+                .map((el) =>
+                  el
+                    .split("_")
+                    .map((el) => el.charAt(0).toUpperCase() + el.slice(1))
+                    .join(" ")
+                )
+                .join(", "),
             };
           })
         : [];
