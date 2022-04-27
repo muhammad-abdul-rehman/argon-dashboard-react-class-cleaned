@@ -86,6 +86,9 @@ class DiscountCodes extends React.Component {
         field: "amount",
         headerName: "Amount",
         width: 180,
+        renderCell({ row }) {
+          return <span dangerouslySetInnerHTML={{ __html: row?.amount }} />;
+        },
       },
       {
         field: "status",
@@ -120,7 +123,7 @@ class DiscountCodes extends React.Component {
               id: item.id,
               name: item?.name,
               code: item?.code,
-              amount: `${item?.amount} ${item?.unit}`,
+              amount: item?.amount,
               status: item?.status,
               expiration:
                 item?.expiration === null ? "No Expiration" : item?.expiration,
