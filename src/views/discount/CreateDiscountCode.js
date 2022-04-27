@@ -275,7 +275,8 @@ const styles = {
       borderColor: "inherit",
     },
     "&:focus": {
-      borderColor: "inherit",
+      borderColor: "#3f51b5",
+      borderWidth: "2px",
     },
   },
 };
