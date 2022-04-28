@@ -83,7 +83,7 @@ class Users extends React.Component {
       {
         field: "id",
         headerName: "ID",
-        width: 90,
+        width: 100,
       },
       {
         field: "name",
