@@ -31,7 +31,7 @@ import {
 
 import MatEdit from "views/MatEdit";
 
-class Users extends React.Component {
+class EditUser extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -458,4 +458,4 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = { setUserLoginDetails };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Users);
+export default connect(mapStateToProps, mapDispatchToProps)(EditUser);

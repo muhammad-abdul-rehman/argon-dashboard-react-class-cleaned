@@ -4,7 +4,8 @@ import Login from "views/auth/Login.js";
 import Tables from "views/Tables.js";
 import Memberships from "views/memberships/Memberships";
 import AddIndividualMembership from "views/memberships/AddIndividualMembership";
-import Customers from "views/Customers";
+import Customers from "views/customers/Customers";
+import EditCustomer from "views/customers/EditCustomer";
 import Payment from "views/Payment";
 import AddClubMembership from "views/memberships/AddClubMembership";
 import Clubs from "views/Clubs";
@@ -36,6 +37,16 @@ var routes = [
     icon: "ni ni-single-02 text-red",
     component: Customers,
     layout: "/admin",
+    children: [
+      {
+        path: "/customer/:id",
+        name: "Edit Customer",
+        icon: "fa fa-user-plus text-info", // redundant
+        component: EditCustomer,
+        layout: "/admin",
+        showInSidebar: true,
+      },
+    ],
   },
   {
     path: "/payment",
