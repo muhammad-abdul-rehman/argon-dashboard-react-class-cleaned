@@ -115,7 +115,12 @@ class Customers extends React.Component {
               className="d-flex justify-content-between align-items-center"
               style={{ cursor: "pointer" }}
             >
-              <MatEdit index={params.row.id} handleClick={this.toggleModal} />
+              <MatEdit
+                index={params.row.id}
+                handleClick={() =>
+                  this.props.history.push("customer/" + params.row.id)
+                }
+              />
             </div>
           );
         },
@@ -135,149 +140,6 @@ class Customers extends React.Component {
 
     return (
       <>
-        <Modal isOpen={this.state.toggle} toggle={this.toggleModal}>
-          <ModalHeader>Edit Customer</ModalHeader>
-          <ModalBody>
-            <Form onSubmit={() => {}}>
-              <FormGroup row>
-                <Label sm={4} for="user_id">
-                  User Id
-                </Label>
-                <Col md={6}>
-                  <Input name="user_id" type="text" />
-                </Col>
-              </FormGroup>
-              <FormGroup row>
-                <Label sm={4} for="membership_id">
-                  Membership Id
-                </Label>
-                <Col md={6}>
-                  <Input required name="membership_id" type="text" />
-                </Col>
-              </FormGroup>
-              <FormGroup row>
-                <Label sm={4} for="number">
-                  Number
-                </Label>
-                <Col md={6}>
-                  <Input required name="number" type="text" />
-                </Col>
-              </FormGroup>
-              <FormGroup row>
-                <Label sm={4} for="subscription">
-                  Subscription
-                </Label>
-                <Col md={6}>
-                  <Input required name="subscription" type="text" />
-                </Col>
-              </FormGroup>
-              <FormGroup row>
-                <Label sm={4} for="date">
-                  Date
-                </Label>
-                <Col md={6}>
-                  <Input required name="date" type="text" />
-                </Col>
-              </FormGroup>
-              <FormGroup row>
-                <Label sm={4} for="gateway">
-                  Gateway
-                </Label>
-                <Col md={6}>
-                  <Input required name="gateway" type="text" />
-                </Col>
-              </FormGroup>
-
-              <FormGroup row>
-                <Label sm={4} for="workplace">
-                  Work Place
-                </Label>
-                <Col md={6}>
-                  <Input required name="workplace" type="text" />
-                </Col>
-              </FormGroup>
-
-              <FormGroup row>
-                <Label sm={4} for="reference_club">
-                  Reference Club
-                </Label>
-                <Col md={6}>
-                  <Input required name="reference_club" type="text" />
-                </Col>
-              </FormGroup>
-
-              <FormGroup row>
-                <Label sm={4} for="adress_one">
-                  Adress One
-                </Label>
-                <Col md={6}>
-                  <Input required name="adress_one" type="text" />
-                </Col>
-              </FormGroup>
-
-              <FormGroup row>
-                <Label sm={4} for="adress_two">
-                  Adress Two
-                </Label>
-                <Col md={6}>
-                  <Input required name="adress_two" type="text" />
-                </Col>
-              </FormGroup>
-
-              <FormGroup row>
-                <Label sm={4} for="town">
-                  Town
-                </Label>
-                <Col md={6}>
-                  <Input required name="town" type="text" />
-                </Col>
-              </FormGroup>
-
-              <FormGroup row>
-                <Label sm={4} for="county">
-                  County
-                </Label>
-                <Col md={6}>
-                  <Input required name="county" type="text" />
-                </Col>
-              </FormGroup>
-
-              <FormGroup row>
-                <Label sm={4} for="eircode">
-                  Eircode
-                </Label>
-                <Col md={6}>
-                  <Input required name="eircode" type="text" />
-                </Col>
-              </FormGroup>
-
-              <FormGroup row>
-                <Label sm={4} for="country">
-                  Country
-                </Label>
-                <Col md={6}>
-                  <Input required name="country" type="text" />
-                </Col>
-              </FormGroup>
-
-              <FormGroup row>
-                <Label sm={4} for="phone">
-                  Phone
-                </Label>
-                <Col md={6}>
-                  <Input required name="phone" type="text" />
-                </Col>
-              </FormGroup>
-            </Form>
-          </ModalBody>
-          <ModalFooter>
-            <Button onClick={() => {}}>Submit</Button>
-            <Button color="secondary" onClick={this.toggleModal}>
-              Cancel
-            </Button>
-          </ModalFooter>
-        </Modal>
-
         <OnlyHeader />
         <Container className="mt--8" fluid>
           <Row>
