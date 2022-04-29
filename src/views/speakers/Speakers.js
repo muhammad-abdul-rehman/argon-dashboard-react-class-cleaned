@@ -51,7 +51,7 @@ class Speakers extends React.Component {
       //   },
       {
         field: "name",
-        headerName: "Library Name",
+        headerName: "Speaker Name",
         width: 340,
         renderCell: (params) => (
           <div className="d-flex align-items-center">
