@@ -228,7 +228,25 @@ class EditCustomer extends React.Component {
                       </Col>
                     </FormGroup>
                     <FormGroup row>
-                      <Col xs={6}>
+                      <Col>
+                        <TextField
+                          id="outlined-basic"
+                          label="ATPI Username"
+                          name="user_login"
+                          variant="outlined"
+                          helperText={"You cannot change this."}
+                          required
+                          value={this.state.customer?.user_login || ""}
+                          InputLabelProps={{
+                            shrink:
+                              this.state.customer?.user_login !== undefined,
+                          }}
+                          disabled
+                        />
+                      </Col>
+                    </FormGroup>
+                    <FormGroup row>
+                      <Col>
                         <TextField
                           id="outlined-basic"
                           label="Name"
