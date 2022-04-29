@@ -60,7 +60,25 @@ class Filr extends React.Component {
       viewLoading: false,
       currentFolder: null,
     };
-    this.breadcrumbs = [];
+    this.breadcrumbs = [
+      <Link
+        underline="hover"
+        color="inherit"
+        href="#"
+        onClick={(e) => {
+          e.preventDefault();
+          if (this.state.files.length !== 0) {
+            this.setState({
+              viewFiles: this.state.files.filter(
+                (el) => el.metadata["assigned-folder"] === undefined
+              ),
+            });
+          }
+        }}
+      >
+        ...
+      </Link>,
+    ];
   }
 
   componentDidMount() {
@@ -113,6 +131,23 @@ class Filr extends React.Component {
           );
         } else if (folder !== undefined) {
           this.breadcrumbs = [
+            <Link
+              underline="hover"
+              color="inherit"
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                if (this.state.files.length !== 0) {
+                  this.setState({
+                    viewFiles: this.state.files.filter(
+                      (el) => el.metadata["assigned-folder"] === undefined
+                    ),
+                  });
+                }
+              }}
+            >
+              ..
+            </Link>,
             <Link
               underline="hover"
               key={folder?.id}
