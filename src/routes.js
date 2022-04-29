@@ -44,7 +44,7 @@ var routes = [
         icon: "fa fa-user-plus text-info", // redundant
         component: EditCustomer,
         layout: "/admin",
-        showInSidebar: true,
+        showInSidebar: false,
       },
     ],
   },
