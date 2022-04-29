@@ -57,13 +57,13 @@ class EditCustomer extends React.Component {
     };
 
     this.current_customer_url =
-      this.props.rcp_url.proxy_domain +
+      this.props.rcp_url.domain +
       this.props.rcp_url.base_url +
       "customers/" +
       this.props.match.params.id;
 
     this.update_customer_url =
-      this.props.rcp_url.proxy_domain +
+      this.props.rcp_url.domain +
       this.props.rcp_url.base_url +
       "customers/update/" +
       this.props.match.params.id;
