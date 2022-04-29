@@ -244,8 +244,9 @@ class EditCustomer extends React.Component {
                       </Col>
                     </FormGroup>
                     <FormGroup row>
-                      <Col>
+                      <Col sm={8}>
                         <TextField
+                          className="w-100"
                           id="outlined-basic"
                           label="Address"
                           name="address"
@@ -259,8 +260,9 @@ class EditCustomer extends React.Component {
                       </Col>
                     </FormGroup>
                     <FormGroup row>
-                      <Col>
+                      <Col sm={8}>
                         <TextField
+                          className="w-100"
                           id="outlined-basic"
                           label="Address Secondary"
                           name="address_two"
