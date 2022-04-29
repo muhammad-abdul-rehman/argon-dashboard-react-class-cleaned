@@ -177,6 +177,8 @@ class EditCustomer extends React.Component {
   };
 
   render() {
+    if (this.state.customer === null)
+      this.fetchCustomer(this.current_customer_url);
     return (
       <>
         <OnlyHeader />
