@@ -81,6 +81,22 @@ class Customers extends React.Component {
     this.setState({ toggle: !this.state.toggle });
   };
 
+  deleteCustomer = async (url, id) => {
+    const res = await fetch(url + id, {
+      method: "DELETE",
+      headers: {
+        Authorization: "Bearer " + this.props.user.token,
+      },
+    });
+    if (res.status !== 200) return this.setState({ error: "error" });
+    const data = await res.json();
+    const { errors } = data;
+    if (errors) return this.setState({ error: "error" });
+    this.setState({
+      customers: this.state.customers.filter((el) => el.id !== id),
+    });
+  };
+
   render() {
     if (this.state.customers.length === 0 && this.props.user.token !== null)
       this.fetchCustomers(
@@ -120,6 +136,14 @@ class Customers extends React.Component {
                 handleClick={() =>
                   this.props.history.push("customer/" + params.row.id)
                 }
+                handleDeleteClick={() => {
+                  this.deleteCustomer(
+                    this.props.rcp_url.proxy_domain +
+                      this.props.rcp_url.base_url +
+                      "customers/delete/",
+                    params.row.id
+                  );
+                }}
               />
             </div>
           );
