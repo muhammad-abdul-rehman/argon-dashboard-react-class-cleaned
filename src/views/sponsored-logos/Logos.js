@@ -80,7 +80,22 @@ class Logos extends React.Component {
                           />
                           <ImageListItemBar
                             position="bottom"
-                            title={item.title.rendered}
+                            title={
+                              <>
+                                <p
+                                  className="mb-0"
+                                  dangerouslySetInnerHTML={{
+                                    __html: item.title.rendered,
+                                  }}
+                                ></p>
+                                {item?._embedded["wp:term"].length !== 0 && (
+                                  <p className="mb-0">
+                                    Page Shown:{" "}
+                                    {item?._embedded["wp:term"].pop()?.name}
+                                  </p>
+                                )}
+                              </>
+                            }
                           />
                         </ImageListItem>
                       ))}

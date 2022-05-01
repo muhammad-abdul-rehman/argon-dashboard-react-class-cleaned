@@ -29,6 +29,12 @@ import {
   Chip,
   Button,
   ButtonGroup,
+  InputLabel,
+  Select,
+  MenuItem,
+  Checkbox,
+  ListItemText,
+  OutlinedInput,
 } from "@material-ui/core";
 
 import MatEdit from "views/MatEdit";
@@ -38,8 +44,11 @@ class CreateLogo extends React.Component {
     super(props);
     this.state = {
       validate: {},
+      taxonomies: [],
+      pages_show: [],
       logoCreated: false,
     };
+    this.handleChange = this.handleChange.bind(this);
 
     this.create_logo_url =
       this.props.rcp_url.proxy_domain +
@@ -62,6 +71,32 @@ class CreateLogo extends React.Component {
         console.error(err);
       });
   }
+
+  handleChange(event) {
+    const {
+      target: { value },
+    } = event;
+    this.setState(
+      // On autofill we get a stringified value.
+      { taxonomies: typeof value === "string" ? value.split(",") : value }
+    );
+  }
+
+  componentDidMount() {
+    const url = new URL(
+      this.props.rcp_url.proxy_domain +
+        this.props.rcp_url.base_wp_url +
+        "page_show"
+    );
+    const params = {
+      _fields: "id,name",
+    };
+    fetch(url)
+      .then((res) => res.json())
+      .then((data) => this.setState({ pages_show: data }))
+      .catch((e) => console.error(e));
+  }
+
   /**
    *
    */
@@ -132,6 +167,54 @@ class CreateLogo extends React.Component {
                           variant="outlined"
                           required
                         />
+                      </Col>
+                    </FormGroup>
+                    <FormGroup row>
+                      <Col>
+                        <InputLabel id="taxonomy_select_label">
+                          Page Show
+                        </InputLabel>
+                        <Select
+                          style={{ width: "225px" }}
+                          labelId="taxonomy_select_label"
+                          id="taxonomy_select"
+                          multiple
+                          name="page_show"
+                          value={this.state.taxonomies}
+                          renderValue={(selected) =>
+                            this.state.pages_show
+                              .filter((el) => selected.includes(el.id))
+                              .map((el) => el.name)
+                              .join(", ")
+                          }
+                          onChange={this.handleChange}
+                          input={<OutlinedInput />}
+                          MenuProps={{
+                            PaperProps: {
+                              style: {
+                                maxHeight: 48 * 4.5 + 8,
+                                width: 250,
+                              },
+                            },
+                          }}
+                        >
+                          {this.state.pages_show.length !== 0 &&
+                            this.state.pages_show.map((page, key) => (
+                              <MenuItem
+                                key={page.name}
+                                value={parseInt(page.id)}
+                              >
+                                <Checkbox
+                                  checked={
+                                    this.state.taxonomies.indexOf(
+                                      parseInt(page.id)
+                                    ) > -1
+                                  }
+                                />
+                                <ListItemText primary={page.name} />
+                              </MenuItem>
+                            ))}
+                        </Select>
                       </Col>
                     </FormGroup>
                     <FormGroup row>
