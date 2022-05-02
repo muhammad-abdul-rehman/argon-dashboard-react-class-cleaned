@@ -11,10 +11,12 @@ import {
   ImageList,
   ImageListItem,
   ImageListItemBar,
+  withStyles,
 } from "@material-ui/core";
 
 import "file-viewer";
 import Vimeo from "@u-wave/react-vimeo";
+import YouTube from "@u-wave/react-youtube";
 
 class Videos extends React.Component {
   constructor(props) {
@@ -69,16 +71,33 @@ class Videos extends React.Component {
                   </Button>
                 </CardHeader>
                 <CardBody>
-                  <ImageList variant="masonry" cols={3} gap={8}>
+                  <ImageList variant="masonry" cols={2} gap={8}>
                     {this.state.videos.length !== 0 &&
                       this.state.videos.map((item, key) => (
                         <ImageListItem key={key}>
                           {/*  maybe just use native video  */}
-                          <Vimeo
-                            onError={(e) => console.log(e)}
-                            controls={true}
-                            video={item.acf?.webinar_recording_video}
-                          />
+                          {item.acf?.webinar_recording_video.search(/vimeo/) !==
+                          -1 ? (
+                            <Vimeo
+                              className={this.props.classes.video}
+                              onError={(e) => console.log(e)}
+                              controls={true}
+                              video={item.acf?.webinar_recording_video}
+                            />
+                          ) : (
+                            <YouTube
+                              className={this.props.classes.video}
+                              onError={(e) => console.log(e)}
+                              controls={true}
+                              video={item.acf?.webinar_recording_video.substr(
+                                item.acf?.webinar_recording_video.length -
+                                  item.acf?.webinar_recording_video.search(
+                                    "be/"
+                                  ) +
+                                  3
+                              )}
+                            />
+                          )}
                         </ImageListItem>
                       ))}
                   </ImageList>
@@ -100,5 +119,15 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = { setUserLoginDetails };
-
-export default connect(mapStateToProps, mapDispatchToProps)(Videos);
+const style = {
+  video: {
+    "& iframe": {
+      width: "100%",
+      height: "100%",
+    },
+  },
+};
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withStyles(style)(Videos));
