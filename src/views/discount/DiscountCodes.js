@@ -123,6 +123,8 @@ class DiscountCodes extends React.Component {
     const rows =
       this.state.discount_codes.length !== 0
         ? this.state.discount_codes.map((item) => {
+            const date =
+              item?.expiration !== null && new Date(item?.expiration);
             return {
               id: item.id,
               name: item?.name,
@@ -130,7 +132,13 @@ class DiscountCodes extends React.Component {
               amount: item?.amount,
               status: item?.status,
               expiration:
-                item?.expiration === null ? "No Expiration" : item?.expiration,
+                item?.expiration === null
+                  ? "No Expiration"
+                  : date.getDay() +
+                    "-" +
+                    date.getMonth() +
+                    "-" +
+                    date.getFullYear(),
               is_expired: item?.is_expired,
               used: `${item?.use_count} / ${
                 item?.max_uses == 0 ? "unlimited" : item?.max_uses

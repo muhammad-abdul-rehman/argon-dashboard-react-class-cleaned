@@ -76,6 +76,7 @@ class Clubs extends React.Component {
     ];
 
     const rows = this.state.clubs?.map((item, key) => {
+      const date = new Date(item.created_date);
       return {
         id: item.id,
         name: item.name,
@@ -84,7 +85,8 @@ class Clubs extends React.Component {
         owner_name: item.owner_name,
         member_count: item.member_count,
         seats: item.seats,
-        created_date: item.created_date,
+        created_date:
+          date.getDay() + "-" + date.getMonth() + "-" + date.getFullYear(),
       };
     });
 

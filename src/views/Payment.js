@@ -114,9 +114,8 @@ class Memberships extends React.Component {
       { field: "created", headerName: "Created", width: 180 },
     ];
 
-    console.log(this.state.payments);
-
     const rows = this.state.payments.map((item, key) => {
+      const date = new Date(item.date);
       return {
         id: item.id,
         name: item.membership_name,
@@ -124,7 +123,8 @@ class Memberships extends React.Component {
         status: item.status,
         amount: item.amount,
         subscription: item.subscription,
-        created: item.date,
+        created:
+          date.getDay() + "-" + date.getMonth() + "-" + date.getFullYear(),
       };
     });
 

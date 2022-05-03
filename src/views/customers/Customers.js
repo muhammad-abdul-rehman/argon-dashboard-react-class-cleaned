@@ -136,13 +136,14 @@ class Customers extends React.Component {
     ];
 
     const rows = this.state.customers.map((item, key) => {
+      const date = new Date(item.date_registered);
       return {
         id: item.id,
         user_id: item.user_id,
         membership_id:
           item.memberships.length === 0 ? "No Memberhsip" : item.memberships[0],
         name: item.name,
-        date: item.date_registered,
+        date: date.getDay() + "-" + date.getMonth() + "-" + date.getFullYear(),
       };
     });
 

@@ -93,6 +93,7 @@ class Speakers extends React.Component {
     const rows =
       this.state.speakers.length !== 0
         ? this.state.speakers.map((item) => {
+            const date = new Date(item.date);
             return {
               id: item.id,
               name: item?.title.rendered,
@@ -100,7 +101,12 @@ class Speakers extends React.Component {
               avatar: item?.acf?.profile_picture?.url,
               designation: item?.acf?.designation,
               status: item.status,
-              date: item.date,
+              date:
+                date.getDay() +
+                "-" +
+                date.getMonth() +
+                "-" +
+                date.getFullYear(),
             };
           })
         : [];

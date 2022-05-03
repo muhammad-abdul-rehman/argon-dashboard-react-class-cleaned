@@ -180,13 +180,15 @@ class Memberships extends React.Component {
     ];
 
     const rows = this.state.memberships.map((item, key) => {
+      const date = new Date(item.created_date);
       return {
         id: item.id,
         name: item.membership_name,
         customer_name: item.customer_name,
         status: item.status,
         recurring: item.recurring_amount,
-        created: item.created_date,
+        created:
+          date.getDay() + "-" + date.getMonth() + "-" + date.getFullYear(),
       };
     });
 
