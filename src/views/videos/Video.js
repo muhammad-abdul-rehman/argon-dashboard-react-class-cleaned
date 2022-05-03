@@ -63,9 +63,7 @@ class Videos extends React.Component {
                   <h3 className="mb-0">Videos</h3>
                   <Button
                     variant="contained"
-                    onClick={() =>
-                      this.props.history.push("sponsored-logos/create")
-                    }
+                    onClick={() => this.props.history.push("videos/create")}
                   >
                     Create
                   </Button>
@@ -79,24 +77,25 @@ class Videos extends React.Component {
                           {item.acf?.webinar_recording_video.search(/vimeo/) !==
                           -1 ? (
                             <Vimeo
-                              className={this.props.classes.video}
+                              className={this.props.classes.vimeo}
                               onError={(e) => console.log(e)}
                               controls={true}
                               video={item.acf?.webinar_recording_video}
                             />
                           ) : (
-                            <YouTube
-                              className={this.props.classes.video}
-                              onError={(e) => console.log(e)}
-                              controls={true}
-                              video={item.acf?.webinar_recording_video.substr(
-                                item.acf?.webinar_recording_video.length -
-                                  item.acf?.webinar_recording_video.search(
-                                    "be/"
-                                  ) +
-                                  3
-                              )}
-                            />
+                            <div className={this.props.classes.youtube}>
+                              <YouTube
+                                onError={(e) => console.log(e)}
+                                controls={true}
+                                video={item.acf?.webinar_recording_video.substr(
+                                  item.acf?.webinar_recording_video.length -
+                                    item.acf?.webinar_recording_video.search(
+                                      "be/"
+                                    ) +
+                                    3
+                                )}
+                              />
+                            </div>
                           )}
                         </ImageListItem>
                       ))}
@@ -120,9 +119,17 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = { setUserLoginDetails };
 const style = {
-  video: {
+  vimeo: {
     "& iframe": {
       width: "100%",
+      height: "100%",
+    },
+  },
+  youtube: {
+    display: "flex",
+    justifyContent: "center",
+    "& iframe": {
+      width: "80%",
       height: "100%",
     },
   },

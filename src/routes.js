@@ -19,6 +19,7 @@ import EditUser from "views/users/EditUser";
 import CreateLogo from "views/sponsored-logos/CreateLogo";
 import CreateSpeaker from "views/speakers/CreateSpeaker";
 import Video from "views/videos/Video";
+import CreateVideo from "views/videos/CreateVideo";
 import Media from "views/media/Media";
 import DiscountCodes from "views/discount/DiscountCodes";
 import CreateDiscountCode from "views/discount/CreateDiscountCode";
@@ -180,9 +181,9 @@ var routes = [
     children: [
       {
         path: "/videos/create",
-        name: "Create Ppeaker",
+        name: "Create Video",
         icon: "fa  fa-book text-green", // redundant
-        component: CreateSpeaker,
+        component: CreateVideo,
         layout: "/admin",
         showInSidebar: false,
       },
