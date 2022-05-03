@@ -59,8 +59,7 @@ class Customers extends React.Component {
   fetchCustomers = async (url, token) => {
     const urlQuery = new URL(url);
     const paramsOptions = {
-      number: this.state.number,
-      offset: (this.state.page - 1) * this.state.number,
+      number: 100,
       orderby: "ID",
       order: "ASC",
     };
