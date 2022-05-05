@@ -114,8 +114,10 @@ class Memberships extends React.Component {
       }
       // Now, click it.
       if (document.createEvent) {
-        var event = document.createEvent("MouseEvents");
-        event.initEvent("click", true, true);
+        var event = new MouseEvent("click", {
+          bubbles: true,
+          cancelable: true,
+        });
         anchor.dispatchEvent(event);
       } else {
         anchor.click();
