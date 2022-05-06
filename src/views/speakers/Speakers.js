@@ -9,15 +9,22 @@ import { DataGrid } from "@material-ui/data-grid";
 
 import { connect } from "react-redux";
 import { setUserLoginDetails } from "features/user/userSlice";
-import { LinearProgress, Avatar, Button } from "@material-ui/core";
+import { LinearProgress, Avatar, Button, Snackbar } from "@material-ui/core";
 
 class Speakers extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       speakers: [],
+      allErrors: "",
+      toggle: false,
+      snackbarStatus: false,
+      snackBarMessage: "Default Text",
     };
   }
+  handleSnackbarChange = () => {
+    this.setState({ snackbarStatus: !this.state.snackbarStatus });
+  };
 
   componentDidMount() {
     if (this.state.speakers.length === 0)
@@ -111,6 +118,20 @@ class Speakers extends React.Component {
           })
         : [];
 
+    /*ADDED FOR SNACKBAR */
+    const action = (
+      <React.Fragment>
+        <Button
+          size="small"
+          aria-label="close"
+          color="inherit"
+          onClick={this.handleSnackbarChange}
+        >
+          Close
+        </Button>
+      </React.Fragment>
+    );
+
     return (
       <>
         <OnlyHeader />
@@ -122,12 +143,37 @@ class Speakers extends React.Component {
                   <h3 className="mb-0">Speakers</h3>
                   <Button
                     variant="contained"
-                    onClick={() => this.props.history.push("speakers/create")}
+                    onClick={
+                      () => {
+                        try {
+                          this.props.history.push("speakers/create");
+                          this.handleSnackbarChange();
+                          this.setState({
+                            snackBarMessage: "Uploaded Successfully",
+                          });
+                        } catch (e) {
+                          this.handleSnackbarChange();
+                          this.setState({ snackBarMessage: e.toString() });
+                        }
+                      }
+
+                      //  () => this.props.history.push("speakers/create")
+                    }
                   >
                     Create
                   </Button>
                 </CardHeader>
                 <CardBody>
+                  {/* ADDED SNACKBAR */}
+                  <Snackbar
+                    open={this.state.snackbarStatus}
+                    autoHideDuration={4000}
+                    onClose={this.handleSnackbarChange}
+                    message={this.state.snackBarMessage}
+                    action={action}
+                    anchorOrigin={{ vertical: "top", horizontal: "center" }}
+                  />
+
                   <DataGrid
                     loading={this.state.speakers.length === 0}
                     components={{
