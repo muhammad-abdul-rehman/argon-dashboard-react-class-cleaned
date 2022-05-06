@@ -55,8 +55,7 @@ class Customers extends React.Component {
   fetchCustomers = async (url, token) => {
     const urlQuery = new URL(url);
     const paramsOptions = {
-      number: this.state.number,
-      offset: (this.state.page - 1) * this.state.number,
+      number: 100,
       orderby: "ID",
       order: "ASC",
     };
@@ -77,18 +76,23 @@ class Customers extends React.Component {
     this.setState({ toggle: !this.state.toggle });
   };
 
-  render() {
-    if (this.state.customers.length === 0 && this.props.user.token !== null)
-      this.fetchCustomers(
-        this.props.rcp_url.domain + this.props.rcp_url.base_url + "customers",
-        this.props.user.token
-      );
-    if (this.state.customers.length === 0 && this.props.user.token !== null)
-      this.fetchCustomers(
-        this.props.rcp_url.domain + this.props.rcp_url.base_url + "customers",
-        this.props.user.token
-      );
+  deleteCustomer = async (url, id) => {
+    const res = await fetch(url + id, {
+      method: "DELETE",
+      headers: {
+        Authorization: "Bearer " + this.props.user.token,
+      },
+    });
+    if (res.status !== 200) return this.setState({ error: "error" });
+    const data = await res.json();
+    const { errors } = data;
+    if (errors) return this.setState({ error: "error" });
+    this.setState({
+      customers: this.state.customers.filter((el) => el.id !== id),
+    });
+  };
 
+  render() {
     const columns = [
       { field: "id", headerName: "ID", width: 100 },
       { field: "user_id", headerName: "User ID", width: 180 },
@@ -112,6 +116,14 @@ class Customers extends React.Component {
                 handleClick={() =>
                   this.props.history.push("customer/" + params.row.id)
                 }
+                handleDeleteClick={() => {
+                  this.deleteCustomer(
+                    this.props.rcp_url.proxy_domain +
+                      this.props.rcp_url.base_url +
+                      "customers/delete/",
+                    params.row.id
+                  );
+                }}
               />
             </div>
           );
@@ -120,13 +132,14 @@ class Customers extends React.Component {
     ];
 
     const rows = this.state.customers.map((item, key) => {
+      const date = new Date(item.date_registered);
       return {
         id: item.id,
         user_id: item.user_id,
         membership_id:
           item.memberships.length === 0 ? "No Memberhsip" : item.memberships[0],
         name: item.name,
-        date: item.date_registered,
+        date: date.getDay() + "-" + date.getMonth() + "-" + date.getFullYear(),
       };
     });
 

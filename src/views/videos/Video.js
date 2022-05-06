@@ -11,18 +11,27 @@ import {
   ImageList,
   ImageListItem,
   ImageListItemBar,
+  withStyles,
+  Snackbar,
 } from "@material-ui/core";
 
 import "file-viewer";
 import Vimeo from "@u-wave/react-vimeo";
+import YouTube from "@u-wave/react-youtube";
 
 class Videos extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       videos: [],
+      snackbarStatus: false,
+      snackBarMessage: "Default Text",
     };
   }
+
+  handleSnackbarChange = () => {
+    this.setState({ snackbarStatus: !this.state.snackbarStatus });
+  };
 
   componentDidMount() {
     if (this.state.videos.length === 0)
@@ -48,6 +57,20 @@ class Videos extends React.Component {
   };
 
   render() {
+    /*ADDED FOR SNACKBAR */
+    const action = (
+      <React.Fragment>
+        <Button
+          size="small"
+          aria-label="close"
+          color="inherit"
+          onClick={this.handleSnackbarChange}
+        >
+          Close
+        </Button>
+      </React.Fragment>
+    );
+
     return (
       <>
         <OnlyHeader />
@@ -59,24 +82,64 @@ class Videos extends React.Component {
                   <h3 className="mb-0">Videos</h3>
                   <Button
                     variant="contained"
-                    onClick={() =>
-                      this.props.history.push("sponsored-logos/create")
+                    onClick={
+                      () => {
+                        try {
+                          this.props.history.push("sponsored-logos/create");
+                          this.handleSnackbarChange();
+                          this.setState({
+                            snackBarMessage: "Uploaded Successfully",
+                          });
+                        } catch (e) {
+                          this.handleSnackbarChange();
+                          this.setState({ snackBarMessage: e.toString() });
+                        }
+                      }
+                      //() => this.props.history.push("sponsored-logos/create")
                     }
                   >
                     Create
                   </Button>
                 </CardHeader>
                 <CardBody>
+                  {/* ADDED SNACKBAR */}
+                  <Snackbar
+                    open={this.state.snackbarStatus}
+                    autoHideDuration={4000}
+                    onClose={this.handleSnackbarChange}
+                    message={this.state.snackBarMessage}
+                    action={action}
+                    anchorOrigin={{ vertical: "top", horizontal: "center" }}
+                  />
+
                   <ImageList variant="masonry" cols={3} gap={8}>
                     {this.state.videos.length !== 0 &&
                       this.state.videos.map((item, key) => (
                         <ImageListItem key={key}>
                           {/*  maybe just use native video  */}
-                          <Vimeo
-                            onError={(e) => console.log(e)}
-                            controls={true}
-                            video={item.acf?.webinar_recording_video}
-                          />
+                          {item.acf?.webinar_recording_video.search(/vimeo/) !==
+                          -1 ? (
+                            <Vimeo
+                              className={this.props.classes.vimeo}
+                              onError={(e) => console.log(e)}
+                              controls={true}
+                              video={item.acf?.webinar_recording_video}
+                            />
+                          ) : (
+                            <div className={this.props.classes.youtube}>
+                              <YouTube
+                                onError={(e) => console.log(e)}
+                                controls={true}
+                                video={item.acf?.webinar_recording_video.substr(
+                                  item.acf?.webinar_recording_video.length -
+                                    item.acf?.webinar_recording_video.search(
+                                      "be/"
+                                    ) +
+                                    3
+                                )}
+                              />
+                            </div>
+                          )}
                         </ImageListItem>
                       ))}
                   </ImageList>
@@ -98,5 +161,23 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = { setUserLoginDetails };
-
-export default connect(mapStateToProps, mapDispatchToProps)(Videos);
+const style = {
+  vimeo: {
+    "& iframe": {
+      width: "100%",
+      height: "100%",
+    },
+  },
+  youtube: {
+    display: "flex",
+    justifyContent: "center",
+    "& iframe": {
+      width: "80%",
+      height: "100%",
+    },
+  },
+};
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withStyles(style)(Videos));

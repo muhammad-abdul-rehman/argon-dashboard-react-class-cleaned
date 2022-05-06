@@ -27,6 +27,7 @@ import {
   Chip,
   Button,
   ButtonGroup,
+  Snackbar,
 } from "@material-ui/core";
 
 import MatEdit from "views/MatEdit";
@@ -146,7 +147,7 @@ class EditCustomer extends React.Component {
     const formData = new FormData(e.target);
 
     fetch(this.update_customer_url, {
-      method: "PUT",
+      method: "nonnnnnn", //"PUT",
       headers: {
         Authorization: "Bearer " + this.props.user.token,
         "Content-Type": "application/json",
@@ -154,7 +155,7 @@ class EditCustomer extends React.Component {
       body: JSON.stringify(Object.fromEntries(formData)),
     })
       .then((res) => res.json())
-      .then((data) =>
+      .then((data) => {
         this.setState((prevState) => ({
           user: data,
           form: {
@@ -171,17 +172,47 @@ class EditCustomer extends React.Component {
             eircode: data?.eircode,
             phone: data?.phone,
           },
-        }))
-      )
-      .catch((err) => console.error(err));
+        }));
+        this.handleSnackbarChange();
+        this.setState({ snackBarMessage: "Uploaded Successfully" });
+      })
+      .catch(
+        (
+          err // console.error(err)
+        ) => {
+          this.handleSnackbarChange();
+          this.setState({ snackBarMessage: err.toString() });
+        }
+      );
   };
 
   render() {
-    if (this.state.customer === null)
-      this.fetchCustomer(this.current_customer_url);
+    const action = (
+      <React.Fragment>
+        <Button
+          size="small"
+          aria-label="close"
+          color="inherit"
+          onClick={this.handleSnackbarChange}
+        >
+          Close
+        </Button>
+      </React.Fragment>
+    );
+
     return (
       <>
         <OnlyHeader />
+
+        <Snackbar
+          open={this.state.snackbarStatus}
+          autoHideDuration={4000}
+          onClose={this.handleSnackbarChange}
+          message={this.state.snackBarMessage}
+          action={action}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        />
+
         <Container className="mt--8" fluid>
           <Row>
             <div className="col">
@@ -228,7 +259,25 @@ class EditCustomer extends React.Component {
                       </Col>
                     </FormGroup>
                     <FormGroup row>
-                      <Col xs={6}>
+                      <Col>
+                        <TextField
+                          id="outlined-basic"
+                          label="ATPI Username"
+                          name="user_login"
+                          variant="outlined"
+                          helperText={"You cannot change this."}
+                          required
+                          value={this.state.customer?.user_login || ""}
+                          InputLabelProps={{
+                            shrink:
+                              this.state.customer?.user_login !== undefined,
+                          }}
+                          disabled
+                        />
+                      </Col>
+                    </FormGroup>
+                    <FormGroup row>
+                      <Col>
                         <TextField
                           id="outlined-basic"
                           label="Name"
@@ -244,8 +293,9 @@ class EditCustomer extends React.Component {
                       </Col>
                     </FormGroup>
                     <FormGroup row>
-                      <Col>
+                      <Col sm={8}>
                         <TextField
+                          className="w-100"
                           id="outlined-basic"
                           label="Address"
                           name="address"
@@ -259,8 +309,9 @@ class EditCustomer extends React.Component {
                       </Col>
                     </FormGroup>
                     <FormGroup row>
-                      <Col>
+                      <Col sm={8}>
                         <TextField
+                          className="w-100"
                           id="outlined-basic"
                           label="Address Secondary"
                           name="address_two"

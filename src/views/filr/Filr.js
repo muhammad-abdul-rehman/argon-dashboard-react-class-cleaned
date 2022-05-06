@@ -3,11 +3,11 @@ import React from "react";
 
 // reactstrap components
 import {
-  Badge,
   Card,
   CardHeader,
   CardBody,
   CardFooter,
+  Dropdown,
   DropdownMenu,
   DropdownItem,
   UncontrolledDropdown,
@@ -21,9 +21,14 @@ import {
   Container,
   Row,
   Col,
-  UncontrolledTooltip,
   Navbar,
   NavLink,
+  Form,
+  Modal,
+  ModalBody,
+  ModalHeader,
+  ModalFooter,
+  ButtonGroup,
 } from "reactstrap";
 
 //MUI
@@ -44,6 +49,9 @@ import {
   Link,
   LinearProgress,
   Breadcrumbs,
+  Grow,
+  TextField,
+  Snackbar,
 } from "@material-ui/core";
 import ListItemButton from "@material-ui/core/Button";
 
@@ -59,6 +67,12 @@ class Filr extends React.Component {
       viewFiles: [],
       viewLoading: false,
       currentFolder: null,
+      dropdownOpen: false,
+      createFolderModalStatus: false,
+      uploadFileModalStatus: false,
+      uploadType: "",
+      newFolderName: "",
+      newFolderId: "",
     };
     this.breadcrumbs = [
       <Link
@@ -80,7 +94,42 @@ class Filr extends React.Component {
       </Link>,
     ];
   }
+  fileChangedHandler = (event) => {
+    this.setState({ selectedFile: event.target.files[0] });
+  };
 
+  uploadHandler = () => {
+    // @todo upload to api
+  };
+
+  createFolder = async (e) => {
+    e.preventDefault();
+
+    if (this.props.user.token === null) return;
+
+    // @todo create folder
+
+    this.setState({ newFolderName: "" });
+  };
+
+  handleFolderNameChange = (e) => {
+    this.setState({ newFolderName: e });
+  };
+
+  handleFolderIdChange = (e) => {
+    this.setState({ newFolderId: e });
+  };
+  toggleCreateFolderModal = () => {
+    this.setState({
+      createFolderModalStatus: !this.state.createFolderModalStatus,
+    });
+  };
+  toggleUploadFileModal = () => {
+    this.setState({ uploadFileModalStatus: !this.state.uploadFileModalStatus });
+  };
+  dropdownToggle = () => {
+    this.setState({ dropdownOpen: !this.state.dropdownOpen });
+  };
   componentDidMount() {
     if (this.state.files.length === 0)
       this.fetchFiles(
@@ -251,8 +300,85 @@ class Filr extends React.Component {
       },
     ];
     const rows = [];
+
+    const folder = this.state.files.find(
+      (el) => el.id == this.state.currentFolder
+    );
+
+    //   console.log('folder.title.rendered ==>> ',folder?.title.rendered);
     return (
       <>
+        <Modal
+          isOpen={this.state.uploadFileModalStatus}
+          toggle={this.toggleUploadFileModal}
+        >
+          <ModalHeader>
+            Upload File
+            {folder?.title.rendered == undefined
+              ? " to root"
+              : " to " + folder?.title.rendered}
+          </ModalHeader>
+          <ModalBody>
+            <input type="file" onChange={this.fileChangedHandler} />
+            <Button variant="contained" onClick={this.uploadHandler}>
+              Upload
+            </Button>
+          </ModalBody>
+          <ModalFooter></ModalFooter>
+        </Modal>
+
+        <Modal
+          isOpen={this.state.createFolderModalStatus}
+          toggle={this.toggleCreateFolderModal}
+        >
+          <ModalHeader>
+            Create Folder
+            {folder?.title.rendered == undefined
+              ? " in root"
+              : " in " + folder?.title.rendered}{" "}
+          </ModalHeader>
+          <ModalBody>
+            <Form onSubmit={this.createFolder.bind(this)}>
+              <Col className="mb-2">
+                <TextField
+                  onChange={(e) => this.handleFolderNameChange(e)}
+                  required
+                  name="folder_name"
+                  id="folder_name"
+                  label="Name"
+                  variant="outlined"
+                  size="small"
+                />
+              </Col>
+              <Col className="mb-2">
+                <TextField
+                  onChange={(e) => this.handleFolderIdChange(e)}
+                  name="folder_id"
+                  id="folder_id"
+                  label="Folder Id (Optional)"
+                  variant="outlined"
+                  size="small"
+                />
+              </Col>
+              <Col>
+                <Button type="submit" variant="contained">
+                  Submit
+                </Button>
+              </Col>
+            </Form>
+          </ModalBody>
+          <ModalFooter></ModalFooter>
+        </Modal>
+
+        {/*
+<Snackbar
+        open={this.state.snackbarStatus}
+        autoHideDuration={4000}
+        onClose={this.handleSnackbarChange}
+        message={this.state.snackBarMessage}
+        action={action}
+      />
+*/}
         <OnlyHeader />
         <Container className="mt--8" fluid>
           <Row>
@@ -260,6 +386,23 @@ class Filr extends React.Component {
               <Card className="shadow">
                 <CardHeader className="border-0">
                   <h3 className="mb-0">Filr</h3>
+
+                  <Row className="d-flex flex-row-reverse ">
+                    <Dropdown
+                      isOpen={this.state.dropdownOpen}
+                      toggle={this.dropdownToggle}
+                    >
+                      <DropdownToggle caret>Options</DropdownToggle>
+                      <DropdownMenu>
+                        <DropdownItem onClick={this.toggleUploadFileModal}>
+                          Upload File
+                        </DropdownItem>
+                        <DropdownItem onClick={this.toggleCreateFolderModal}>
+                          Create Folder
+                        </DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
+                  </Row>
                 </CardHeader>
                 <CardBody>
                   <Breadcrumbs maxItems={3}>{this.breadcrumbs}</Breadcrumbs>

@@ -11,6 +11,7 @@ import {
   ImageList,
   ImageListItem,
   ImageListItemBar,
+  Snackbar,
 } from "@material-ui/core";
 
 import "file-viewer";
@@ -20,8 +21,16 @@ class Logos extends React.Component {
     super(props);
     this.state = {
       logos: [],
+      allErrors: "",
+      toggle: false,
+      snackbarStatus: false,
+      snackBarMessage: "Default Text",
     };
   }
+
+  handleSnackbarChange = () => {
+    this.setState({ snackbarStatus: !this.state.snackbarStatus });
+  };
 
   componentDidMount() {
     if (this.state.logos.length === 0)
@@ -49,6 +58,20 @@ class Logos extends React.Component {
   };
 
   render() {
+    /*ADDED FOR SNACKBAR */
+    const action = (
+      <React.Fragment>
+        <Button
+          size="small"
+          aria-label="close"
+          color="inherit"
+          onClick={this.handleSnackbarChange}
+        >
+          Close
+        </Button>
+      </React.Fragment>
+    );
+
     return (
       <>
         <OnlyHeader />
@@ -60,14 +83,33 @@ class Logos extends React.Component {
                   <h3 className="mb-0">Sponsored Logos</h3>
                   <Button
                     variant="contained"
-                    onClick={() =>
-                      this.props.history.push("sponsored-logos/create")
-                    }
+                    onClick={() => {
+                      try {
+                        //    this.props.history.push("sponsored-logos/create");
+                        this.handleSnackbarChange();
+                        this.setState({
+                          snackBarMessage: "Uploaded Successfully",
+                        });
+                      } catch (e) {
+                        this.handleSnackbarChange();
+                        this.setState({ snackBarMessage: e.toString() });
+                      }
+                    }}
                   >
                     Create
                   </Button>
                 </CardHeader>
                 <CardBody>
+                  {/* ADDED SNACKBAR */}
+                  <Snackbar
+                    open={this.state.snackbarStatus}
+                    autoHideDuration={4000}
+                    onClose={this.handleSnackbarChange}
+                    message={this.state.snackBarMessage}
+                    action={action}
+                    anchorOrigin={{ vertical: "top", horizontal: "center" }}
+                  />
+
                   <ImageList variant="masonry" cols={3} gap={8}>
                     {this.state.logos.length !== 0 &&
                       this.state.logos.map((item, key) => (
@@ -80,7 +122,22 @@ class Logos extends React.Component {
                           />
                           <ImageListItemBar
                             position="bottom"
-                            title={item.title.rendered}
+                            title={
+                              <>
+                                <p
+                                  className="mb-0"
+                                  dangerouslySetInnerHTML={{
+                                    __html: item.title.rendered,
+                                  }}
+                                ></p>
+                                {item?._embedded["wp:term"].length !== 0 && (
+                                  <p className="mb-0">
+                                    Page Shown:{" "}
+                                    {item?._embedded["wp:term"].pop()?.name}
+                                  </p>
+                                )}
+                              </>
+                            }
                           />
                         </ImageListItem>
                       ))}

@@ -1,7 +1,11 @@
 import OnlyHeader from "components/Headers/OnlyHeader";
 import React from "react";
-import { DataGrid } from "@material-ui/data-grid";
-import { FormControlLabel, IconButton } from "@material-ui/core";
+import {
+  DataGrid,
+  GridToolbarContainer,
+  GridToolbarExport,
+} from "@material-ui/data-grid";
+import { FormControlLabel, IconButton, Button } from "@material-ui/core";
 
 // reactstrap components
 import { Card, CardHeader, Container, Row } from "reactstrap";
@@ -44,6 +48,76 @@ class Memberships extends React.Component {
         this.props.rcp_url.domain + this.props.rcp_url.base_url + "memberships",
         this.props.user.token
       );
+    }
+  }
+
+  CustomToolbar = () => (
+    <GridToolbarContainer>
+      <GridToolbarExport />
+      <Button
+        variant="text"
+        startIcon={<i className="fa fa-arrow-alt-circle-down"></i>}
+        size="small"
+        color="primary"
+        onClick={this.getExportCsvFile}
+      >
+        Export
+      </Button>
+    </GridToolbarContainer>
+  );
+
+  getExportCsvFile = async () => {
+    const res = await fetch(
+      this.props.rcp_url.proxy_domain +
+        this.props.rcp_url.base_url +
+        "exports/new",
+      {
+        method: "post",
+        headers: {
+          Authorization: "Bearer " + this.props.user.token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ type: "memberships" }),
+      }
+    );
+    if (res.status !== 200) return;
+    let text = await res.text();
+    let date = new Date();
+    this.saveExportCSV(
+      `rcp-export-${date.getDate()}-${date.getMonth()}-${date.getFullYear()}-${date.getUTCHours()}:${date.getUTCMinutes()}`,
+      text
+    );
+  };
+
+  saveExportCSV(filename, text) {
+    if (window.navigator.msSaveBlob) {
+      // IE 10 and later, and Edge.
+      var blobObject = new Blob([text], { type: "text/csv" });
+      window.navigator.msSaveBlob(blobObject, filename);
+    } else {
+      // Everthing else (except old IE).
+      // Create a dummy anchor (with a download attribute) to click.
+      var anchor = document.createElement("a");
+      anchor.download = filename;
+      if (window.URL.createObjectURL) {
+        // Everything else new.
+        var blobObject = new Blob([text], { type: "text/csv" });
+        anchor.href = window.URL.createObjectURL(blobObject);
+      } else {
+        // Fallback for older browsers (limited to 2MB on post-2010 Chrome).
+        // Load up the data into the URI for "download."
+        anchor.href = "data:text/csv;charset=utf-8," + encodeURIComponent(text);
+      }
+      // Now, click it.
+      if (document.createEvent) {
+        var event = new MouseEvent("click", {
+          bubbles: true,
+          cancelable: true,
+        });
+        anchor.dispatchEvent(event);
+      } else {
+        anchor.click();
+      }
     }
   }
 
@@ -176,13 +250,15 @@ class Memberships extends React.Component {
     ];
 
     const rows = this.state.memberships.map((item, key) => {
+      const date = new Date(item.created_date);
       return {
         id: item.id,
         name: item.membership_name,
         customer_name: item.customer_name,
         status: item.status,
         recurring: item.recurring_amount,
-        created: item.created_date,
+        created:
+          date.getDay() + "-" + date.getMonth() + "-" + date.getFullYear(),
       };
     });
 
@@ -202,6 +278,7 @@ class Memberships extends React.Component {
                   rows={rows}
                   columns={columns}
                   pagination
+                  components={{ Toolbar: this.CustomToolbar }}
                 />
                 {/* Add Pagination */}
               </Card>
