@@ -188,7 +188,8 @@ class CreateVideo extends React.Component {
                               document
                                 .getElementById("legend-date")
                                 .classList.add(
-                                  "PrivateNotchedOutline-legendNotched-5"
+                                  "PrivateNotchedOutline-legendNotched-5",
+                                  "PrivateNotchedOutline-legendNotched"
                                 );
                             }}
                             onBlur={(e) => {
@@ -217,14 +218,20 @@ class CreateVideo extends React.Component {
                                 document
                                   .getElementById("legend-date")
                                   .classList.remove(
-                                    "PrivateNotchedOutline-legendNotched-5"
+                                    "PrivateNotchedOutline-legendNotched-5",
+                                    "PrivateNotchedOutline-legendNotched"
                                   );
                               }
                             }}
                           />
-                          <fieldset className="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline">
+                          <fieldset
+                            className={
+                              this.props.classes.fieldset +
+                              " PrivateNotchedOutline-root MuiOutlinedInput-notchedOutline"
+                            }
+                          >
                             <legend
-                              className="PrivateNotchedOutline-legendLabelled-4"
+                              className={this.props.classes.legend}
                               id="legend-date"
                             >
                               <span>Date</span>
@@ -318,6 +325,40 @@ const styles = {
     },
     "&:focus::-webkit-datetime-edit": {
       color: "#000",
+    },
+  },
+  fieldset: {
+    top: "-5px",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    margin: 0,
+    padding: "0 8px",
+    overflow: "hidden",
+    position: "absolute",
+    borderStyle: "solid",
+    borderWidth: "1px",
+    borderRadius: "inherit",
+    pointerEvents: "none",
+  },
+  legend: {
+    width: "auto",
+    height: "11px",
+    display: "block",
+    padding: 0,
+    fontSize: "0.75em",
+    maxWidth: "0.01px",
+    textAlign: "left",
+    transition: "max-width 50ms cubic-bezier(0.0, 0, 0.2, 1) 0ms",
+    visibility: "hidden",
+    "&.PrivateNotchedOutline-legendNotched": {
+      maxWidth: "1000px",
+      transition: "max-width 100ms cubic-bezier(0.0, 0, 0.2, 1) 50ms",
+    },
+    "& > span": {
+      display: "inline-block",
+      paddingLeft: "5px",
+      paddingRight: "5px",
     },
   },
 };
