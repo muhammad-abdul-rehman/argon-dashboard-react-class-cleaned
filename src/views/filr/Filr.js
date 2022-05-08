@@ -3,20 +3,27 @@ import React from "react";
 
 // reactstrap components
 import {
+  Badge,
   Card,
   CardHeader,
   CardBody,
+  CardFooter,
+  DropdownMenu,
+  DropdownItem,
+  UncontrolledDropdown,
+  DropdownToggle,
+  Media,
+  Pagination,
+  PaginationItem,
+  PaginationLink,
+  Progress,
+  Table,
   Container,
   Row,
   Col,
+  UncontrolledTooltip,
   Navbar,
   NavLink,
-  Form,
-  Modal,
-  ModalBody,
-  ModalHeader,
-  ModalFooter,
-  ButtonGroup,
 } from "reactstrap";
 
 //MUI
@@ -37,9 +44,6 @@ import {
   Link,
   LinearProgress,
   Breadcrumbs,
-  Grow,
-  TextField,
-  Snackbar,
 } from "@material-ui/core";
 import ListItemButton from "@material-ui/core/Button";
 

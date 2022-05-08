@@ -27,7 +27,6 @@ import {
   Chip,
   Button,
   ButtonGroup,
-  Snackbar,
 } from "@material-ui/core";
 
 import MatEdit from "views/MatEdit";
@@ -187,19 +186,8 @@ class EditCustomer extends React.Component {
   };
 
   render() {
-    const action = (
-      <React.Fragment>
-        <Button
-          size="small"
-          aria-label="close"
-          color="inherit"
-          onClick={this.handleSnackbarChange}
-        >
-          Close
-        </Button>
-      </React.Fragment>
-    );
-
+    if (this.state.customer === null)
+      this.fetchCustomer(this.current_customer_url);
     return (
       <>
         <OnlyHeader />
