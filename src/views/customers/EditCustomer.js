@@ -146,7 +146,7 @@ class EditCustomer extends React.Component {
     const formData = new FormData(e.target);
 
     fetch(this.update_customer_url, {
-      method: "nonnnnnn", //"PUT",
+      method: "PUT",
       headers: {
         Authorization: "Bearer " + this.props.user.token,
         "Content-Type": "application/json",
@@ -154,7 +154,7 @@ class EditCustomer extends React.Component {
       body: JSON.stringify(Object.fromEntries(formData)),
     })
       .then((res) => res.json())
-      .then((data) => {
+      .then((data) =>
         this.setState((prevState) => ({
           user: data,
           form: {
@@ -171,18 +171,9 @@ class EditCustomer extends React.Component {
             eircode: data?.eircode,
             phone: data?.phone,
           },
-        }));
-        this.handleSnackbarChange();
-        this.setState({ snackBarMessage: "Uploaded Successfully" });
-      })
-      .catch(
-        (
-          err // console.error(err)
-        ) => {
-          this.handleSnackbarChange();
-          this.setState({ snackBarMessage: err.toString() });
-        }
-      );
+        }))
+      )
+      .catch((err) => console.error(err));
   };
 
   render() {
@@ -191,16 +182,6 @@ class EditCustomer extends React.Component {
     return (
       <>
         <OnlyHeader />
-
-        <Snackbar
-          open={this.state.snackbarStatus}
-          autoHideDuration={4000}
-          onClose={this.handleSnackbarChange}
-          message={this.state.snackBarMessage}
-          action={action}
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        />
-
         <Container className="mt--8" fluid>
           <Row>
             <div className="col">
