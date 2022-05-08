@@ -6,18 +6,6 @@ import {
   Card,
   CardHeader,
   CardBody,
-  CardFooter,
-  Dropdown,
-  DropdownMenu,
-  DropdownItem,
-  UncontrolledDropdown,
-  DropdownToggle,
-  Media,
-  Pagination,
-  PaginationItem,
-  PaginationLink,
-  Progress,
-  Table,
   Container,
   Row,
   Col,
@@ -67,12 +55,6 @@ class Filr extends React.Component {
       viewFiles: [],
       viewLoading: false,
       currentFolder: null,
-      dropdownOpen: false,
-      createFolderModalStatus: false,
-      uploadFileModalStatus: false,
-      uploadType: "",
-      newFolderName: "",
-      newFolderId: "",
     };
     this.breadcrumbs = [
       <Link
@@ -94,42 +76,7 @@ class Filr extends React.Component {
       </Link>,
     ];
   }
-  fileChangedHandler = (event) => {
-    this.setState({ selectedFile: event.target.files[0] });
-  };
 
-  uploadHandler = () => {
-    // @todo upload to api
-  };
-
-  createFolder = async (e) => {
-    e.preventDefault();
-
-    if (this.props.user.token === null) return;
-
-    // @todo create folder
-
-    this.setState({ newFolderName: "" });
-  };
-
-  handleFolderNameChange = (e) => {
-    this.setState({ newFolderName: e });
-  };
-
-  handleFolderIdChange = (e) => {
-    this.setState({ newFolderId: e });
-  };
-  toggleCreateFolderModal = () => {
-    this.setState({
-      createFolderModalStatus: !this.state.createFolderModalStatus,
-    });
-  };
-  toggleUploadFileModal = () => {
-    this.setState({ uploadFileModalStatus: !this.state.uploadFileModalStatus });
-  };
-  dropdownToggle = () => {
-    this.setState({ dropdownOpen: !this.state.dropdownOpen });
-  };
   componentDidMount() {
     if (this.state.files.length === 0)
       this.fetchFiles(
@@ -300,7 +247,19 @@ class Filr extends React.Component {
       },
     ];
     const rows = [];
-
+    /* const action = (
+      <React.Fragment>
+        <Button
+          size="small"
+          aria-label="close"
+          color="inherit"
+          onClick={this.handleSnackbarChange}
+        >
+          Close
+        </Button>
+      </React.Fragment>
+    );
+    */
     const folder = this.state.files.find(
       (el) => el.id == this.state.currentFolder
     );
@@ -339,7 +298,7 @@ class Filr extends React.Component {
           </ModalHeader>
           <ModalBody>
             <Form onSubmit={this.createFolder.bind(this)}>
-              <Col className="mb-2">
+              <Col>
                 <TextField
                   onChange={(e) => this.handleFolderNameChange(e)}
                   required
@@ -349,8 +308,7 @@ class Filr extends React.Component {
                   variant="outlined"
                   size="small"
                 />
-              </Col>
-              <Col className="mb-2">
+
                 <TextField
                   onChange={(e) => this.handleFolderIdChange(e)}
                   name="folder_id"
@@ -359,8 +317,7 @@ class Filr extends React.Component {
                   variant="outlined"
                   size="small"
                 />
-              </Col>
-              <Col>
+
                 <Button type="submit" variant="contained">
                   Submit
                 </Button>
@@ -386,23 +343,6 @@ class Filr extends React.Component {
               <Card className="shadow">
                 <CardHeader className="border-0">
                   <h3 className="mb-0">Filr</h3>
-
-                  <Row className="d-flex flex-row-reverse ">
-                    <Dropdown
-                      isOpen={this.state.dropdownOpen}
-                      toggle={this.dropdownToggle}
-                    >
-                      <DropdownToggle caret>Options</DropdownToggle>
-                      <DropdownMenu>
-                        <DropdownItem onClick={this.toggleUploadFileModal}>
-                          Upload File
-                        </DropdownItem>
-                        <DropdownItem onClick={this.toggleCreateFolderModal}>
-                          Create Folder
-                        </DropdownItem>
-                      </DropdownMenu>
-                    </Dropdown>
-                  </Row>
                 </CardHeader>
                 <CardBody>
                   <Breadcrumbs maxItems={3}>{this.breadcrumbs}</Breadcrumbs>
