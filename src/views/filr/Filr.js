@@ -109,9 +109,7 @@ class Filr extends React.Component {
       .then((data) => {
         console.log(data);
         return fetch(
-          this.props.rcp_url.proxy_domain +
-            this.props.rcp_url.base_wp_url +
-            "filr",
+          this.props.rcp_url.domain + this.props.rcp_url.base_wp_url + "filr",
           {
             method: "POST",
             headers: {
@@ -139,9 +137,7 @@ class Filr extends React.Component {
 
   uploadToMedia(form) {
     return fetch(
-      this.props.rcp_url.proxy_domain +
-        this.props.rcp_url.base_wp_url +
-        "media",
+      this.props.rcp_url.domain + this.props.rcp_url.base_wp_url + "media",
       {
         method: "POST",
         headers: {
