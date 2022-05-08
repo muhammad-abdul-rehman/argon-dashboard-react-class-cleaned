@@ -53,7 +53,7 @@ class Memberships extends React.Component {
 
   CustomToolbar = () => (
     <GridToolbarContainer>
-      <GridToolbarExport />
+      {/* <GridToolbarExport /> */}
       <Button
         variant="text"
         startIcon={<i className="fa fa-arrow-alt-circle-down"></i>}
