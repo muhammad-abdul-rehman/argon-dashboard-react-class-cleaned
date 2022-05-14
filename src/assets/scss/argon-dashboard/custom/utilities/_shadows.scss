@@ -3,12 +3,11 @@
 //
 
 // General styles
-[class*="shadow"] {
+[class*='shadow'] {
 	@if $enable-transitions {
-        transition: $transition-base;
-    }
+		transition: $transition-base;
+	}
 }
-
 
 // Size variations
 .shadow-sm--hover:hover {

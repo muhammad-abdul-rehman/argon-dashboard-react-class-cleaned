@@ -15,45 +15,52 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React from "react";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { Link } from 'react-router-dom';
 // reactstrap components
 import {
-  DropdownMenu,
-  DropdownItem,
-  UncontrolledDropdown,
-  DropdownToggle,
-  Form,
-  FormGroup,
-  InputGroupAddon,
-  InputGroupText,
-  Input,
-  InputGroup,
-  Navbar,
-  Nav,
-  Container,
-  Media,
-  Button,
-} from "reactstrap";
+	DropdownMenu,
+	DropdownItem,
+	UncontrolledDropdown,
+	DropdownToggle,
+	Form,
+	FormGroup,
+	InputGroupAddon,
+	InputGroupText,
+	Input,
+	InputGroup,
+	Navbar,
+	Nav,
+	Container,
+	Media,
+	Button,
+} from 'reactstrap';
 
 class AdminNavbar extends React.Component {
-  render() {
-    return (
-      <>
-        <Navbar className="navbar-top navbar-dark" expand="md" id="navbar-main">
-          <Container fluid>
-            <div className="d-flex w-100 align-items-center">
-              <Link
-                className="h4 mb-0 text-secondary text-uppercase d-none d-md-inline-block"
-                to="/"
-              >
-                {this.props.brandText}
-              </Link>
-              <Button color="success" className="ml-auto d-none d-md-inline-block">
-                Logout
-              </Button>
-            </div>
-            {/* <Form className="navbar-search navbar-search-dark form-inline mr-3 d-none d-md-flex ml-lg-auto">
+	render() {
+		return (
+			<>
+				<Navbar
+					className='navbar-top navbar-dark'
+					expand='md'
+					id='navbar-main'
+				>
+					<Container fluid>
+						<div className='d-flex w-100 align-items-center'>
+							<Link
+								className='h4 mb-0 text-secondary text-uppercase d-none d-md-inline-block'
+								to='/'
+							>
+								{this.props.brandText}
+							</Link>
+							<Button
+								color='success'
+								className='ml-auto d-none d-md-inline-block'
+							>
+								Logout
+							</Button>
+						</div>
+						{/* <Form className="navbar-search navbar-search-dark form-inline mr-3 d-none d-md-flex ml-lg-auto">
               <FormGroup className="mb-0">
                 <InputGroup className="input-group-alternative">
                   <InputGroupAddon addonType="prepend">
@@ -66,7 +73,7 @@ class AdminNavbar extends React.Component {
               </FormGroup>
             </Form>
              */}
-            {/* <Nav className="align-items-center d-none d-md-flex" navbar>
+						{/* <Nav className="align-items-center d-none d-md-flex" navbar>
               <UncontrolledDropdown nav>
                 <DropdownToggle className="pr-0" nav>
                   <Media className="align-items-center">
@@ -112,11 +119,11 @@ class AdminNavbar extends React.Component {
               </UncontrolledDropdown>
             </Nav>
            */}
-          </Container>
-        </Navbar>
-      </>
-    );
-  }
+					</Container>
+				</Navbar>
+			</>
+		);
+	}
 }
 
 export default AdminNavbar;

@@ -1,6 +1,6 @@
 //
 // Article
-// 
+//
 
 article {
 	h4:not(:first-child),
@@ -8,7 +8,8 @@ article {
 		margin-top: 3rem;
 	}
 
-	h4, h5 {
+	h4,
+	h5 {
 		margin-bottom: 1.5rem;
 	}
 

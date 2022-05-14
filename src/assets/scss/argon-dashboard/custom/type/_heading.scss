@@ -2,7 +2,6 @@
 // Heading
 //
 
-
 // General styles
 
 .heading {
@@ -12,15 +11,14 @@
 	font-weight: $heading-font-weight;
 }
 
-
 // Heading variations
 
 .heading-small {
-	padding-top: .25rem;
-	padding-bottom: .25rem;
-	font-size: .75rem;
+	padding-top: 0.25rem;
+	padding-bottom: 0.25rem;
+	font-size: 0.75rem;
 	text-transform: uppercase;
-	letter-spacing: .04em;
+	letter-spacing: 0.04em;
 }
 
 .heading-title {

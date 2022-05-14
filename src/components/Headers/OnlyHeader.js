@@ -15,23 +15,23 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React from "react";
+import React from 'react';
 
 // reactstrap components
-import { Card, CardBody, CardTitle, Container, Row, Col } from "reactstrap";
+import { Card, CardBody, CardTitle, Container, Row, Col } from 'reactstrap';
 
 class OnlyHeader extends React.Component {
-  render() {
-    return (
-      <>
-        <div className="header bg-infog pb-8 pt-5 pt-md-8">
-          <Container fluid>
-            <div className="header-body"></div>
-          </Container>
-        </div>
-      </>
-    );
-  }
+	render() {
+		return (
+			<>
+				<div className='header bg-infog pb-8 pt-5 pt-md-8'>
+					<Container fluid>
+						<div className='header-body'></div>
+					</Container>
+				</div>
+			</>
+		);
+	}
 }
 
 export default OnlyHeader;
