@@ -44,6 +44,7 @@ import {
 	Link,
 	LinearProgress,
 	Breadcrumbs,
+	withStyles,
 } from '@material-ui/core';
 import ListItemButton from '@material-ui/core/Button';
 
@@ -444,7 +445,11 @@ class Filr extends React.Component {
 									</Grid>
 								</CardBody>
 							</Card>
-							<Drawer anchor='left' open={this.state.drawer}>
+							<Drawer
+								anchor='left'
+								open={this.state.drawer}
+								className={this.props.classes.fileViewer}
+							>
 								{Object.keys(this.state.selectedFile).length !==
 									0 && (
 									<>
@@ -556,4 +561,15 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = { setUserLoginDetails };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Filr);
+const styles = {
+	fileViewer: {
+		'& .MuiPaper-root.MuiDrawer-paper': {
+			width: '75%',
+		},
+	},
+};
+
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(withStyles(styles)(Filr));
