@@ -2,7 +2,7 @@ import OnlyHeader from 'components/Headers/OnlyHeader';
 import React from 'react';
 
 //@mui
-import { Switch } from '@material-ui/core';
+import { Switch, withStyles } from '@material-ui/core';
 
 // reactstrap components
 import {
@@ -12,6 +12,7 @@ import {
 	Label,
 	Col,
 	Input,
+	InputGroup,
 	Container,
 	Row,
 	CardBody,
@@ -19,7 +20,12 @@ import {
 	FormFeedback,
 	FormGroup,
 	Table,
+	Progress,
 } from 'reactstrap';
+
+import PhoneInput from 'react-phone-input-2';
+
+import Cart from './Cart';
 
 import { connect } from 'react-redux';
 import { setUserLoginDetails } from 'features/user/userSlice';
@@ -50,8 +56,24 @@ class AddClubMembership extends React.Component {
 			country: '',
 			region: '',
 			error_message: [],
+			progress: 0,
+			totalProgress: 5,
+			discountDetails: {},
 		};
 		this.handleChange = this.handleChange.bind(this);
+	}
+
+	componentDidMount() {
+		if (
+			null !== this.props.user.token &&
+			this.props.levels?.levels?.length === 0
+		) {
+			this.fetchMembershipLevels(
+				this.props.rcp_url.proxy_domain +
+					this.props.rcp_url.base_url +
+					'levels'
+			);
+		}
 	}
 
 	componentDidUpdate(
@@ -126,6 +148,45 @@ class AddClubMembership extends React.Component {
 	selectRegion(val) {
 		this.setState({ region: val });
 	}
+
+	updateProgress(val) {
+		this.setState({ progress: this.state.progress + val });
+	}
+
+	resetProgress() {
+		this.setState({ progress: 0 });
+	}
+
+	validateDiscount() {
+		if (!this.state.selectedMembership) return;
+
+		const code = document.getElementById('discount_code').value;
+		//@todo check res.ok on all fetch calls.
+		fetch(
+			this.props.rcp_url.proxy_domain +
+				this.props.rcp_url.base_url +
+				'discounts/validate',
+			{
+				method: 'POST',
+				headers: {
+					Authorization: 'Bearer ' + this.props.user.token,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					code: code,
+					object_id: this.state.selectedMembership.id,
+					user_id: this.props.user.id,
+				}),
+			}
+		)
+			.then(res => res.json())
+			.then(data => {
+				console.log(data);
+				this.setState({ discountDetails: data });
+			})
+			.catch(e => console.error(e));
+	}
+
 	/**
 	 * Handle Payment
 	 * @param {*} event
@@ -139,27 +200,38 @@ class AddClubMembership extends React.Component {
 		}
 		const cardElement = elements.getElement('card');
 		try {
+			/* UPDATE PROGRESS */
+			console.log('1');
+			this.updateProgress(1);
 			const membership = this.props.levels.levels.find(
 				el => el.id === parseInt(event.target.membership_level.value)
 			);
+			console.log('2');
+			this.updateProgress(1);
 			const formData = new FormData();
-			formData.append('action', 'stripe_payment_intent');
-			formData.append('price', membership.price);
-			formData.append('currency_symbol', membership.currency_symbol);
+			formData.append(
+				'code',
+				this.state.discountDetails.code
+					? this.state.discountDetails.code
+					: event.target.discount_code.value
+			);
+			formData.append('object_id', membership.id);
 			const res = await fetch(
 				this.props.rcp_url.domain +
 					'/wp-admin/admin-ajax.php?action=stripe_payment_intent',
 				{
 					method: 'post',
 					headers: {
-						'Content-Type': 'multipart/form-data',
+						Authorization: 'Bearer ' + this.props.user.token,
+						'Content-Type': 'application/json',
 					},
-					body: formData,
+					body: JSON.stringify(Object.fromEntries(formData)),
 				}
 			);
-			const {
-				data: { client_secret },
-			} = await res.json();
+			/* UPDATE PROGRESS */
+			console.log('3');
+			this.updateProgress(1);
+			const { client_secret } = await res.json();
 			const paymentMethodReq = await stripe.createPaymentMethod({
 				type: 'card',
 				card: cardElement,
@@ -175,6 +247,8 @@ class AddClubMembership extends React.Component {
 			});
 
 			if (paymentMethodReq.error) {
+				alert(paymentMethodReq.error.message);
+				this.resetProgress();
 				return;
 			}
 
@@ -186,10 +260,12 @@ class AddClubMembership extends React.Component {
 			);
 
 			if (error) {
+				alert(error);
+				this.resetProgress();
 				return;
 			}
 
-			return transaction;
+			return Promise.resolve(transaction.paymentIntent);
 		} catch (err) {
 			return Promise.reject(err);
 		}
@@ -201,13 +277,26 @@ class AddClubMembership extends React.Component {
 	async submitForm(event) {
 		event.persist();
 		event.preventDefault();
+		const formData = new FormData(event.target);
+		const user_additional_fields = [
+			'workplace',
+			'reference_club',
+			'address',
+			'address_secondary',
+			'town',
+			'country',
+			'county',
+			'eircode',
+		];
 		const user_args = {
 			first_name: event.target.first_name.value,
 			last_name: event.target.last_name.value,
 			user_email: event.target.email.value,
 			user_pass: event.target.password.value,
 		};
-
+		formData.forEach((val, key) => {
+			if (user_additional_fields.includes(key)) user_args[key] = val;
+		});
 		this.onSuccessfullCheckout(
 			event,
 			user_args,
@@ -230,25 +319,23 @@ class AddClubMembership extends React.Component {
 					membership,
 					club_name
 				);
-				// const { errors } = data;
-				// if (errors) return Promise.reject(errors);
-				// return this.addPaymentAndMembership(
-				//   data,
-				//   membership,
-				//   transaction,
-				//   club_name
-				// );
 			})
 			.then(res => {
 				if (res.status !== 200) return Promise.reject(res);
 				return res.json();
 			})
-			.then(data_memership => {
+			.then(async data_memership => {
 				const { errors, user_id, object_id } = data_memership;
 				if (errors) return Promise.reject(errors);
-				if (this.state.enable_payment) {
-					const transaction = this.handlePayment(event);
+				if (this.state.enable_stripe_payment) {
+					const transaction = await this.handlePayment(event);
+
+					console.log(transaction);
 					return this.addPayment(user_id, membership, transaction);
+					// return this.addPayment(user_id, membership, transaction);
+				}
+				if (this.state.enable_manual_payment) {
+					return this.addManualPayment(event, user_id, membership);
 				}
 				return Promise.resolve(data_memership);
 			})
@@ -282,38 +369,12 @@ class AddClubMembership extends React.Component {
 		);
 	}
 
-	// addPaymentAndMembership(data, membership, transaction, club_name) {
-	//   this.addPayment(data.user_id, membership, transaction)
-	//     .then((res) => {
-	//       if (res.status !== 200) return Promise.reject(res);
-	//       return res.json();
-	//     })
-	//     .then((data_payment) => {
-	//       const { errors } = data_payment;
-	//       if (errors) return Promise.reject(errors);
-	//       return this.addMembership(data.customer_id, membership, club_name);
-	//     })
-	//     .then((res) => {
-	//       if (res.status !== 200) return Promise.reject(res);
-	//       return res.json();
-	//     })
-	//     .then((data) => {
-	//       const { errors } = data;
-	//       if (errors) return Promise.reject(errors);
-	//       console.log(data);
-	//       return data;
-	//     })
-	//     .catch((err) => {
-	//       console.error(err);
-	//     });
-	// }
-
 	addPayment(user_id, membership, transaction) {
 		const args = {
 			subscription: membership.name,
 			object_id: membership.id,
 			user_id: user_id,
-			amount: membership.price,
+			amount: transaction.amount,
 			transaction_id: transaction.id,
 			status: transaction.status,
 		};
@@ -329,6 +390,38 @@ class AddClubMembership extends React.Component {
 					Authorization: 'Bearer ' + this.props.user.token,
 				},
 				body: JSON.stringify(args),
+			}
+		);
+	}
+
+	addManualPayment(event, user_id, membership) {
+		const formData = new FormData(event.target);
+		const fields = ['transaction_id', 'gateway', 'date', 'transaction_id'];
+		const payment_args = {
+			subscription: membership.name,
+			object_id: membership.id,
+			user_id: user_id,
+			amount: this.state.discountDetails?.total
+				? this.state.discountDetails?.total
+				: membership.price,
+			status: 'complete',
+		};
+		formData.forEach((val, key) => {
+			if (fields.includes(key)) {
+				payment_args[key] = val;
+			}
+		});
+		return fetch(
+			this.props.rcp_url.proxy_domain +
+				this.props.rcp_url.base_url +
+				'payments/new',
+			{
+				method: 'post',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: 'Bearer ' + this.props.user.token,
+				},
+				body: JSON.stringify(payment_args),
 			}
 		);
 	}
@@ -372,50 +465,109 @@ class AddClubMembership extends React.Component {
 									</h3>
 								</CardHeader>
 								<CardBody>
+									{/* PROGRESS BAR */}
+									{this.state.progress > 0 && (
+										<Progress
+											value={
+												(this.state.progress /
+													this.state.totalProgress) *
+												100
+											}
+										/>
+									)}
 									<Form onSubmit={this.submitForm.bind(this)}>
 										<FormGroup row>
-											<Label sm={3}>Name</Label>
-											<Row
-												style={{
-													flex: 2,
-													paddingLeft: '1em',
-												}}
-											>
-												<Col md={6}>
-													<Input
-														id='first_name'
-														name='first_name'
-														placeholder='First Name'
-														type='text'
-														onChange={e => {
-															this.handleChange(
-																e
-															);
-														}}
-														required
-													/>
-												</Col>
-												<Col
-													className='mt-sm-2 mt-md-0'
-													md={6}
+											<Label sm={4}>
+												Membership Type
+											</Label>
+											<Col md={6}>
+												<Input
+													name='membership_level'
+													defaultValue=''
+													type='select'
+													onChange={e => {
+														this.handleChange(e);
+													}}
+													required
 												>
-													<Input
-														id='last_name'
-														name='last_name'
-														placeholder='Last Name'
-														type='text'
-														onChange={e => {
-															this.handleChange(
-																e
-															);
-														}}
-														required
-													/>
-												</Col>
-											</Row>
+													<option disabled selected>
+														Select club membership
+														level.
+													</option>
+													{this.props.levels.levels
+														.length > 0 &&
+														this.props.levels.levels
+															.filter(
+																el =>
+																	el.level ===
+																	3
+															)
+															.map(
+																(item, key) => (
+																	<option
+																		key={
+																			key
+																		}
+																		value={
+																			item.id
+																		}
+																	>
+																		{
+																			item.name
+																		}
+																	</option>
+																)
+															)}
+												</Input>
+											</Col>
 										</FormGroup>
 										<FormGroup row>
-											<Label for='email' sm={3}>
+											<Label sm={4}>First Name</Label>
+											<Col md={6}>
+												<Input
+													id='first_name'
+													name='first_name'
+													placeholder='First Name'
+													type='text'
+													onChange={e => {
+														this.handleChange(e);
+													}}
+													required
+												/>
+											</Col>
+										</FormGroup>
+										<FormGroup row>
+											<Label sm={4}>Last Name</Label>
+											<Col md={6}>
+												<Input
+													id='first_name'
+													name='first_name'
+													placeholder='First Name'
+													type='text'
+													onChange={e => {
+														this.handleChange(e);
+													}}
+													required
+												/>
+											</Col>
+											<Col
+												className='mt-sm-2 mt-md-0'
+												md={6}
+											>
+												<Input
+													id='last_name'
+													name='last_name'
+													placeholder='Last Name'
+													type='text'
+													onChange={e => {
+														this.handleChange(e);
+													}}
+													required
+												/>
+											</Col>
+										</FormGroup>
+										<FormGroup row>
+											<Label for='email' sm={4}>
 												Email
 											</Label>
 											<Col md={6}>
@@ -448,7 +600,7 @@ class AddClubMembership extends React.Component {
 											</Col>
 										</FormGroup>
 										<FormGroup row>
-											<Label for='password' sm={3}>
+											<Label for='password' sm={4}>
 												Password
 											</Label>
 											<Col md={6}>
@@ -458,59 +610,6 @@ class AddClubMembership extends React.Component {
 													placeholder='Password'
 													type='password'
 													required
-												/>
-											</Col>
-										</FormGroup>
-										<FormGroup row>
-											<Label sm={4}>
-												Membership Type
-											</Label>
-											<Col md={6}>
-												<Input
-													name='membership_level'
-													defaultValue=''
-													type='select'
-													onChange={e => {
-														this.handleChange(e);
-													}}
-													required
-												>
-													{this.props.levels.levels
-														.length > 0 &&
-														this.props.levels.levels
-															.filter(
-																el =>
-																	el.level ===
-																	3
-															)
-															.map(
-																(item, key) => (
-																	<option
-																		selected
-																		key={
-																			key
-																		}
-																		value={
-																			item.id
-																		}
-																	>
-																		{
-																			item.name
-																		}
-																	</option>
-																)
-															)}
-												</Input>
-											</Col>
-										</FormGroup>
-										<FormGroup row>
-											<Label sm={4} for='club_name'>
-												Club Name
-											</Label>
-											<Col md={6}>
-												<Input
-													name='club_name'
-													type='text'
 												/>
 											</Col>
 										</FormGroup>
@@ -569,12 +668,12 @@ class AddClubMembership extends React.Component {
 										</FormGroup>
 										<FormGroup row>
 											<Label sm={4} for='region'>
-												Region
+												County
 											</Label>
 											<Col md={6}>
 												<RegionDropdown
 													className='form-control'
-													name='region'
+													name='county' //"country"
 													country={country}
 													value={region}
 													onChange={val =>
@@ -583,75 +682,204 @@ class AddClubMembership extends React.Component {
 												/>
 											</Col>
 										</FormGroup>
+										<FormGroup row>
+											<Label sm={4} for='eircode'>
+												Eircode
+											</Label>
+											<Col md={6}>
+												<Input
+													required
+													name='eircode'
+													type='text'
+												/>
+											</Col>
+										</FormGroup>
+										<FormGroup row>
+											<Label sm={4} for='phone'>
+												Phone
+											</Label>
+											<Col md={6}>
+												<PhoneInput
+													name='phone'
+													specialLabel={''}
+													country={'ir'}
+												/>
+											</Col>
+										</FormGroup>
+										{this.props.user.is_admin && (
+											<FormGroup row>
+												<Label sm={4} for='region'>
+													Region
+												</Label>
+												<Col md={6}>
+													<Input
+														name='region'
+														type='select'
+													>
+														<option value='NW'>
+															NW
+														</option>
+														<option value='SW'>
+															SW
+														</option>
+														<option value='SE'>
+															SE
+														</option>
+														<option value='NE'>
+															NE
+														</option>
+														<option value='NI'>
+															NI
+														</option>
+														<option value='INT'>
+															INT
+														</option>
+													</Input>
+												</Col>
+											</FormGroup>
+										)}
 										{undefined !==
 											this.state.selectedMembership && (
-											<Table
-												bordered
-												striped
-												className='mb-2'
-											>
-												<thead>
-													<tr>
-														<th className='border-right-0'>
-															<h2>
-																Memberhsip
-																Details
-															</h2>
-														</th>
-													</tr>
-												</thead>
-												<tbody>
-													<tr>
-														<td className='font-weight-bold'>
-															Name
-														</td>
-														<td>
-															{
-																this.state
-																	.selectedMembership
-																	.name
-															}
-														</td>
-													</tr>
-													<tr>
-														<td className='font-weight-bold'>
-															Duration
-														</td>
-														<td>
-															{`${this.state.selectedMembership.duration} ${this.state.selectedMembership.duration_unit}`}
-														</td>
-													</tr>
-													<tr>
-														<td className='font-weight-bold'>
-															Price
-														</td>
-														<td>
-															{`${this.state.selectedMembership.price} ${this.state.selectedMembership.currency_symbol}`}
-														</td>
-													</tr>
-												</tbody>
-											</Table>
+											<Cart
+												membership={
+													this.state
+														.selectedMembership
+												}
+												discount={
+													this.state.discountDetails
+												}
+											/>
 										)}
 										<FormGroup row>
-											<Label sm={4} for='payment'>
-												Pay with card.
+											<Label sm={4} for='discount_code'>
+												ATPI staff code / Discount Code
+											</Label>
+											<Col md={6}>
+												<InputGroup>
+													<Input
+														name='discount_code'
+														type='text'
+														id='discount_code'
+													/>
+													<Button
+														onClick={this.validateDiscount.bind(
+															this
+														)}
+													>
+														Apply
+													</Button>
+												</InputGroup>
+											</Col>
+										</FormGroup>
+										<FormGroup
+											check
+											row
+											className='form-group'
+										>
+											<Input
+												type='checkbox'
+												name='consent'
+												className={
+													this.props.classes.checkbox
+												}
+												onChange={e =>
+													this.setState({
+														consent:
+															e.target.checked,
+													})
+												}
+											/>
+											<Col>
+												<Label for='consent' check>
+													We are aware of the
+													importance of your personal
+													information. For more
+													information, please read
+													about how we keep your data
+													protected in our Privacy
+													Policy
+												</Label>
+											</Col>
+										</FormGroup>
+										<FormGroup
+											check
+											row
+											className='form-group'
+										>
+											<Input
+												type='checkbox'
+												name='auto_renew'
+												className={
+													this.props.classes.checkbox
+												}
+												onChange={e =>
+													this.setState({
+														auto_renew:
+															e.target.checked,
+													})
+												}
+											/>
+											<Col>
+												<Label for='auto_renew' check>
+													Auto Renew
+												</Label>
+											</Col>
+										</FormGroup>
+										{this.props.user.is_admin && (
+											<FormGroup row>
+												<Label sm={4} for='paid_by'>
+													Paid by
+												</Label>
+												<Col md={6}>
+													<Input
+														name='paid_by'
+														type='select'
+													>
+														<option value='Individual'>
+															Individual
+														</option>
+														<option value='Club'>
+															Club
+														</option>
+														<option value='College'>
+															College
+														</option>
+														<option value='Honorary'>
+															Honorary
+														</option>
+													</Input>
+												</Col>
+											</FormGroup>
+										)}
+										<FormGroup
+											row
+											disabled={
+												this.state.enable_manual_payment
+											}
+										>
+											<Label sm={4} for='payment_stripe'>
+												Pay with Credit Card(Stripe).
 											</Label>
 											<Col md={6}>
 												<Switch
-													name='payment_enable'
-													onChange={e =>
+													name='payment_stripe'
+													disabled={
+														this.state
+															.enable_manual_payment
+													}
+													onChange={e => {
 														this.setState({
-															enable_payment:
+															enable_stripe_payment:
 																e.target
 																	.checked,
-														})
-													}
+														});
+													}}
 												/>
 											</Col>
 										</FormGroup>
 										{this.state.selectedMembership
 											?.price !== 0 &&
-											this.state.enable_payment ===
+											this.state.enable_stripe_payment ===
 												true && (
 												<FormGroup row>
 													<Col md={12}>
@@ -661,6 +889,156 @@ class AddClubMembership extends React.Component {
 															}
 														/>
 													</Col>
+												</FormGroup>
+											)}
+										<FormGroup
+											row
+											disabled={
+												this.state.enable_stripe_payment
+											}
+										>
+											<Label sm={4} for='payment_manual'>
+												Manual Payment
+											</Label>
+											<Col md={6}>
+												<Switch
+													name='payment_manual'
+													disabled={
+														this.state
+															.enable_stripe_payment
+													}
+													onChange={e => {
+														this.setState({
+															enable_manual_payment:
+																e.target
+																	.checked,
+														});
+													}}
+												/>
+											</Col>
+										</FormGroup>
+										{this.state.selectedMembership
+											?.price !== 0 &&
+											this.state.enable_manual_payment ===
+												true && (
+												<FormGroup tag='fieldset'>
+													<legend>
+														Payment Type
+													</legend>
+													<FormGroup check>
+														<Input
+															name='gateway'
+															type='radio'
+															value='stripe'
+														/>
+														<Label check>
+															Stripe Phone Payment
+														</Label>
+													</FormGroup>
+													<FormGroup check>
+														<Input
+															name='gateway'
+															type='radio'
+															value='stripe'
+														/>
+														<Label check>
+															Stripe Payment link
+														</Label>
+													</FormGroup>
+													<FormGroup check>
+														<Input
+															name='gateway'
+															type='radio'
+															value='paypal'
+														/>{' '}
+														<Label check>
+															PayPal
+														</Label>
+													</FormGroup>
+													<FormGroup check>
+														<Input
+															name='gateway'
+															type='radio'
+															value='bank transfer'
+														/>
+														<Label check>
+															Bank Transfer
+														</Label>
+													</FormGroup>
+													<FormGroup check>
+														<Input
+															name='gateway'
+															type='radio'
+															value='cheque'
+														/>
+														<Label check>
+															Cheque
+														</Label>
+													</FormGroup>
+													<FormGroup check>
+														<Input
+															name='gateway'
+															type='radio'
+															value='cash'
+														/>
+														<Label check>
+															Cash
+														</Label>
+													</FormGroup>
+													<FormGroup check>
+														<Input
+															name='gateway'
+															type='radio'
+															value='honorary'
+														/>
+														<Label check>
+															Honorary
+														</Label>
+													</FormGroup>
+													<FormGroup row>
+														<Label sm={4}>
+															Payment date
+														</Label>
+														<Col
+															className='mt-sm-2 mt-md-0'
+															md={6}
+														>
+															<Input
+																id='payment_date'
+																name='date'
+																placeholder='Payment date'
+																type='date'
+																onChange={e => {
+																	this.handleChange(
+																		e
+																	);
+																}}
+																required
+															/>
+														</Col>
+													</FormGroup>
+													<FormGroup row>
+														<Label sm={4}>
+															Payment Reference:
+														</Label>
+														<Col
+															className='mt-sm-2 mt-md-0'
+															md={6}
+														>
+															<Input
+																id='transaction_id'
+																name='transaction_id'
+																placeholder='Payment Reference:'
+																type='text'
+																onChange={e => {
+																	this.handleChange(
+																		e
+																	);
+																}}
+																required
+															/>
+														</Col>
+													</FormGroup>
 												</FormGroup>
 											)}
 										<FormGroup check row>
@@ -699,9 +1077,25 @@ const mapStateToProps = state => {
 	};
 };
 
+const styles = {
+	checkbox: {
+		width: '1em',
+		height: '1em',
+		marginTop: '0.25em',
+		verticalAlign: 'top',
+		backgroundColor: '#fff',
+		backgroundRepeat: 'no-repeat',
+		backgroundPosition: 'center',
+		backgroundSize: 'contain',
+		border: '1px solid rgba(0,0,0,.25)',
+		'-webkit-print-color-adjust': 'exact',
+		colorAdjust: 'exact',
+	},
+};
+
 const mapDispatchToProps = { setUserLoginDetails, setMembershipLevels };
 
 export default connect(
 	mapStateToProps,
 	mapDispatchToProps
-)(injectedClubCheckoutForm);
+)(withStyles(styles)(injectedClubCheckoutForm));
