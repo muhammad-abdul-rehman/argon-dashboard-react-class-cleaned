@@ -5,7 +5,13 @@ import {
 	GridToolbarContainer,
 	GridToolbarExport,
 } from '@material-ui/data-grid';
-import { FormControlLabel, IconButton, Button } from '@material-ui/core';
+
+import {
+	FormControlLabel,
+	IconButton,
+	Button,
+	CircularProgress,
+} from '@material-ui/core';
 
 // reactstrap components
 import { Card, CardHeader, Container, Row } from 'reactstrap';
@@ -83,7 +89,11 @@ class Memberships extends React.Component {
 				color='primary'
 				onClick={this.getExportCsvFile}
 			>
-				Export
+				{this.state.exportLoading ? (
+					<CircularProgress size='1.3rem' />
+				) : (
+					'Export'
+				)}
 			</Button>
 		</GridToolbarContainer>
 	);
