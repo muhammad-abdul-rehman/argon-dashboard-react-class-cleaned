@@ -24,7 +24,7 @@ class Header extends React.Component {
   render() {
     return (
       <>
-        <div className="header bg-gradient-info pb-8 pt-5 pt-md-8">
+        <div className="header bg-infog pb-8 pt-5 pt-md-8">
           <Container fluid>
             <div className="header-body">
               {/* Card stats */}
@@ -33,12 +33,12 @@ class Header extends React.Component {
                   <Card className="card-stats mb-4 mb-xl-0">
                     <CardBody>
                       <Row>
-                        <div className="col">
+                        <div className="col pr-0">
                           <CardTitle
                             tag="h5"
                             className="text-uppercase text-muted mb-0"
                           >
-                            Traffic
+                            Numbers of Active Individual Memberships
                           </CardTitle>
                           <span className="h2 font-weight-bold mb-0">
                             350,897
@@ -63,12 +63,12 @@ class Header extends React.Component {
                   <Card className="card-stats mb-4 mb-xl-0">
                     <CardBody>
                       <Row>
-                        <div className="col">
+                        <div className="col pr-0">
                           <CardTitle
                             tag="h5"
                             className="text-uppercase text-muted mb-0"
                           >
-                            New users
+                             Number of New Membership
                           </CardTitle>
                           <span className="h2 font-weight-bold mb-0">
                             2,356
@@ -93,12 +93,12 @@ class Header extends React.Component {
                   <Card className="card-stats mb-4 mb-xl-0">
                     <CardBody>
                       <Row>
-                        <div className="col">
+                        <div className="col pr-0">
                           <CardTitle
                             tag="h5"
                             className="text-uppercase text-muted mb-0"
                           >
-                            Sales
+                            Number of membership renewals
                           </CardTitle>
                           <span className="h2 font-weight-bold mb-0">924</span>
                         </div>
@@ -121,12 +121,12 @@ class Header extends React.Component {
                   <Card className="card-stats mb-4 mb-xl-0">
                     <CardBody>
                       <Row>
-                        <div className="col">
+                        <div className="col pr-0">
                           <CardTitle
                             tag="h5"
                             className="text-uppercase text-muted mb-0"
                           >
-                            Performance
+                            Number of lapsed memberships
                           </CardTitle>
                           <span className="h2 font-weight-bold mb-0">
                             49,65%

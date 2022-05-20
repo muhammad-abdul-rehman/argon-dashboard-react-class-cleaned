@@ -24,7 +24,7 @@ class OnlyHeader extends React.Component {
   render() {
     return (
       <>
-        <div className="header bg-gradient-info pb-8 pt-5 pt-md-8">
+        <div className="header bg-infog pb-8 pt-5 pt-md-8">
           <Container fluid>
             <div className="header-body"></div>
           </Container>

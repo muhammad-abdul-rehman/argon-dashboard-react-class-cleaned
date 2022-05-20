@@ -1,6 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
+import { Provider } from "react-redux";
+import store from "./store";
 
 import "assets/plugins/nucleo/css/nucleo.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -12,9 +14,10 @@ import AuthLayout from "layouts/Auth.js";
 ReactDOM.render(
   <BrowserRouter>
     <Switch>
-      <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
-      <Route path="/auth" render={(props) => <AuthLayout {...props} />} />
-      <Redirect from="/" to="/auth/login" />
+      <Provider store={store}>
+        <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
+        <Redirect from="/" to="/admin/users/me" />
+      </Provider>
     </Switch>
   </BrowserRouter>,
   document.getElementById("root")
