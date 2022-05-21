@@ -540,21 +540,6 @@ class AddClubMembership extends React.Component {
 											<Label sm={4}>Last Name</Label>
 											<Col md={6}>
 												<Input
-													id='first_name'
-													name='first_name'
-													placeholder='First Name'
-													type='text'
-													onChange={e => {
-														this.handleChange(e);
-													}}
-													required
-												/>
-											</Col>
-											<Col
-												className='mt-sm-2 mt-md-0'
-												md={6}
-											>
-												<Input
 													id='last_name'
 													name='last_name'
 													placeholder='Last Name'
