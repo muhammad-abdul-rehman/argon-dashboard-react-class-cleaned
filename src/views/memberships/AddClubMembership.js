@@ -472,15 +472,17 @@ class AddClubMembership extends React.Component {
 		const numOfMembers = [];
 
 		for (var i = 0; i <= this.state.numberOfMembers; i += 1) {
-			numOfMembers.push(
-				<ClubMember
-					memberIndex={i}
-					key={i}
-					handleChange={this.handleChange}
-					increment={this.incrementNumberOfMembers}
-					decrement={this.decrementNumberOfMembers}
-				/>
-			);
+			if (i <= 5) {
+				numOfMembers.push(
+					<ClubMember
+						memberIndex={i}
+						key={i}
+						handleChange={this.handleChange}
+						increment={this.incrementNumberOfMembers}
+						decrement={this.decrementNumberOfMembers}
+					/>
+				);
+			}
 		}
 
 		return (
