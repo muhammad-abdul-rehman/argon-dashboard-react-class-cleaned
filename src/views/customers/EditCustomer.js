@@ -43,7 +43,7 @@ class EditCustomer extends React.Component {
 			form: {
 				name: '',
 				email_verification: '',
-				address: '',
+				address_one: '',
 				address_two: '',
 				county: '',
 				country: '',
@@ -100,8 +100,8 @@ class EditCustomer extends React.Component {
 				...prevState.form,
 				name: data?.name,
 				email_verification: data?.email_verification,
-				address: data?.address,
-				address_two: data?.address_secondary,
+				address_one: data?.address_one,
+				address_two: data?.address_two,
 				county: data?.county,
 				country: data?.country,
 				workplace: data?.workplace,
@@ -162,8 +162,8 @@ class EditCustomer extends React.Component {
 						...prevState.form,
 						name: data?.name,
 						email_verification: data?.email_verification,
-						address: data?.address,
-						address_two: data?.address_secondary,
+						address_one: data?.address_one,
+						address_two: data?.address_two,
 						county: data?.county,
 						country: data?.country,
 						workplace: data?.workplace,
@@ -299,7 +299,7 @@ class EditCustomer extends React.Component {
 													className='w-100'
 													id='outlined-basic'
 													label='Address'
-													name='address'
+													name='address_one'
 													variant='outlined'
 													onChange={e =>
 														this.handleChange(e)
@@ -311,7 +311,7 @@ class EditCustomer extends React.Component {
 													InputLabelProps={{
 														shrink:
 															this.state.customer
-																?.address !==
+																?.address_one !==
 															undefined,
 													}}
 												/>
@@ -335,7 +335,7 @@ class EditCustomer extends React.Component {
 													InputLabelProps={{
 														shrink:
 															this.state.customer
-																?.address_secondary !==
+																?.address_two !==
 															undefined,
 													}}
 												/>
