@@ -43,6 +43,7 @@ import {
 	RegionDropdown,
 	CountryRegionData,
 } from 'react-country-region-selector';
+import ClubMember from './ClubMember';
 
 class AddClubMembership extends React.Component {
 	constructor(props) {
@@ -59,6 +60,7 @@ class AddClubMembership extends React.Component {
 			progress: 0,
 			totalProgress: 5,
 			discountDetails: {},
+			numberOfMembers: 0,
 		};
 		this.handleChange = this.handleChange.bind(this);
 	}
@@ -217,8 +219,9 @@ class AddClubMembership extends React.Component {
 			);
 			formData.append('object_id', membership.id);
 			const res = await fetch(
-				this.props.rcp_url.domain +
-					'/wp-admin/admin-ajax.php?action=stripe_payment_intent',
+				this.props.rcp_url.proxy_domain +
+					this.props.rcp_url.base_url +
+					'payments/payment_intent',
 				{
 					method: 'post',
 					headers: {
@@ -239,7 +242,7 @@ class AddClubMembership extends React.Component {
 					name: `${event.target.first_name.value} ${event.target.last_name.value}`,
 					email: event.target.email.value,
 					address: {
-						address: event.target.address.value,
+						line1: event.target.address.value,
 						country: this.props.country,
 						state: this.props.region,
 					},
@@ -315,6 +318,7 @@ class AddClubMembership extends React.Component {
 				const { errors } = data;
 				if (errors) return Promise.reject(errors);
 				return this.addMembership(
+					event,
 					data.customer_id,
 					membership,
 					club_name
@@ -426,7 +430,16 @@ class AddClubMembership extends React.Component {
 		);
 	}
 
-	addMembership(customer_id, membership, club_name) {
+	addMembership(event, customer_id, membership, club_name) {
+		const formData = new FormData(event.target);
+		formData.forEach((val, key) => {
+			if (!key.includes('members')) {
+				formData.delete(key);
+			}
+		});
+		formData.append('customer_id', customer_id);
+		formData.append('object_id', membership.id);
+		formData.append('club_name', club_name);
 		return fetch(
 			this.props.rcp_url.domain +
 				this.props.rcp_url.base_url +
@@ -434,24 +447,42 @@ class AddClubMembership extends React.Component {
 			{
 				method: 'post',
 				headers: {
-					'Content-Type': 'application/json',
 					Authorization: 'Bearer ' + this.props.user.token,
 				},
-				body: JSON.stringify({
-					customer_id: customer_id,
-					object_id: membership.id,
-					club_name: club_name,
-				}),
+				body: formData,
 			}
 		);
 	}
 
+	incrementNumberOfMembers = e => {
+		e.preventDefault();
+		this.setState({ numberOfMembers: this.state.numberOfMembers + 1 });
+	};
+	decrementNumberOfMembers = e => {
+		e.preventDefault();
+		this.setState({ numberOfMembers: this.state.numberOfMembers - 1 });
+	};
 	render() {
 		const { email, country, region } = this.state;
 		const cardElementOptions = {
 			style: { base: {}, invalid: {} },
 			hidePostalCode: true,
 		}; // @todo for styling card element.
+
+		const numOfMembers = [];
+
+		for (var i = 0; i <= this.state.numberOfMembers; i += 1) {
+			numOfMembers.push(
+				<ClubMember
+					memberIndex={i}
+					key={i}
+					handleChange={this.handleChange}
+					increment={this.incrementNumberOfMembers}
+					decrement={this.decrementNumberOfMembers}
+				/>
+			);
+		}
+
 		return (
 			<>
 				<OnlyHeader />
@@ -519,6 +550,21 @@ class AddClubMembership extends React.Component {
 																)
 															)}
 												</Input>
+											</Col>
+										</FormGroup>
+										<FormGroup row>
+											<Label sm={4}>Club Name</Label>
+											<Col md={6}>
+												<Input
+													id='club_name'
+													name='club_name'
+													placeholder='Club Name'
+													type='text'
+													onChange={e => {
+														this.handleChange(e);
+													}}
+													required
+												/>
 											</Col>
 										</FormGroup>
 										<FormGroup row>
@@ -723,6 +769,24 @@ class AddClubMembership extends React.Component {
 												</Col>
 											</FormGroup>
 										)}
+										<h2>Group Members</h2>
+										{this.state.numberOfMembers < 0 && (
+											<>
+												<p>
+													To add members, click on the
+													button.
+												</p>
+												<Button
+													onClick={
+														this
+															.incrementNumberOfMembers
+													}
+												>
+													Add Member
+												</Button>
+											</>
+										)}
+										{numOfMembers}
 										{undefined !==
 											this.state.selectedMembership && (
 											<Cart
