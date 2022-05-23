@@ -61,6 +61,7 @@ class AddClubMembership extends React.Component {
 			totalProgress: 5,
 			discountDetails: {},
 			numberOfMembers: 0,
+			owner_workplace: {},
 		};
 		this.handleChange = this.handleChange.bind(this);
 	}
@@ -482,6 +483,7 @@ class AddClubMembership extends React.Component {
 						handleChange={this.handleChange}
 						increment={this.incrementNumberOfMembers}
 						decrement={this.decrementNumberOfMembers}
+						workplace={this.state.owner_workplace.value}
 					/>
 				);
 			}
@@ -673,6 +675,10 @@ class AddClubMembership extends React.Component {
 												<Input
 													name='workplace'
 													type='text'
+													innerRef={el =>
+														(this.state.owner_workplace =
+															el)
+													}
 												/>
 											</Col>
 										</FormGroup>

@@ -51,6 +51,7 @@ class ClubMember extends React.Component {
 	}
 
 	render() {
+		console.log(this.props.workplace);
 		return (
 			<div id='group_members'>
 				<FormGroup row>
@@ -193,7 +194,9 @@ class ClubMember extends React.Component {
 								'][workplace]'
 							}
 							type='text'
+							disabled
 							placeholder='Workplace'
+							value={this.props.workplace}
 						/>
 					</Col>
 				</FormGroup>
