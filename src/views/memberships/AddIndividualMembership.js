@@ -652,6 +652,18 @@ class AddIndividualMembership extends React.Component {
 											</Col>
 										</FormGroup>
 										<FormGroup row>
+											<Label sm={4} for='town'>
+												Town
+											</Label>
+											<Col md={6}>
+												<Input
+													required
+													name='town'
+													type='text'
+												/>
+											</Col>
+										</FormGroup>
+										<FormGroup row>
 											<Label sm={4} for='country'>
 												Country
 											</Label>
