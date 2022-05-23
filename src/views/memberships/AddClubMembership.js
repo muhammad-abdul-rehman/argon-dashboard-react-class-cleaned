@@ -658,6 +658,17 @@ class AddClubMembership extends React.Component {
 											</Col>
 										</FormGroup>
 										<FormGroup row>
+											<Label sm={4} for='reference_club'>
+												Job Title
+											</Label>
+											<Col md={6}>
+												<Input
+													name='reference_club'
+													type='text'
+												/>
+											</Col>
+										</FormGroup>
+										<FormGroup row>
 											<Label sm={4} for='address'>
 												Address
 											</Label>
@@ -680,6 +691,18 @@ class AddClubMembership extends React.Component {
 												<Input
 													required
 													name='address_secondary'
+													type='text'
+												/>
+											</Col>
+										</FormGroup>
+										<FormGroup row>
+											<Label sm={4} for='town'>
+												Town
+											</Label>
+											<Col md={6}>
+												<Input
+													required
+													name='town'
 													type='text'
 												/>
 											</Col>
