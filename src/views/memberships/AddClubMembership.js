@@ -457,7 +457,7 @@ class AddClubMembership extends React.Component {
 
 	incrementNumberOfMembers = e => {
 		e.preventDefault();
-		if (this.state.numberOfMembers >= 5) return;
+		if (this.state.numberOfMembers >= 4) return;
 		this.setState({ numberOfMembers: this.state.numberOfMembers + 1 });
 	};
 	decrementNumberOfMembers = e => {
@@ -474,19 +474,17 @@ class AddClubMembership extends React.Component {
 
 		const numOfMembers = [];
 
-		for (var i = 0; i <= this.state.numberOfMembers && i <= 5; i += 1) {
-			if (i <= 5) {
-				numOfMembers.push(
-					<ClubMember
-						memberIndex={i}
-						key={i}
-						handleChange={this.handleChange}
-						increment={this.incrementNumberOfMembers}
-						decrement={this.decrementNumberOfMembers}
-						workplace={this.state.owner_workplace.value}
-					/>
-				);
-			}
+		for (var i = 0; i <= this.state.numberOfMembers; i += 1) {
+			numOfMembers.push(
+				<ClubMember
+					memberIndex={i}
+					key={i}
+					handleChange={this.handleChange}
+					increment={this.incrementNumberOfMembers}
+					decrement={this.decrementNumberOfMembers}
+					workplace={this.state.owner_workplace.value}
+				/>
+			);
 		}
 
 		return (
