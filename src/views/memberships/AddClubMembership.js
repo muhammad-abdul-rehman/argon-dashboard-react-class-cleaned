@@ -456,7 +456,7 @@ class AddClubMembership extends React.Component {
 
 	incrementNumberOfMembers = e => {
 		e.preventDefault();
-		if (this.state.numberOfMembers > 5) return;
+		if (this.state.numberOfMembers >= 5) return;
 		this.setState({ numberOfMembers: this.state.numberOfMembers + 1 });
 	};
 	decrementNumberOfMembers = e => {
@@ -564,6 +564,23 @@ class AddClubMembership extends React.Component {
 													name='club_name'
 													placeholder='Club Name'
 													type='text'
+													onChange={e => {
+														this.handleChange(e);
+													}}
+													required
+												/>
+											</Col>
+										</FormGroup>
+										<FormGroup row>
+											<Label sm={4}>
+												Club Description
+											</Label>
+											<Col md={6}>
+												<Input
+													id='club_description'
+													name='club_description'
+													placeholder='Club Description'
+													type='textarea'
 													onChange={e => {
 														this.handleChange(e);
 													}}

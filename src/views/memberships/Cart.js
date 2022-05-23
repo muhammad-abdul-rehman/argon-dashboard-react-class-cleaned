@@ -54,6 +54,10 @@ class Cart extends React.Component {
 							)}
 						</td>
 					</tr>
+					<tr>
+						<td className='font-weight-bold'>Next Renewal Date</td>
+						<td>{this.props.membership.renewal_date}</td>
+					</tr>
 				</tbody>
 			</Table>
 		);
