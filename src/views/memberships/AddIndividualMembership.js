@@ -625,6 +625,17 @@ class AddIndividualMembership extends React.Component {
 											</Col>
 										</FormGroup>
 										<FormGroup row>
+											<Label sm={4} for='reference_club'>
+												Job Title
+											</Label>
+											<Col md={6}>
+												<Input
+													name='reference_club'
+													type='text'
+												/>
+											</Col>
+										</FormGroup>
+										<FormGroup row>
 											<Label sm={4} for='address'>
 												Address
 											</Label>
