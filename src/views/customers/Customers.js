@@ -1,6 +1,6 @@
 import OnlyHeader from 'components/Headers/OnlyHeader';
 import React from 'react';
-import { DataGrid } from '@material-ui/data-grid';
+import { DataGrid, GridToolbar } from '@material-ui/data-grid';
 
 // reactstrap components
 import {
@@ -105,9 +105,27 @@ class Customers extends React.Component {
 	render() {
 		const columns = [
 			{ field: 'id', headerName: 'ID', width: 100 },
-			{ field: 'user_id', headerName: 'User ID', width: 180 },
-			{ field: 'name', headerName: 'Name', width: 180 },
-			{ field: 'membership_id', headerName: 'Membership Id', width: 180 },
+			{
+				field: 'membership_number',
+				headerName: 'Membership Number',
+				width: 180,
+			},
+			{ field: 'first_name', headerName: 'First Name', width: 180 },
+			{ field: 'last_name', headerName: 'Last Name', width: 180 },
+			{ field: 'email', headerName: 'Email', width: 180 },
+			{ field: 'workplace', headerName: 'Workplace', width: 180 },
+			{ field: 'reference_club', headerName: 'Job Title', width: 180 },
+			{
+				field: 'membership_type',
+				headerName: 'Membership Type',
+				width: 180,
+			},
+			{
+				field: 'membership_status',
+				headerName: 'Membership Status',
+				width: 180,
+			},
+			{ field: 'renewal_date', headerName: 'Renewal date', width: 180 },
 			{ field: 'date', headerName: 'Date', width: 180 },
 			{
 				field: 'actions',
@@ -147,12 +165,28 @@ class Customers extends React.Component {
 			const date = new Date(item.date_registered);
 			return {
 				id: item.id,
-				user_id: item.user_id,
+				membership_number: item.user_login,
+				workplace: item.workplace,
+				reference_club: item.reference_club,
 				membership_id:
 					item.memberships.length === 0
 						? 'No Memberhsip'
 						: item.memberships[0],
-				name: item.name,
+				first_name: item.first_name,
+				last_name: item.last_name,
+				email: item.email,
+				membership_type:
+					item.memberships_data.length === 0
+						? 'No Memberhsip'
+						: item.memberships_data[0].type,
+				membership_status:
+					item.memberships_data.length === 0
+						? 'No Membership'
+						: item.memberships_data[0].status,
+				renewal_date:
+					item.memberships_data.length === 0
+						? 'No Renewal Date'
+						: item.memberships_data[0].expired_date,
 				date:
 					date.getDay() +
 					'-' +
@@ -170,7 +204,7 @@ class Customers extends React.Component {
 						<div className='col'>
 							<Card className='shadow'>
 								<CardHeader className='border-0'>
-									<h3 className='mb-0'>Customers</h3>
+									<h3 className='mb-0'>Members</h3>
 								</CardHeader>
 								<DataGrid
 									loading={this.state.customers.length === 0}
@@ -178,6 +212,9 @@ class Customers extends React.Component {
 									rows={rows}
 									columns={columns}
 									pagination
+									components={{
+										Toolbar: GridToolbar,
+									}}
 								/>
 							</Card>
 						</div>
