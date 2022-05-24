@@ -4,16 +4,15 @@
 
 // Bootstrap default mixins
 
-@import "../bootstrap/mixins";
-
+@import '../bootstrap/mixins';
 
 // Custom mixins
 
-@import "mixins/alert";
-@import "mixins/badge";
-@import "mixins/background-variant";
-@import "mixins/buttons";
-@import "mixins/forms";
-@import "mixins/icon";
-@import "mixins/modals";
-@import "mixins/popover";
+@import 'mixins/alert';
+@import 'mixins/badge';
+@import 'mixins/background-variant';
+@import 'mixins/buttons';
+@import 'mixins/forms';
+@import 'mixins/icon';
+@import 'mixins/modals';
+@import 'mixins/popover';

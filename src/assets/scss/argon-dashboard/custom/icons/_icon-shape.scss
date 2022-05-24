@@ -2,7 +2,6 @@
 // Icon shape
 //
 
-
 .icon-shape {
 	padding: 12px;
 	text-align: center;
@@ -11,20 +10,22 @@
 	justify-content: center;
 	border-radius: 50%;
 
-
-	i, svg {
+	i,
+	svg {
 		font-size: 1.25rem;
 	}
 
 	&.icon-lg {
-		i, svg {
+		i,
+		svg {
 			font-size: 1.625rem;
 		}
 	}
 
 	&.icon-sm {
-		i, svg {
-			font-size: .875rem;
+		i,
+		svg {
+			font-size: 0.875rem;
 		}
 	}
 
@@ -32,7 +33,6 @@
 		width: 30px;
 		height: 30px;
 	}
-
 }
 
 @each $color, $value in $theme-colors {
