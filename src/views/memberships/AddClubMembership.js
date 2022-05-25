@@ -443,11 +443,8 @@ class AddClubMembership extends React.Component {
 		formData.append('customer_id', customer_id);
 		formData.append('object_id', membership.id);
 		formData.append('club_name', club_name);
-<<<<<<< HEAD
-=======
 		formData.append('autorenew', event.target.auto_renew.checked);
 		formData.append('status', 'active');
->>>>>>> 32fcf19 (fix: Fields not updating properly)
 		return fetch(
 			this.props.rcp_url.domain +
 				this.props.rcp_url.base_url +
