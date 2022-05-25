@@ -286,11 +286,12 @@ class AddClubMembership extends React.Component {
 			'workplace',
 			'reference_club',
 			'address',
-			'address_secondary',
+			'address_two',
 			'town',
 			'country',
 			'county',
 			'eircode',
+			'phone',
 		];
 		const user_args = {
 			first_name: event.target.first_name.value,
@@ -382,6 +383,7 @@ class AddClubMembership extends React.Component {
 			amount: transaction.amount,
 			transaction_id: transaction.id,
 			status: transaction.status,
+			gateway: 'stripe',
 		};
 
 		return fetch(
@@ -441,6 +443,11 @@ class AddClubMembership extends React.Component {
 		formData.append('customer_id', customer_id);
 		formData.append('object_id', membership.id);
 		formData.append('club_name', club_name);
+<<<<<<< HEAD
+=======
+		formData.append('autorenew', event.target.auto_renew.checked);
+		formData.append('status', 'active');
+>>>>>>> 32fcf19 (fix: Fields not updating properly)
 		return fetch(
 			this.props.rcp_url.domain +
 				this.props.rcp_url.base_url +
@@ -704,16 +711,13 @@ class AddClubMembership extends React.Component {
 											</Col>
 										</FormGroup>
 										<FormGroup row>
-											<Label
-												sm={4}
-												for='address_secondary'
-											>
+											<Label sm={4} for='address_two'>
 												Address 2
 											</Label>
 											<Col md={6}>
 												<Input
 													required
-													name='address_secondary'
+													name='address_two'
 													type='text'
 												/>
 											</Col>

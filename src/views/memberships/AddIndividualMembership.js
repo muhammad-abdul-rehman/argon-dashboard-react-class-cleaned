@@ -293,11 +293,12 @@ class AddIndividualMembership extends React.Component {
 			'workplace',
 			'reference_club',
 			'address',
-			'address_secondary',
+			'address_two',
 			'town',
 			'country',
 			'county',
 			'eircode',
+			'phone',
 		];
 		const user_args = {
 			first_name: event.target.first_name.value,
@@ -385,6 +386,7 @@ class AddIndividualMembership extends React.Component {
 			amount: transaction.amount,
 			transaction_id: transaction.id,
 			status: transaction.status,
+			gateway: 'stripe',
 		};
 
 		return fetch(
@@ -648,16 +650,13 @@ class AddIndividualMembership extends React.Component {
 											</Col>
 										</FormGroup>
 										<FormGroup row>
-											<Label
-												sm={4}
-												for='address_secondary'
-											>
+											<Label sm={4} for='address_two'>
 												Address 2
 											</Label>
 											<Col md={6}>
 												<Input
 													required
-													name='address_secondary'
+													name='address_two'
 													type='text'
 												/>
 											</Col>

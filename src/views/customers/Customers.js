@@ -127,6 +127,7 @@ class Customers extends React.Component {
 			},
 			{ field: 'renewal_date', headerName: 'Renewal date', width: 180 },
 			{ field: 'date', headerName: 'Date', width: 180 },
+			{ field: 'club_member', headerName: 'Club Member', width: 180 },
 			{
 				field: 'actions',
 				type: 'actions',
@@ -183,6 +184,9 @@ class Customers extends React.Component {
 					item.memberships_data.length === 0
 						? 'No Membership'
 						: item.memberships_data[0].status,
+				club_member: item.is_club_member
+					? item.club_member
+					: 'Not a club member',
 				renewal_date:
 					item.memberships_data.length === 0
 						? 'No Renewal Date'
