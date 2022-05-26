@@ -385,7 +385,7 @@ class AddIndividualMembership extends React.Component {
 			user_id: user_id,
 			amount: transaction.amount,
 			transaction_id: transaction.id,
-			status: transaction.status,
+			status: transaction.status === 'succeeded' ? 'complete' : 'failed',
 			gateway: 'stripe',
 		};
 
@@ -690,13 +690,13 @@ class AddIndividualMembership extends React.Component {
 											</Col>
 										</FormGroup>
 										<FormGroup row>
-											<Label sm={4} for='region'>
-												Region
+											<Label sm={4} for='county'>
+												County
 											</Label>
 											<Col md={6}>
 												<RegionDropdown
 													className='form-control'
-													name='region' //"country"
+													name='county' //"country"
 													country={country}
 													value={region}
 													onChange={val =>

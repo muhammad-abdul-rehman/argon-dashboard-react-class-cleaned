@@ -382,7 +382,7 @@ class AddClubMembership extends React.Component {
 			user_id: user_id,
 			amount: transaction.amount,
 			transaction_id: transaction.id,
-			status: transaction.status,
+			status: transaction.status === 'succeeded' ? 'complete' : 'failed',
 			gateway: 'stripe',
 		};
 
@@ -747,7 +747,7 @@ class AddClubMembership extends React.Component {
 											</Col>
 										</FormGroup>
 										<FormGroup row>
-											<Label sm={4} for='region'>
+											<Label sm={4} for='county'>
 												County
 											</Label>
 											<Col md={6}>

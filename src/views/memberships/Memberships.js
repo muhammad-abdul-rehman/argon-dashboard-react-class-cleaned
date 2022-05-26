@@ -280,6 +280,7 @@ class Memberships extends React.Component {
 
 		const rows = this.state.memberships.map((item, key) => {
 			const date = new Date(item.created_date);
+			console.log(date);
 			return {
 				id: item.id,
 				name: item.membership_name,
@@ -287,11 +288,11 @@ class Memberships extends React.Component {
 				status: item.status,
 				recurring: item.recurring_amount,
 				created:
-					date.getDay() +
+					date.getUTCDate() +
 					'-' +
-					date.getMonth() +
+					date.getUTCMonth() +
 					'-' +
-					date.getFullYear(),
+					date.getUTCFullYear(),
 			};
 		});
 		return (
