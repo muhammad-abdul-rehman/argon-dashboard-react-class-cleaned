@@ -26,7 +26,7 @@ import {
 import { connect } from 'react-redux';
 import { setUserLoginDetails } from 'features/user/userSlice';
 
-class Memberships extends React.Component {
+class Payments extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -60,7 +60,9 @@ class Memberships extends React.Component {
 			this.state.payments?.length === 0
 		) {
 			this.fetchPayment(
-				this.props.rcp_url.domain + this.props.rcp_url.url + 'payments',
+				this.props.rcp_url.proxy_domain +
+					this.props.rcp_url.base_url +
+					'payments',
 				this.props.user.token
 			);
 		}
@@ -107,6 +109,38 @@ class Memberships extends React.Component {
 	render() {
 		const columns = [
 			{ field: 'id', headerName: 'ID', width: 100 },
+			{
+				field: 'membership_number',
+				headerName: 'Membership Number',
+				width: 180,
+			},
+			{
+				field: 'first_name',
+				headerName: 'First Name',
+				width: 180,
+			},
+			{
+				field: 'last_name',
+				headerName: 'Last Name',
+				width: 180,
+			},
+			{
+				field: 'invoice_url',
+				headerName: 'Invoice URL',
+				width: 180,
+				renderCell: ({ row }) => {
+					return (
+						<a href={row.invoice_url} target='_blank'>
+							{row.invoice_url}
+						</a>
+					);
+				},
+			},
+			{
+				field: 'payment_method',
+				headerName: 'Payment Method',
+				width: 180,
+			},
 			{ field: 'customer_id', headerName: 'Customer ID', width: 180 },
 			{ field: 'status', headerName: 'Status', width: 180 },
 			{ field: 'amount', headerName: 'Amount', width: 180 },
@@ -118,11 +152,15 @@ class Memberships extends React.Component {
 			const date = new Date(item.date);
 			return {
 				id: item.id,
+				membership_number: item.membership_number,
+				first_name: item.first_name,
+				last_name: item.last_name,
+				invoice_url: item.invoice_url,
 				name: item.membership_name,
-				customer_id: item.customer_id,
 				status: item.status,
 				amount: item.amount,
 				subscription: item.subscription,
+				payment_method: item.gateway,
 				created:
 					date.getDay() +
 					'-' +
@@ -195,4 +233,4 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = { setUserLoginDetails };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Memberships);
+export default connect(mapStateToProps, mapDispatchToProps)(Payments);

@@ -21,11 +21,15 @@ class Memberships extends React.Component {
 		this.state = {
 			memberships: [],
 			page: 1,
-			number: 5,
+			number: 20,
+			membershipLoading: true,
 		};
 	}
 
 	componentDidMount() {
+		this.setState({
+			membershipLoading: this.state.memberships?.length === 0,
+		});
 		if (null === this.props.user.token) {
 			this.fetchToken(
 				this.props.rcp_url.domain +
@@ -37,12 +41,13 @@ class Memberships extends React.Component {
 				this.props.rcp_url.domain +
 					this.props.rcp_url.base_url +
 					'memberships',
-				this.props.user.token
+				this.props.user.token,
+				this.state.page
 			);
 		}
 	}
 
-	componentDidUpdate({ user: prevUser }) {
+	componentDidUpdate({ user: prevUser }, { page: prevPage }) {
 		if (
 			null !== this.props.user.token &&
 			prevUser.token !== this.props.user.token &&
@@ -52,7 +57,18 @@ class Memberships extends React.Component {
 				this.props.rcp_url.domain +
 					this.props.rcp_url.base_url +
 					'memberships',
-				this.props.user.token
+				this.props.user.token,
+				this.state.page
+			);
+		}
+
+		if (prevPage !== this.state.page) {
+			this.fetchMemberships(
+				this.props.rcp_url.proxy_domain +
+					this.props.rcp_url.base_url +
+					'memberships',
+				this.props.user.token,
+				this.state.page
 			);
 		}
 	}
@@ -145,13 +161,13 @@ class Memberships extends React.Component {
 		this.props.setUserLoginDetails(data);
 	}
 
-	fetchMemberships = async (url, token) => {
+	fetchMemberships = async (url, token, page) => {
 		const urlQuery = new URL(url);
 		const paramsOptions = {
 			number: this.state.number,
-			offset: (this.state.page - 1) * this.state.number,
-			orderby: 'ID',
-			order: 'ASC',
+			offset: (page - 1) * this.state.number,
+			order_by: 'created_date',
+			order: 'DESC',
 		};
 		for (let key in paramsOptions) {
 			urlQuery.searchParams.set(key, paramsOptions[key]);
@@ -163,7 +179,7 @@ class Memberships extends React.Component {
 			},
 		});
 		const data = await res.json();
-		this.setState({ memberships: data });
+		this.setState({ memberships: data, membershipLoading: false });
 	};
 
 	deleteMembership = async (url, id) => {
@@ -180,6 +196,10 @@ class Memberships extends React.Component {
 		this.setState({
 			memberships: this.state.memberships.filter(el => el.id !== id),
 		});
+	};
+
+	handlePageChange = params => {
+		this.setState({ page: params + 1, membershipLoading: true });
 	};
 
 	render() {
@@ -274,7 +294,6 @@ class Memberships extends React.Component {
 					date.getFullYear(),
 			};
 		});
-
 		return (
 			<>
 				<OnlyHeader />
@@ -286,13 +305,18 @@ class Memberships extends React.Component {
 									<h3 className='mb-0'>Memberships</h3>
 								</CardHeader>
 								<DataGrid
-									loading={
-										this.state.memberships.length === 0
-									}
+									loading={this.state.membershipLoading}
 									autoHeight
 									rows={rows}
 									columns={columns}
+									pageSize={20}
+									onPageChange={this.handlePageChange.bind(
+										this
+									)}
+									page={this.state.page - 1}
+									rowCount={1000}
 									pagination
+									paginationMode='server'
 									components={{ Toolbar: this.CustomToolbar }}
 								/>
 								{/* Add Pagination */}
