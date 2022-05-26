@@ -451,6 +451,7 @@ class AddIndividualMembership extends React.Component {
 				body: JSON.stringify({
 					customer_id: customer_id,
 					object_id: membership.id,
+					status: 'active',
 				}),
 			}
 		);
