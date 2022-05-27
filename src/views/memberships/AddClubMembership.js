@@ -61,8 +61,10 @@ class AddClubMembership extends React.Component {
 			totalProgress: 5,
 			discountDetails: {},
 			numberOfMembers: 0,
+			membersArray: [],
 			owner_workplace: {},
 		};
+		this.memberIndex = 1;
 		this.handleChange = this.handleChange.bind(this);
 	}
 
@@ -462,12 +464,29 @@ class AddClubMembership extends React.Component {
 	incrementNumberOfMembers = e => {
 		e.preventDefault();
 		if (this.state.numberOfMembers >= 4) return;
-		this.setState({ numberOfMembers: this.state.numberOfMembers + 1 });
+		this.setState({
+			numberOfMembers: this.state.numberOfMembers + 1,
+			membersArray: [
+				...this.state.membersArray,
+				<ClubMember
+					memberIndex={this.memberIndex}
+					key={this.memberIndex}
+					handleChange={this.handleChange}
+					increment={this.incrementNumberOfMembers}
+					decrement={this.decrementNumberOfMembers}
+					workplace={this.state.owner_workplace.value}
+				/>,
+			],
+		});
+		this.memberIndex = this.memberIndex + 1;
 	};
-	decrementNumberOfMembers = e => {
+	decrementNumberOfMembers = (e, key) => {
 		e.preventDefault();
 		if (this.state.numberOfMembers < -1) return;
-		this.setState({ numberOfMembers: this.state.numberOfMembers - 1 });
+		this.setState({
+			numberOfMembers: this.state.numberOfMembers - 1,
+			membersArray: this.state.membersArray.filter(el => el.key != key),
+		});
 	};
 	render() {
 		const { email, country, region } = this.state;
@@ -476,21 +495,20 @@ class AddClubMembership extends React.Component {
 			hidePostalCode: true,
 		}; // @todo for styling card element.
 
-		const numOfMembers = [];
+		// const numOfMembers = [];
 
-		for (var i = 0; i <= this.state.numberOfMembers; i += 1) {
-			numOfMembers.push(
-				<ClubMember
-					memberIndex={i}
-					key={i}
-					handleChange={this.handleChange}
-					increment={this.incrementNumberOfMembers}
-					decrement={this.decrementNumberOfMembers}
-					workplace={this.state.owner_workplace.value}
-				/>
-			);
-		}
-
+		// for (var i = 0; i <= this.state.numberOfMembers; i += 1) {
+		// 	numOfMembers.push(
+		// 		<ClubMember
+		// 			memberIndex={i}
+		// 			key={i}
+		// 			handleChange={this.handleChange}
+		// 			increment={this.incrementNumberOfMembers}
+		// 			decrement={this.decrementNumberOfMembers}
+		// 			workplace={this.state.owner_workplace.value}
+		// 		/>
+		// 	);
+		// }
 		return (
 			<>
 				<OnlyHeader />
@@ -819,7 +837,7 @@ class AddClubMembership extends React.Component {
 											</FormGroup>
 										)}
 										<h2>Group Members</h2>
-										{this.state.numberOfMembers < 0 && (
+										{this.state.numberOfMembers === 0 && (
 											<>
 												<p>
 													To add members, click on the
@@ -835,7 +853,8 @@ class AddClubMembership extends React.Component {
 												</Button>
 											</>
 										)}
-										{numOfMembers}
+										{/* {numOfMembers} */}
+										{this.state.membersArray}
 										{undefined !==
 											this.state.selectedMembership && (
 											<Cart

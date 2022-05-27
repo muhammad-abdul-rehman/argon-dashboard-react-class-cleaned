@@ -51,7 +51,6 @@ class ClubMember extends React.Component {
 	}
 
 	render() {
-		console.log(this.props.workplace);
 		return (
 			<div id='group_members'>
 				<FormGroup row>
@@ -228,8 +227,12 @@ class ClubMember extends React.Component {
 						<Button onClick={this.props.increment}>
 							Add More Members
 						</Button>
-						<Button onClick={this.props.decrement}>
-							Delete Members
+						<Button
+							onClick={e =>
+								this.props.decrement(e, this.props.memberIndex)
+							}
+						>
+							Delete This Member
 						</Button>
 					</Col>
 				</Row>
