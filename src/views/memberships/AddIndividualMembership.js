@@ -500,14 +500,17 @@ class AddIndividualMembership extends React.Component {
 											<Col md={6}>
 												<Input
 													name='membership_level'
-													defaultValue=''
+													defaultValue='select'
 													type='select'
 													onChange={e => {
 														this.handleChange(e);
 													}}
 													required
 												>
-													<option disabled selected>
+													<option
+														value='select'
+														disabled
+													>
 														Select a membership
 														level.
 													</option>
