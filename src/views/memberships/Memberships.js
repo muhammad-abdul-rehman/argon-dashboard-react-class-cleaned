@@ -218,9 +218,7 @@ class Memberships extends React.Component {
 				// some action
 				e.preventDefault();
 				this.props.history.push(
-					this.props.history.location.pathname +
-						'/renew-membership/' +
-						index
+					this.props.history.location.pathname + '/edit/' + index
 				);
 			};
 			const handleDeleteClick = e => {
