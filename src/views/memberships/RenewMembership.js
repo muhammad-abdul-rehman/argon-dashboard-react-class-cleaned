@@ -205,26 +205,24 @@ class RenewMembership extends React.Component {
 		const cardElement = elements.getElement('card');
 		try {
 			const membership = this.props.levels.levels.find(
-				el => el.id === parseInt(event.target.membership_level.value)
+				el => el.id === parseInt(this.state.membership.object_id)
 			);
 			const formData = new FormData();
-			formData.append('action', 'stripe_payment_intent');
-			formData.append('price', membership.recurring_amount);
-			formData.append('currency_symbol', membership.currency_symbol);
+			formData.append('object_id', membership.id);
 			const res = await fetch(
-				this.props.rcp_url.domain +
-					'/wp-admin/admin-ajax.php?action=stripe_payment_intent',
+				this.props.rcp_url.proxy_domain +
+					this.props.rcp_url.base_url +
+					'payments/payment_intent',
 				{
 					method: 'post',
 					headers: {
-						'Content-Type': 'multipart/form-data',
+						Authorization: 'Bearer ' + this.props.user.token,
+						'Content-Type': 'application/json',
 					},
-					body: formData,
+					body: JSON.stringify(Object.fromEntries(formData)),
 				}
 			);
-			const {
-				data: { client_secret },
-			} = await res.json();
+			const { client_secret } = await res.json();
 			const paymentMethodReq = await stripe.createPaymentMethod({
 				type: 'card',
 				card: cardElement,
@@ -234,7 +232,7 @@ class RenewMembership extends React.Component {
 			});
 
 			if (paymentMethodReq.error) {
-				return;
+				throw paymentMethodReq.error;
 			}
 
 			const { error, ...transaction } = await stripe.confirmCardPayment(
@@ -245,10 +243,10 @@ class RenewMembership extends React.Component {
 			);
 
 			if (error) {
-				return;
+				throw error;
 			}
 
-			return transaction;
+			return Promise.resolve(transaction.paymentIntent);
 		} catch (err) {
 			return Promise.reject(err);
 		}
@@ -257,11 +255,12 @@ class RenewMembership extends React.Component {
 	/**
 	 * Submit the form.
 	 */
-	submit_edit_membership(event) {
+	async submit_edit_membership(event) {
 		event.persist();
 		event.preventDefault();
 		if (this.state.enable_payment) {
-			const transaction = this.handlePayment(event);
+			const transaction = await this.handlePayment(event);
+			console.log(transaction);
 			this.addPayment(this.state.selectedMembership, transaction)
 				.then(res => {
 					if (res.status > 400) return Promise.reject(res);
@@ -413,7 +412,7 @@ class RenewMembership extends React.Component {
 		const args = {
 			subscription: membership.name,
 			object_id: membership.id,
-			user_id: this.state.membership.price,
+			user_id: this.state.membership.user_id,
 			amount: transaction.amount,
 			transaction_id: transaction.id,
 			status: transaction.status === 'succeeded' ? 'complete' : 'failed',
