@@ -222,6 +222,45 @@ class ClubMember extends React.Component {
 						/>
 					</Col>
 				</FormGroup>
+				<FormGroup row>
+					<Label
+						for={
+							'members[' +
+							this.props.memberIndex +
+							'][membership_level]'
+						}
+						sm={4}
+					>
+						Membership Level for member
+					</Label>
+					<Col md={6}>
+						<Input
+							name={
+								'members[' +
+								this.props.memberIndex +
+								'][membership_level]'
+							}
+							defaultValue=''
+							type='select'
+							onChange={e => {
+								this.props.handleChange(e);
+							}}
+							required
+						>
+							<option disabled selected>
+								Select a membership level.
+							</option>
+							{this.props.levels.levels.length > 0 &&
+								this.props.levels.levels
+									.filter(el => el.level)
+									.map((item, key) => (
+										<option key={key} value={item.id}>
+											{item.name}
+										</option>
+									))}
+						</Input>
+					</Col>
+				</FormGroup>
 				<Row className='mb-4'>
 					<Col className='d-flex justify-content-end'>
 						<Button onClick={this.props.increment}>

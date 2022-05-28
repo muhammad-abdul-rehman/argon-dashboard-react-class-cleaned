@@ -25,6 +25,7 @@ import {
 
 import { connect } from 'react-redux';
 import { setUserLoginDetails } from 'features/user/userSlice';
+import MatEdit from './MatEdit';
 
 class Payments extends React.Component {
 	constructor(props) {
@@ -146,6 +147,38 @@ class Payments extends React.Component {
 			{ field: 'amount', headerName: 'Amount', width: 180 },
 			{ field: 'subscription', headerName: 'Subscription', width: 180 },
 			{ field: 'created', headerName: 'Created', width: 180 },
+			{
+				field: 'actions',
+				type: 'actions',
+				headerName: 'Actions',
+				width: 100,
+				cellClassName: 'actions',
+				renderCell: params => {
+					return (
+						<div
+							className='d-flex justify-content-between align-items-center'
+							style={{ cursor: 'pointer' }}
+						>
+							<MatEdit
+								index={params.row.id}
+								handleClick={() =>
+									this.props.history.push(
+										'payment/edit/' + params.row.id
+									)
+								}
+								handleDeleteClick={() => {
+									this.deleteCustomer(
+										this.props.rcp_url.proxy_domain +
+											this.props.rcp_url.base_url +
+											'payments/delete/',
+										params.row.id
+									);
+								}}
+							/>
+						</div>
+					);
+				},
+			},
 		];
 
 		const rows = this.state.payments.map((item, key) => {

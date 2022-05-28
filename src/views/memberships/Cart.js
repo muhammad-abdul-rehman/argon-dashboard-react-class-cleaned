@@ -26,7 +26,7 @@ class Cart extends React.Component {
 					<tr>
 						<td className='font-weight-bold'>Discount</td>
 						<td>{`${
-							this.props.discount.total_discount !== undefined
+							this.props.discount?.total_discount !== undefined
 								? this.props.discount.total_discount
 								: '0'
 						} ${this.props.membership.currency_symbol}`}</td>
