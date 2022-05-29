@@ -14,6 +14,7 @@ import {
 } from '@material-ui/core';
 
 import 'file-viewer';
+import LogoLoopSingle from './LogoLoopSingle';
 
 class Logos extends React.Component {
 	constructor(props) {
@@ -24,7 +25,7 @@ class Logos extends React.Component {
 	}
 
 	componentDidMount() {
-		if (this.state.logos.length === 0)
+		if (this.state.logos.length === 0 && this.props.user.token !== null)
 			this.fetchLogos(
 				this.props.rcp_url.domain +
 					this.props.rcp_url.base_wp_url +
@@ -32,20 +33,53 @@ class Logos extends React.Component {
 			);
 	}
 
-	componentDidUpdate() {}
+	componentDidUpdate() {
+		if (this.state.logos.length === 0 && this.props.user.token !== null)
+			this.fetchLogos(
+				this.props.rcp_url.proxy_domain +
+					this.props.rcp_url.base_wp_url +
+					'sponsored_logos'
+			);
+	}
 
 	fetchLogos = async url => {
 		const queryUrl = new URL(url);
 		const params = {
 			per_page: 100,
 			_embed: true,
+			status: 'any',
 		};
 		for (let key in params) {
 			queryUrl.searchParams.set(key, params[key]);
 		}
-		const res = await fetch(queryUrl);
+		const res = await fetch(queryUrl, {
+			headers: {
+				Authorization: 'Bearer ' + this.props.user.token,
+			},
+		});
 		const data = await res.json();
 		this.setState({ logos: data });
+	};
+
+	editLogo = (e, id) => {
+		e.preventDefault();
+		this.props.history.push(
+			this.props.history.location.pathname + '/edit/' + id
+		);
+	};
+	deleteLogo = async (url, id) => {
+		const res = await fetch(url, {
+			method: 'DELETE',
+			headers: {
+				Authorization: 'Bearer ' + this.props.user.token,
+			},
+		});
+
+		if (res.status > 400) {
+			const data = await res.text();
+		}
+
+		this.setState({ logos: this.state.logos.filter(el => el.id !== id) });
 	};
 
 	render() {
@@ -57,7 +91,7 @@ class Logos extends React.Component {
 						<div className='col'>
 							<Card className='shadow'>
 								<CardHeader className='border-0 d-flex justify-content-between pl-3 pr-3'>
-									<h3 className='mb-0'>Sponsored Logos</h3>
+									<h3 className='mb-0'>Sponsor Logos</h3>
 									<Button
 										variant='contained'
 										onClick={() =>
@@ -78,48 +112,16 @@ class Logos extends React.Component {
 										{this.state.logos.length !== 0 &&
 											this.state.logos.map(
 												(item, key) => (
-													<ImageListItem key={key}>
-														<img
-															src={`${item?._embedded['wp:featuredmedia'][0]?.source_url}?w=248&fit=crop&auto=format`}
-															srcSet={`${item?._embedded['wp:featuredmedia'][0]?.source_url}?w=248&fit=crop&auto=format&dpr=2 2x`}
-															alt={
-																item.title
-																	.rendered
-															}
-															loading='lazy'
-														/>
-														<ImageListItemBar
-															position='bottom'
-															title={
-																<>
-																	<p
-																		className='mb-0'
-																		dangerouslySetInnerHTML={{
-																			__html: item
-																				.title
-																				.rendered,
-																		}}
-																	></p>
-																	{item
-																		?._embedded[
-																		'wp:term'
-																	].length !==
-																		0 && (
-																		<p className='mb-0'>
-																			Page
-																			Shown:{' '}
-																			{
-																				item?._embedded[
-																					'wp:term'
-																				].pop()
-																					?.name
-																			}
-																		</p>
-																	)}
-																</>
-															}
-														/>
-													</ImageListItem>
+													<LogoLoopSingle
+														key={key}
+														item={item}
+														deleteHandle={
+															this.deleteLogo
+														}
+														editHandle={
+															this.editLogo
+														}
+													/>
 												)
 											)}
 									</ImageList>

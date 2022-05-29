@@ -24,6 +24,7 @@ import Media from 'views/media/Media';
 import DiscountCodes from 'views/discount/DiscountCodes';
 import CreateDiscountCode from 'views/discount/CreateDiscountCode';
 import EditPayment from 'views/EditPayment';
+import EditLogo from 'views/sponsored-logos/EditLogo';
 
 var routes = [
 	{
@@ -161,6 +162,14 @@ var routes = [
 				name: 'Create Logo',
 				icon: 'fa  fa-book text-green', // redundant
 				component: CreateLogo,
+				layout: '/admin',
+				showInSidebar: false,
+			},
+			{
+				path: '/sponsored-logos/edit/:id',
+				name: 'Create Logo',
+				icon: 'fa  fa-book text-green', // redundant
+				component: EditLogo,
 				layout: '/admin',
 				showInSidebar: false,
 			},
