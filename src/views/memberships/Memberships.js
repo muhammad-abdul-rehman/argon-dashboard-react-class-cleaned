@@ -3,6 +3,8 @@ import React from 'react';
 import {
 	DataGrid,
 	GridToolbarContainer,
+	GridToolbarFilterButton,
+	getGridNumericColumnOperators,
 	GridToolbarExport,
 } from '@material-ui/data-grid';
 
@@ -11,6 +13,9 @@ import {
 	IconButton,
 	Button,
 	CircularProgress,
+	InputAdornment,
+	LinearProgress,
+	TextField,
 } from '@material-ui/core';
 
 // reactstrap components
@@ -29,7 +34,19 @@ class Memberships extends React.Component {
 			page: 1,
 			number: 20,
 			membershipLoading: true,
+			searchFilter: null,
+			search: '',
+			searched: false,
 		};
+		this.gridOperators = getGridNumericColumnOperators().filter(
+			el =>
+				el.value !== 'isEmpty' &&
+				el.value !== 'isNotEmpty' &&
+				el.value !== '<' &&
+				el.value !== '<=' &&
+				el.value !== '>' &&
+				el.value !== '<='
+		);
 	}
 
 	componentDidMount() {
@@ -53,34 +70,64 @@ class Memberships extends React.Component {
 		}
 	}
 
-	componentDidUpdate({ user: prevUser }, { page: prevPage }) {
+	componentDidUpdate(
+		{ user: prevUser },
+		{ page: prevPage, searchFilter: prevSearchFilter }
+	) {
 		if (
 			null !== this.props.user.token &&
 			prevUser.token !== this.props.user.token &&
-			this.state.memberships?.length === 0
+			this.state.memberships?.length === 0 &&
+			this.state.searchFilter === null &&
+			this.state.search === ''
 		) {
 			this.fetchMemberships(
 				this.props.rcp_url.domain +
 					this.props.rcp_url.base_url +
 					'memberships',
 				this.props.user.token,
-				this.state.page
+				this.state.page,
+				null,
+				null
 			);
 		}
 
-		if (prevPage !== this.state.page) {
+		if (null !== this.props.user.token && prevPage !== this.state.page) {
+			this.setState({ membershipLoading: true });
 			this.fetchMemberships(
 				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'memberships',
 				this.props.user.token,
-				this.state.page
+				this.state.page,
+				null,
+				null
+			);
+		}
+
+		if (
+			null !== this.props.user.token &&
+			prevSearchFilter !== this.state.searchFilter
+		) {
+			this.setState({ membershipLoading: true });
+			this.fetchMemberships(
+				this.props.rcp_url.proxy_domain +
+					this.props.rcp_url.base_url +
+					'memberships',
+				this.props.user.token,
+				this.state.page,
+				this.state.searchFilter.value !== undefined
+					? this.state.searchFilter
+					: null,
+				this.state.search === '' || this.state.search === undefined
+					? null
+					: this.state.search
 			);
 		}
 	}
 
 	CustomToolbar = () => (
-		<GridToolbarContainer>
+		<GridToolbarContainer className='justify-content-between'>
 			{/* <GridToolbarExport /> */}
 			<Button
 				variant='text'
@@ -95,8 +142,72 @@ class Memberships extends React.Component {
 					'Export'
 				)}
 			</Button>
+			<GridToolbarFilterButton />
+			<TextField
+				id='search_membership'
+				InputProps={{
+					endAdornment: (
+						<InputAdornment
+							style={{ color: '#3f51b5' }}
+							position='start'
+						>
+							<IconButton
+								size='small'
+								onClick={() => {
+									this.setState({
+										membershipLoading: true,
+										searched: true,
+									});
+									this.fetchMemberships(
+										this.props.rcp_url.proxy_domain +
+											this.props.rcp_url.base_url +
+											'memberships',
+										this.props.user.token,
+										this.state.page,
+										null,
+										this.state.search
+									);
+								}}
+							>
+								<i className='fa fa-search' />
+							</IconButton>
+							{this.state.searched && (
+								<IconButton
+									size='small'
+									onClick={() => {
+										this.setState({
+											membershipLoading: true,
+											searched: false,
+											search: '',
+										});
+
+										this.fetchMemberships(
+											this.props.rcp_url.proxy_domain +
+												this.props.rcp_url.base_url +
+												'memberships',
+											this.props.user.token,
+											this.state.page,
+											null,
+											null
+										);
+									}}
+								>
+									<i className='fa fa-times' />
+								</IconButton>
+							)}
+						</InputAdornment>
+					),
+				}}
+				variant='standard'
+				value={this.state.search}
+				onChange={e => this.setState({ search: e.target.value })}
+			/>
 		</GridToolbarContainer>
 	);
+
+	onFilterChange = filterModel => {
+		this.setState({ searchFilter: filterModel.items[0] });
+	};
 
 	getExportCsvFile = async () => {
 		const res = await fetch(
@@ -171,7 +282,7 @@ class Memberships extends React.Component {
 		this.props.setUserLoginDetails(data);
 	}
 
-	fetchMemberships = async (url, token, page) => {
+	fetchMemberships = async (url, token, page, filter, search) => {
 		const urlQuery = new URL(url);
 		const paramsOptions = {
 			number: this.state.number,
@@ -179,6 +290,19 @@ class Memberships extends React.Component {
 			order_by: 'created_date',
 			order: 'DESC',
 		};
+		if (filter !== null && filter !== undefined) {
+			switch (filter.operatorValue) {
+				case '=':
+					paramsOptions['id__in[]'] = filter.value;
+					break;
+				case '!=':
+					paramsOptions['id__not_in[]'] = filter.value;
+					break;
+			}
+		}
+		if (search !== null && search !== undefined) {
+			paramsOptions.search_user = search;
+		}
 		for (let key in paramsOptions) {
 			urlQuery.searchParams.set(key, paramsOptions[key]);
 		}
@@ -188,6 +312,11 @@ class Memberships extends React.Component {
 				Authorization: 'Bearer ' + token,
 			},
 		});
+
+		if (res.status !== 200) {
+			this.setState({ memberships: [], membershipLoading: false });
+			return;
+		}
 		const data = await res.json();
 		this.setState({ memberships: data, membershipLoading: false });
 	};
@@ -261,12 +390,42 @@ class Memberships extends React.Component {
 			);
 		};
 		const columns = [
-			{ field: 'id', headerName: 'ID', width: 90 },
-			{ field: 'name', headerName: 'Name', width: 180 },
-			{ field: 'customer_name', headerName: 'Customer Name', width: 180 },
-			{ field: 'status', headerName: 'Status', width: 180 },
-			{ field: 'recurring', headerName: 'Recurring', width: 180 },
-			{ field: 'created', headerName: 'Created', width: 180 },
+			{
+				field: 'id',
+				headerName: 'ID',
+				width: 90,
+				filterOperators: this.gridOperators,
+			},
+			{
+				field: 'name',
+				headerName: 'Name',
+				width: 180,
+				filterable: false,
+			},
+			{
+				field: 'customer_name',
+				headerName: 'Customer Name',
+				width: 180,
+				filterable: false,
+			},
+			{
+				field: 'status',
+				headerName: 'Status',
+				width: 180,
+				filterable: false,
+			},
+			{
+				field: 'recurring',
+				headerName: 'Recurring',
+				width: 180,
+				filterable: false,
+			},
+			{
+				field: 'created',
+				headerName: 'Created',
+				width: 180,
+				filterable: false,
+			},
 			{
 				field: 'actions',
 				type: 'actions',
@@ -288,7 +447,6 @@ class Memberships extends React.Component {
 
 		const rows = this.state.memberships.map((item, key) => {
 			const date = new Date(item.created_date);
-			console.log(date);
 			return {
 				id: item.id,
 				name: item.membership_name,
@@ -303,6 +461,7 @@ class Memberships extends React.Component {
 					date.getUTCFullYear(),
 			};
 		});
+
 		return (
 			<>
 				<OnlyHeader />
@@ -318,15 +477,33 @@ class Memberships extends React.Component {
 									autoHeight
 									rows={rows}
 									columns={columns}
-									pageSize={20}
 									onPageChange={this.handlePageChange.bind(
 										this
 									)}
+									pageSize={
+										this.state.memberships.length > 20
+											? 20
+											: this.state.memberships.length
+									}
 									page={this.state.page - 1}
 									rowCount={1000}
 									pagination
 									paginationMode='server'
-									components={{ Toolbar: this.CustomToolbar }}
+									filterMode='server'
+									onFilterModelChange={this.onFilterChange}
+									components={{
+										Toolbar: this.CustomToolbar,
+										LoadingOverlay: LinearProgress,
+										NoRowsOverlay: () => (
+											<div
+												height='100%'
+												alignItems='center'
+												justifyContent='center'
+											>
+												No rows found.
+											</div>
+										),
+									}}
 								/>
 								{/* Add Pagination */}
 							</Card>

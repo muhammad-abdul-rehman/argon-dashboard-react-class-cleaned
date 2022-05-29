@@ -323,7 +323,7 @@ class EditPayment extends React.Component {
 															this.handleChange
 														}
 														value={
-															this.state.payment
+															this.state.form
 																?.gateway || ''
 														}
 													>

@@ -177,7 +177,7 @@ class Library extends React.Component {
 						<div className='col'>
 							<Card className='shadow'>
 								<CardHeader className='border-0 d-flex justify-content-between pl-3 pr-3'>
-									<h3 className='mb-0'>Filr Libraries</h3>
+									<h3 className='mb-0'>Club Records</h3>
 									<Row className='d-flex '>
 										<Grow in={this.state.addLibrary}>
 											<Col
