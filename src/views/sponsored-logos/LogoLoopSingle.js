@@ -85,7 +85,7 @@ class LogoLoopSingle extends React.Component {
 								onClick={async () => {
 									this.setState({ delLoading: true });
 									await this.props.deleteHandle(
-										this.props.rcp_url.proxy_domain +
+										this.props.rcp_url.domain +
 											this.props.rcp_url.base_wp_url +
 											'sponsored_logos/' +
 											this.props.item.id,

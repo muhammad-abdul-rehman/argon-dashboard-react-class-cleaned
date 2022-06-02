@@ -95,7 +95,7 @@ class Memberships extends React.Component {
 		if (null !== this.props.user.token && prevPage !== this.state.page) {
 			this.setState({ membershipLoading: true });
 			this.fetchMemberships(
-				this.props.rcp_url.proxy_domain +
+				this.props.rcp_url.domain +
 					this.props.rcp_url.base_url +
 					'memberships',
 				this.props.user.token,
@@ -111,7 +111,7 @@ class Memberships extends React.Component {
 		) {
 			this.setState({ membershipLoading: true });
 			this.fetchMemberships(
-				this.props.rcp_url.proxy_domain +
+				this.props.rcp_url.domain +
 					this.props.rcp_url.base_url +
 					'memberships',
 				this.props.user.token,
@@ -159,7 +159,7 @@ class Memberships extends React.Component {
 										searched: true,
 									});
 									this.fetchMemberships(
-										this.props.rcp_url.proxy_domain +
+										this.props.rcp_url.domain +
 											this.props.rcp_url.base_url +
 											'memberships',
 										this.props.user.token,
@@ -182,7 +182,7 @@ class Memberships extends React.Component {
 										});
 
 										this.fetchMemberships(
-											this.props.rcp_url.proxy_domain +
+											this.props.rcp_url.domain +
 												this.props.rcp_url.base_url +
 												'memberships',
 											this.props.user.token,

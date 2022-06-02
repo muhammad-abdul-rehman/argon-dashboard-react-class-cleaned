@@ -68,7 +68,7 @@ class AddIndividualMembership extends React.Component {
 			this.props.levels?.levels?.length === 0
 		) {
 			this.fetchMembershipLevels(
-				this.props.rcp_url.proxy_domain +
+				this.props.rcp_url.domain +
 					this.props.rcp_url.base_url +
 					'levels'
 			);
@@ -163,7 +163,7 @@ class AddIndividualMembership extends React.Component {
 		const code = document.getElementById('discount_code').value;
 		//@todo check res.ok on all fetch calls.
 		fetch(
-			this.props.rcp_url.proxy_domain +
+			this.props.rcp_url.domain +
 				this.props.rcp_url.base_url +
 				'discounts/validate',
 			{
@@ -222,7 +222,7 @@ class AddIndividualMembership extends React.Component {
 			//@todo remove payment if discount is 100%.
 
 			const res = await fetch(
-				this.props.rcp_url.proxy_domain +
+				this.props.rcp_url.domain +
 					this.props.rcp_url.base_url +
 					'payments/payment_intent',
 				{
@@ -429,7 +429,7 @@ class AddIndividualMembership extends React.Component {
 			}
 		});
 		return fetch(
-			this.props.rcp_url.proxy_domain +
+			this.props.rcp_url.domain +
 				this.props.rcp_url.base_url +
 				'payments/new',
 			{

@@ -50,13 +50,13 @@ class EditPayment extends React.Component {
 		};
 
 		this.current_payment_url =
-			this.props.rcp_url.proxy_domain +
+			this.props.rcp_url.domain +
 			this.props.rcp_url.base_url +
 			'payments/' +
 			this.props.match.params.id;
 
 		this.update_payment_url =
-			this.props.rcp_url.proxy_domain +
+			this.props.rcp_url.domain +
 			this.props.rcp_url.base_url +
 			'payments/update/' +
 			this.props.match.params.id;

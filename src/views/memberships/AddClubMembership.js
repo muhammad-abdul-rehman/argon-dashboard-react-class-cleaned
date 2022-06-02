@@ -75,7 +75,7 @@ class AddClubMembership extends React.Component {
 			this.props.levels?.levels?.length === 0
 		) {
 			this.fetchMembershipLevels(
-				this.props.rcp_url.proxy_domain +
+				this.props.rcp_url.domain +
 					this.props.rcp_url.base_url +
 					'levels'
 			);
@@ -169,7 +169,7 @@ class AddClubMembership extends React.Component {
 		const code = document.getElementById('discount_code').value;
 		//@todo check res.ok on all fetch calls.
 		fetch(
-			this.props.rcp_url.proxy_domain +
+			this.props.rcp_url.domain +
 				this.props.rcp_url.base_url +
 				'discounts/validate',
 			{
@@ -223,7 +223,7 @@ class AddClubMembership extends React.Component {
 			);
 			formData.append('object_id', membership.id);
 			const res = await fetch(
-				this.props.rcp_url.proxy_domain +
+				this.props.rcp_url.domain +
 					this.props.rcp_url.base_url +
 					'payments/payment_intent',
 				{
@@ -428,7 +428,7 @@ class AddClubMembership extends React.Component {
 			}
 		});
 		return fetch(
-			this.props.rcp_url.proxy_domain +
+			this.props.rcp_url.domain +
 				this.props.rcp_url.base_url +
 				'payments/new',
 			{

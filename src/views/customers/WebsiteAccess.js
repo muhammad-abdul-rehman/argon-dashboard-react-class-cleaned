@@ -20,7 +20,7 @@ class WebsiteAccessRole extends React.Component {
 		e.preventDefault();
 		const form = new FormData(e.target);
 		const url =
-			this.props.rcp_url.proxy_domain +
+			this.props.rcp_url.domain +
 			this.props.rcp_url.base_wp_url +
 			'users/' +
 			this.props.user_id;
