@@ -20,10 +20,12 @@ import {
 	TextField,
 	Button,
 	FormControl,
+	FormControlLabel,
 	Select,
 	MenuItem,
 	InputLabel,
 	Input,
+	Switch,
 } from '@material-ui/core';
 
 import { connect } from 'react-redux';
@@ -46,6 +48,9 @@ class EditPayment extends React.Component {
 				payment_id: '',
 				discount_code: '',
 				status: '',
+				subscription_id: '',
+				subscription_key: '',
+				transaction_id: '',
 			},
 		};
 
@@ -103,6 +108,8 @@ class EditPayment extends React.Component {
 				gateway: data?.gateway,
 				gateway_manual: data?.gateway_manual,
 				subscription_key: data?.subscription_key,
+				subscription_id: data?.subscription_id,
+				transaction_id: data?.transaction_id,
 				payment_id: data?.payment_id,
 				discount_code: data?.discount_code,
 			},
@@ -159,6 +166,8 @@ class EditPayment extends React.Component {
 						gateway: data?.gateway,
 						gateway_manual: data?.gateway_manual,
 						subscription_key: data?.subscription_key,
+						subscription_id: data?.subscription_id,
+						transaction_id: data?.transaction_id,
 						payment_id: data?.payment_id,
 						discount_code: data?.discount_code,
 					},
@@ -411,6 +420,81 @@ class EditPayment extends React.Component {
 										</FormGroup>
 										<FormGroup row>
 											<Col>
+												<TextField
+													id='outlined-basic'
+													label='Transaction ID'
+													name='transaction_id'
+													variant='outlined'
+													onChange={e =>
+														this.handleChange(e)
+													}
+													value={
+														this.state.form
+															?.transaction_id ||
+														''
+													}
+													InputLabelProps={{
+														shrink:
+															this.state.payment
+																?.transaction_id !==
+															undefined,
+													}}
+													disabled
+												/>
+											</Col>
+										</FormGroup>
+										<FormGroup row>
+											<Col>
+												<TextField
+													id='outlined-basic'
+													label='Subscription ID'
+													name='subscription_id'
+													variant='outlined'
+													onChange={e =>
+														this.handleChange(e)
+													}
+													value={
+														this.state.form
+															?.subscription_id ||
+														''
+													}
+													InputLabelProps={{
+														shrink:
+															this.state.payment
+																?.subscription_id !==
+															undefined,
+													}}
+													disabled
+												/>
+											</Col>
+										</FormGroup>
+										<FormGroup row>
+											<Col>
+												<TextField
+													id='outlined-basic'
+													label='Subscription Key'
+													name='subscription_key'
+													variant='outlined'
+													onChange={e =>
+														this.handleChange(e)
+													}
+													value={
+														this.state.form
+															?.subscription_key ||
+														''
+													}
+													InputLabelProps={{
+														shrink:
+															this.state.payment
+																?.subscription_key !==
+															undefined,
+													}}
+													disabled
+												/>
+											</Col>
+										</FormGroup>
+										<FormGroup row>
+											<Col>
 												<FormControl
 													style={{
 														minWidth: '120px',
@@ -460,6 +544,24 @@ class EditPayment extends React.Component {
 												</FormControl>
 											</Col>
 										</FormGroup>
+										<FormGroup row>
+											<Col>
+												<FormControlLabel
+													control={
+														<Switch
+															checked={
+																this.state
+																	.payment
+																	?.auto_renew
+															}
+															disabled
+														/>
+													}
+													label='Auto Renew'
+												/>
+											</Col>
+										</FormGroup>
+
 										<FormGroup row>
 											<Col xs={12}></Col>
 										</FormGroup>

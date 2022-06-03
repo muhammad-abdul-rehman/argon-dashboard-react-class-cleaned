@@ -126,7 +126,6 @@ class Customers extends React.Component {
 				width: 180,
 			},
 			{ field: 'renewal_date', headerName: 'Renewal date', width: 180 },
-			{ field: 'date', headerName: 'Date', width: 180 },
 			{ field: 'club_member', headerName: 'Club Member', width: 180 },
 			{
 				field: 'actions',
@@ -163,7 +162,6 @@ class Customers extends React.Component {
 		];
 
 		const rows = this.state.customers.map((item, key) => {
-			const date = new Date(item.date_registered);
 			return {
 				id: item.id,
 				membership_number: item.user_login,
@@ -191,12 +189,6 @@ class Customers extends React.Component {
 					item.memberships_data.length === 0
 						? 'No Renewal Date'
 						: item.memberships_data[0].expired_date,
-				date:
-					date.getDay() +
-					'-' +
-					date.getMonth() +
-					'-' +
-					date.getFullYear(),
 			};
 		});
 

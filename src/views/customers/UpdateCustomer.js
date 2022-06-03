@@ -48,57 +48,6 @@ class UpdateCustomer extends React.Component {
 					<Col>
 						<TextField
 							id='outlined-basic'
-							label='Customer ID'
-							name='customer_id'
-							variant='outlined'
-							helperText={'You cannot change this.'}
-							required
-							value={this.props.customer?.id || ''}
-							InputLabelProps={{
-								shrink: this.props.customer?.id !== '',
-							}}
-							disabled
-						/>
-					</Col>
-					<Col>
-						<TextField
-							id='outlined-basic'
-							label='User ID'
-							name='user_id'
-							variant='outlined'
-							helperText={'You cannot change this.'}
-							required
-							value={this.props.customer?.user_id || ''}
-							InputLabelProps={{
-								shrink: this.props.customer?.user_id !== '',
-							}}
-							disabled
-						/>
-					</Col>
-				</FormGroup>
-				<FormGroup row>
-					<Col>
-						<TextField
-							id='outlined-basic'
-							label='ATPI Username'
-							name='user_login'
-							variant='outlined'
-							helperText={'You cannot change this.'}
-							required
-							value={this.props.customer?.user_login || ''}
-							InputLabelProps={{
-								shrink:
-									this.props.customer?.user_login !==
-									undefined,
-							}}
-							disabled
-						/>
-					</Col>
-				</FormGroup>
-				<FormGroup row>
-					<Col>
-						<TextField
-							id='outlined-basic'
 							label='First Name'
 							name='first_name'
 							variant='outlined'
@@ -262,6 +211,57 @@ class UpdateCustomer extends React.Component {
 							InputLabelProps={{
 								shrink: this.props.customer?.phone !== '',
 							}}
+						/>
+					</Col>
+				</FormGroup>
+				<FormGroup row>
+					<Col>
+						<TextField
+							id='outlined-basic'
+							label='Customer ID'
+							name='customer_id'
+							variant='outlined'
+							helperText={'You cannot change this.'}
+							required
+							value={this.props.customer?.id || ''}
+							InputLabelProps={{
+								shrink: this.props.customer?.id !== '',
+							}}
+							disabled
+						/>
+					</Col>
+					<Col>
+						<TextField
+							id='outlined-basic'
+							label='User ID'
+							name='user_id'
+							variant='outlined'
+							helperText={'You cannot change this.'}
+							required
+							value={this.props.customer?.user_id || ''}
+							InputLabelProps={{
+								shrink: this.props.customer?.user_id !== '',
+							}}
+							disabled
+						/>
+					</Col>
+				</FormGroup>
+				<FormGroup row>
+					<Col>
+						<TextField
+							id='outlined-basic'
+							label='ATPI Membership number'
+							name='user_login'
+							variant='outlined'
+							helperText={'You cannot change this.'}
+							required
+							value={this.props.customer?.user_login || ''}
+							InputLabelProps={{
+								shrink:
+									this.props.customer?.user_login !==
+									undefined,
+							}}
+							disabled
 						/>
 					</Col>
 				</FormGroup>

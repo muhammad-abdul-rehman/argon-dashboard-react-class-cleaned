@@ -34,6 +34,7 @@ import UpdateCustomer from './UpdateCustomer';
 import MembershipDetails from './MembershipDetails';
 import PaymentDetails from './PaymentDetails';
 import WebsiteAccess from './WebsiteAccess';
+import ClubDetails from './ClubDetails';
 
 class EditCustomer extends React.Component {
 	constructor(props) {
@@ -79,9 +80,23 @@ class EditCustomer extends React.Component {
 			this.fetchCustomer(this.current_customer_url);
 	}
 
-	componentDidUpdate({ user: prevUser }) {
+	componentDidUpdate({ user: prevUser }, { customer: prevCustomer }) {
 		if (prevUser !== this.props.user && this.props.user.token !== null) {
 			this.fetchCustomer(this.current_customer_url);
+		}
+
+		if (
+			prevCustomer !== this.state.customer &&
+			this.state.customer.memberships_data[0].club &&
+			this.props.user.token !== null
+		) {
+			console.log(this.state.customer.memberships_data[0].club);
+			this.fetchClub(
+				this.props.rcp_url.domain +
+					this.props.rcp_url.base_url +
+					`groups/${this.state.customer.memberships_data[0].club}`,
+				this.props.user.token
+			);
 		}
 	}
 
@@ -118,6 +133,22 @@ class EditCustomer extends React.Component {
 				phone: data?.phone,
 			},
 		}));
+	};
+
+	fetchClub = async url => {
+		const res = await fetch(url, {
+			headers: {
+				Authorization: 'Bearer ' + this.props.user.token,
+			},
+		});
+
+		if (!res.ok) return;
+
+		const { errors, ...data } = await res.json();
+
+		if (!errors) {
+			this.setState({ club: data });
+		}
 	};
 
 	handleChange = event => {
@@ -201,7 +232,7 @@ class EditCustomer extends React.Component {
 						<div className='col'>
 							<Card className='shadow'>
 								<CardHeader className='border-0'>
-									<h3 className='mb-0'>Customer</h3>
+									<h3 className='mb-0'>Member</h3>
 								</CardHeader>
 								<CardBody>
 									<UpdateCustomer
@@ -221,6 +252,9 @@ class EditCustomer extends React.Component {
 												: null
 										}
 									/>
+									{this.state.customer && this.state.club && (
+										<ClubDetails club={this.state.club} />
+									)}
 									{this.state.customer &&
 										this.state.customer.payments.length !==
 											0 && (
